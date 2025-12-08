@@ -1,6 +1,6 @@
 import React from 'react';
 import { AssetRecord } from '../types';
-import { ChevronsUpDown, MoreHorizontal } from 'lucide-react';
+import { ChevronsUpDown, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from 'lucide-react';
 
 interface Props {
   data: AssetRecord[];
@@ -81,15 +81,37 @@ export const AssetTable: React.FC<Props> = ({ data }) => {
       
       {/* Pagination Footer */}
       <div className="px-6 py-4 border-t border-gray-200 bg-white flex items-center justify-between">
-            <div className="text-xs text-gray-500">
-                Showing <span className="font-medium text-gray-900">1</span> to <span className="font-medium text-gray-900">5</span> of <span className="font-medium text-gray-900">24</span> results
+            <div className="text-sm text-gray-900">
+                Showing 1 - 10 of <span className="text-green-500 font-semibold">58</span> Row(s)
             </div>
-            <div className="flex gap-1">
-                <button className="px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-200 disabled:opacity-50 text-gray-600">Previous</button>
-                <button className="px-3 py-1 text-xs bg-black text-white rounded shadow-sm hover:bg-gray-800">1</button>
-                <button className="px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-200 text-gray-600">2</button>
-                <button className="px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-200 text-gray-600">3</button>
-                <button className="px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-200 disabled:opacity-50 text-gray-600">Next</button>
+            
+            <div className="flex items-center gap-8">
+                <div className="flex items-center gap-2 text-sm text-gray-900">
+                    Row per page
+                    <select className="border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:border-gray-400 text-gray-900 cursor-pointer">
+                        <option>10</option>
+                        <option>20</option>
+                        <option>50</option>
+                    </select>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                     <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded hover:bg-gray-50 text-gray-600 transition-colors">
+                        <ChevronsLeft size={16} />
+                     </button>
+                     <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded hover:bg-gray-50 text-gray-600 transition-colors">
+                        <ChevronLeft size={16} />
+                     </button>
+                     
+                     <span className="text-sm text-gray-900 mx-3 font-medium">1 / 6</span>
+                     
+                     <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded hover:bg-gray-50 text-gray-600 transition-colors">
+                        <ChevronRight size={16} />
+                     </button>
+                     <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded hover:bg-gray-50 text-gray-600 transition-colors">
+                        <ChevronsRight size={16} />
+                     </button>
+                </div>
             </div>
       </div>
     </div>
