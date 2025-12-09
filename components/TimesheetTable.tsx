@@ -1,6 +1,6 @@
 import React from 'react';
 import { TimesheetRecord } from '../types';
-import { ChevronsUpDown, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Pencil, Smartphone } from 'lucide-react';
+import { ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Pencil, Smartphone } from 'lucide-react';
 
 interface Props {
   data: TimesheetRecord[];
@@ -30,7 +30,7 @@ export const TimesheetTable: React.FC<Props> = ({ data }) => {
               <th colSpan={2} className="p-2 text-center border-b border-gray-800 w-64 border-r">
                 Actual Time
               </th>
-              <th rowSpan={2} className="p-4 w-32 border-r border-gray-800">
+              <th rowSpan={2} className="p-4 w-40 border-r border-gray-800">
                 Status
               </th>
                <th rowSpan={2} className="p-4 w-48">
@@ -42,13 +42,9 @@ export const TimesheetTable: React.FC<Props> = ({ data }) => {
                 <th className="p-4 border-r border-gray-800">In</th>
                 <th className="p-4 border-r border-gray-800">Out</th>
             </tr>
-            
-            {/* Sub-header for Time text? The image has 'Time' under 'In/Out' but it seems merged with the column header. 
-                Using strictly two rows as defined above. 
-            */}
           </thead>
           <tbody className="divide-y divide-gray-200 text-sm text-gray-700">
-            {data.map((item, index) => (
+            {data.map((item) => (
               <tr key={item.id} className="bg-white hover:bg-gray-50 transition-colors cursor-pointer group">
                 <td className="p-4 text-center">
                     <button className="text-gray-400 hover:text-black transition-colors">
@@ -96,13 +92,17 @@ export const TimesheetTable: React.FC<Props> = ({ data }) => {
                 </td>
                 
                 <td className="p-4">
-                    <span className={`px-3 py-1 text-xs font-semibold rounded shadow-sm
-                        ${item.status === 'Tepat Waktu' 
-                            ? 'bg-[#e6fffa] text-[#00a86b] border border-[#b2f5ea]' 
-                            : 'bg-[#e0f7fa] text-[#00bcd4] border border-[#b2ebf2]'
-                        }`}>
-                        {item.status}
-                    </span>
+                    {item.status === 'Tepat Waktu' ? (
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-green-50 text-green-700 text-xs font-medium border border-transparent">
+                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                            {item.status}
+                        </div>
+                    ) : (
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-cyan-50 text-cyan-700 text-xs font-medium border border-transparent">
+                            <div className="w-2 h-2 rounded-full bg-cyan-500"></div>
+                            {item.status}
+                        </div>
+                    )}
                 </td>
 
                  <td className="p-4">
