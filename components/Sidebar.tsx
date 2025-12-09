@@ -13,11 +13,17 @@ import {
   Search,
   ChevronLeft
 } from 'lucide-react';
+import { SidebarItem } from '../types';
 
-export const Sidebar: React.FC = () => {
+interface Props {
+  activeItem: string;
+  onNavigate: (label: string) => void;
+}
+
+export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
   const menuItems = [
     { label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-    { label: 'ATK', icon: <PenTool size={20} />, active: true },
+    { label: 'ATK', icon: <PenTool size={20} /> },
     { label: 'ARK', icon: <ShoppingCart size={20} /> },
     { label: 'Contract', icon: <FileText size={20} /> },
     { label: 'Timesheet', icon: <Clock size={20} /> },
@@ -53,18 +59,22 @@ export const Sidebar: React.FC = () => {
 
       {/* Navigation List */}
       <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-1">
-        {menuItems.map((item, index) => (
-          <button
-            key={index}
-            className={`w-full flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200
-              ${item.active 
-                ? 'bg-[#1a1a1a] text-white border-l-4 border-white' 
-                : 'hover:bg-[#1a1a1a] hover:text-white border-l-4 border-transparent'}`}
-          >
-            <span className={`${item.active ? 'text-white' : 'text-gray-500'}`}>{item.icon}</span>
-            {item.label}
-          </button>
-        ))}
+        {menuItems.map((item, index) => {
+          const isActive = activeItem === item.label;
+          return (
+            <button
+              key={index}
+              onClick={() => onNavigate(item.label)}
+              className={`w-full flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200
+                ${isActive
+                  ? 'bg-[#1a1a1a] text-white border-l-4 border-white' 
+                  : 'hover:bg-[#1a1a1a] hover:text-white border-l-4 border-transparent'}`}
+            >
+              <span className={`${isActive ? 'text-white' : 'text-gray-500'}`}>{item.icon}</span>
+              {item.label}
+            </button>
+          );
+        })}
       </nav>
 
       {/* Footer / Minimize */}
@@ -73,7 +83,7 @@ export const Sidebar: React.FC = () => {
           <div className="bg-gray-900 p-1 rounded-full">
             <ChevronLeft size={14} />
           </div>
-          Minimize
+          Minimize menu
         </button>
       </div>
     </div>

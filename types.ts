@@ -31,6 +31,30 @@ export interface MasterItem {
   averagePrice: string;
 }
 
+export interface ContractRecord {
+  id: number;
+  contractName: string;
+  contractImage: string;
+  category: string;
+  startDate: string;
+  endDate: string;
+  reminderLevel: string;
+  documentName: string;
+  status: 'Active' | 'Inactive';
+}
+
+export interface TimesheetRecord {
+  id: number;
+  employee: Employee;
+  date: string;
+  dayType: string;
+  task: string;
+  clockIn: string;
+  clockOut: string;
+  status: 'Tepat Waktu' | 'Tidak Tepat Waktu' | 'Absen';
+  photos: string[];
+}
+
 export interface SidebarItem {
   label: string;
   icon: React.ReactNode;

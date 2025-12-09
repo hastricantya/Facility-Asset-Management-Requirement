@@ -1,4 +1,4 @@
-import { AssetRecord, MasterItem } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord } from './types';
 
 export const MOCK_DATA: AssetRecord[] = [
   {
@@ -139,4 +139,188 @@ export const MOCK_MASTER_DATA: MasterItem[] = [
     lastPurchasePrice: 'Rp. 88.000',
     averagePrice: 'Rp. 91.783'
   }
+];
+
+export const MOCK_ARK_DATA: AssetRecord[] = [
+    {
+      id: 1,
+      employee: {
+        name: 'Alam Anugrah Akbar',
+        phone: 'SI2311.0013',
+        role: 'Cleaning Service',
+        avatar: 'https://picsum.photos/id/111/100/100'
+      },
+      category: 'Tissue',
+      itemName: 'Nice Tissue Toilet',
+      itemDescription: 'Roll 2 Ply',
+      qty: 8,
+      date: '01/06/2010',
+      remainingStock: 2,
+      itemCode: 'TS-TNICE002',
+      status: 'Approved'
+    },
+    {
+      id: 2,
+      employee: {
+        name: 'Budi Santoso',
+        phone: 'SI2001.0044',
+        role: 'General Affair Staff',
+        avatar: 'https://picsum.photos/id/222/100/100'
+      },
+      category: 'Sabun Cuci',
+      itemName: 'Sunlight Jeruk Nipis',
+      itemDescription: 'Pouch 755ml',
+      qty: 5,
+      date: '02/06/2010',
+      remainingStock: 15,
+      itemCode: 'SB-SUN01',
+      status: 'Approved'
+    },
+    {
+        id: 3,
+        employee: {
+          name: 'Siti Aminah',
+          phone: 'SI2011.0022',
+          role: 'Pantry Staff',
+          avatar: 'https://picsum.photos/id/333/100/100'
+        },
+        category: 'Pengharum Ruangan',
+        itemName: 'Stella Matic Refill',
+        itemDescription: 'Green Fantasy',
+        qty: 2,
+        date: '03/06/2010',
+        remainingStock: 8,
+        itemCode: 'PR-STL02',
+        status: 'Pending'
+    }
+];
+
+export const MOCK_MASTER_ARK_DATA: MasterItem[] = [
+    {
+      id: 1,
+      category: 'Tissue',
+      itemName: 'Nice Tissue Toilet',
+      itemCode: 'TS-TNICE002',
+      remainingStock: 250,
+      purchaseDate: '01/06/2010',
+      lastPurchasePrice: 'Rp. 4.500',
+      averagePrice: 'Rp. 4.200'
+    },
+    {
+      id: 2,
+      category: 'Sabun Cuci',
+      itemName: 'Sunlight Jeruk Nipis',
+      itemCode: 'SB-SUN01',
+      remainingStock: 45,
+      purchaseDate: '02/06/2010',
+      lastPurchasePrice: 'Rp. 15.000',
+      averagePrice: 'Rp. 14.500'
+    },
+    {
+      id: 3,
+      category: 'Pengharum Ruangan',
+      itemName: 'Stella Matic Refill',
+      itemCode: 'PR-STL02',
+      remainingStock: 30,
+      purchaseDate: '03/06/2010',
+      lastPurchasePrice: 'Rp. 35.000',
+      averagePrice: 'Rp. 33.800'
+    }
+  ];
+
+export const MOCK_CONTRACT_DATA: ContractRecord[] = [
+  {
+    id: 1,
+    contractName: 'Mobil Innova B 1122 OKE, Tahun 2022 dipakai Pak Jack',
+    contractImage: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=200&h=150',
+    category: 'Mobil',
+    startDate: '02/08/2022',
+    endDate: '01/08/2023',
+    reminderLevel: 'High',
+    documentName: 'DO16078320240315160249805.pdf',
+    status: 'Active'
+  }
+];
+
+export const MOCK_TIMESHEET_DATA: TimesheetRecord[] = [
+    {
+        id: 1,
+        employee: {
+            name: 'Muhammad Herlambang',
+            phone: 'SI2311.0012',
+            role: 'Cleaning Service',
+            avatar: 'https://picsum.photos/id/55/100/100'
+        },
+        date: '14/03/2024',
+        dayType: 'Thursday - WD',
+        task: '',
+        clockIn: '07:35',
+        clockOut: '16:32',
+        status: 'Tepat Waktu',
+        photos: ['https://picsum.photos/id/101/50/50', 'https://picsum.photos/id/102/50/50']
+    },
+    {
+        id: 2,
+        employee: {
+            name: 'Muhammad Herlambang',
+            phone: 'SI2311.0012',
+            role: 'Cleaning Service',
+            avatar: 'https://picsum.photos/id/55/100/100'
+        },
+        date: '15/03/2024',
+        dayType: 'Friday - WD',
+        task: '',
+        clockIn: '07:41',
+        clockOut: '16:45',
+        status: 'Tidak Tepat Waktu',
+        photos: ['https://picsum.photos/id/103/50/50', 'https://picsum.photos/id/104/50/50']
+    },
+    {
+        id: 3,
+        employee: {
+            name: 'Muhammad Koiri',
+            phone: 'SI2311.0002',
+            role: 'Cleaning Service',
+            avatar: 'https://picsum.photos/id/65/100/100'
+        },
+        date: '14/03/2024',
+        dayType: 'Thursday - WD',
+        task: '',
+        clockIn: '09:56',
+        clockOut: '20:05',
+        status: 'Tepat Waktu',
+        photos: ['https://picsum.photos/id/106/50/50', 'https://picsum.photos/id/107/50/50']
+    },
+    {
+        id: 4,
+        employee: {
+            name: 'Muhammad Koiri',
+            phone: 'SI2311.0002',
+            role: 'Cleaning Service',
+            avatar: 'https://picsum.photos/id/65/100/100'
+        },
+        date: '15/03/2024',
+        dayType: 'Friday - WD',
+        task: '',
+        clockIn: '09:50',
+        clockOut: '18:56',
+        status: 'Tidak Tepat Waktu',
+        photos: ['https://picsum.photos/id/108/50/50', 'https://picsum.photos/id/109/50/50']
+    },
+    {
+        id: 5,
+        employee: {
+            name: 'Nartiana Nia',
+            phone: 'SI2311.0011',
+            role: 'Cleaning Service',
+            avatar: 'https://picsum.photos/id/77/100/100'
+        },
+        date: '14/03/2024',
+        dayType: 'Thursday - WD',
+        task: '',
+        clockIn: '08:37',
+        clockOut: '17:38',
+        status: 'Tepat Waktu',
+        photos: []
+    }
 ];

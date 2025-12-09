@@ -1,15 +1,95 @@
 import React from 'react';
-import { Search, Filter, Plus, LayoutGrid, List } from 'lucide-react';
+import { Search, Filter, Plus, LayoutGrid, List, ChevronsRight, Filter as FilterIcon, Calendar } from 'lucide-react';
 
 interface Props {
+  tabs: string[];
   activeTab: string;
   onTabChange: (tab: string) => void;
   onAddClick: () => void;
+  searchPlaceholder?: string;
+  moduleName?: string;
 }
 
-export const FilterBar: React.FC<Props> = ({ activeTab, onTabChange, onAddClick }) => {
-  const tabs = ['Pengguna', 'Master ATK', 'All'];
+export const FilterBar: React.FC<Props> = ({ tabs, activeTab, onTabChange, onAddClick, searchPlaceholder = "Search by Employee, Item...", moduleName }) => {
+  
+  // Specific layout for Timesheet module
+  if (moduleName === 'Timesheet') {
+    return (
+        <div className="mb-6">
+            <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                <div className="flex flex-col md:flex-row gap-4 items-end">
+                    
+                    {/* Employment Status Group */}
+                    <div className="flex-1 min-w-[300px]">
+                        <div className="flex items-center gap-2 mb-2">
+                             <div className="bg-black rounded-full p-1"><ChevronsRight size={12} className="text-white"/></div>
+                             <span className="text-xs font-medium text-gray-500">Employment Status</span>
+                        </div>
+                        <div className="flex border border-gray-300 rounded-lg overflow-hidden h-[38px]">
+                            {tabs.map((tab) => {
+                                const isActive = activeTab === tab;
+                                return (
+                                    <button
+                                        key={tab}
+                                        onClick={() => onTabChange(tab)}
+                                        className={`flex-1 text-sm font-medium transition-colors ${
+                                            isActive ? 'bg-white text-black font-bold' : 'bg-white text-gray-400 hover:bg-gray-50'
+                                        } ${isActive ? '' : 'border-r last:border-r-0 border-gray-200'}`}
+                                    >
+                                        {tab}
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    </div>
 
+                    {/* Select Employee */}
+                    <div className="flex-1">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Select Employee</label>
+                        <div className="relative">
+                            <input 
+                                type="text" 
+                                placeholder="Select Employee" 
+                                defaultValue="Alam Anugrah Akbar x + 13 ..."
+                                className="w-full bg-white pl-4 pr-10 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none text-gray-700 h-[38px]"
+                            />
+                            <div className="absolute right-3 top-2 text-gray-400">
+                                <FilterIcon size={16} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Select Date */}
+                    <div className="flex-1">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Select Date</label>
+                        <div className="relative">
+                            <input 
+                                type="text" 
+                                defaultValue="14/03/2024     →     15/03/2024"
+                                className="w-full bg-white pl-4 pr-10 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none text-gray-700 h-[38px]"
+                            />
+                            <Calendar className="absolute right-3 top-2.5 text-gray-400" size={16} />
+                        </div>
+                    </div>
+
+                    {/* Attendance Status */}
+                    <div className="flex-1">
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Attendance Status</label>
+                         <div className="relative">
+                            <input 
+                                type="text" 
+                                defaultValue="Present x"
+                                className="w-full bg-white pl-4 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none text-gray-700 h-[38px]"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+  }
+
+  // Standard layout for ATK, ARK, Contract, etc.
   return (
     <div className="mb-6">
       {/* Tabs */}
@@ -41,7 +121,7 @@ export const FilterBar: React.FC<Props> = ({ activeTab, onTabChange, onAddClick 
                     <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
                     <input 
                     type="text" 
-                    placeholder="Search by Employee, Item..." 
+                    placeholder={searchPlaceholder} 
                     className="w-full bg-white pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none transition-all"
                     />
                 </div>
@@ -62,6 +142,7 @@ export const FilterBar: React.FC<Props> = ({ activeTab, onTabChange, onAddClick 
                     <option>Tinta Printer</option>
                     <option>Kertas</option>
                     <option>Amplop</option>
+                    <option>Mobil</option>
                 </select>
             </div>
 
