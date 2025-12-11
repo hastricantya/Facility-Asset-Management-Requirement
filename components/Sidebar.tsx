@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   LayoutDashboard, 
   PenTool, 
@@ -11,7 +11,14 @@ import {
   BookOpen, 
   BarChart, 
   Search,
-  ChevronLeft
+  ChevronLeft,
+  Car,
+  Database,
+  Wrench,
+  Send,
+  DollarSign,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { SidebarItem } from '../types';
 
@@ -20,9 +27,34 @@ interface Props {
   onNavigate: (label: string) => void;
 }
 
+interface MenuItem {
+    label: string;
+    icon: React.ReactNode;
+    subItems?: MenuItem[];
+}
+
 export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
-  const menuItems = [
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan']);
+
+  const toggleMenu = (label: string) => {
+    setExpandedMenus(prev => 
+        prev.includes(label) ? prev.filter(item => item !== label) : [...prev, label]
+    );
+  };
+
+  const menuItems: MenuItem[] = [
     { label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
+    { 
+        label: 'Kendaraan', 
+        icon: <Car size={20} />,
+        subItems: [
+            { label: 'Daftar Aset', icon: <Database size={18} /> },
+            { label: 'Servis', icon: <Wrench size={18} /> },
+            { label: 'Pajak & KIR', icon: <FileText size={18} /> },
+            { label: 'Mutasi', icon: <Send size={18} /> },
+            { label: 'Penjualan', icon: <DollarSign size={18} /> },
+        ]
+    },
     { label: 'ATK', icon: <PenTool size={20} /> },
     { label: 'ARK', icon: <ShoppingCart size={20} /> },
     { label: 'Contract', icon: <FileText size={20} /> },
@@ -60,17 +92,59 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
       {/* Navigation List */}
       <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-1">
         {menuItems.map((item, index) => {
-          const isActive = activeItem === item.label;
+          const hasSub = item.subItems && item.subItems.length > 0;
+          const isExpanded = expandedMenus.includes(item.label);
+          // Check if parent or any child is active
+          const isParentActive = activeItem === item.label; 
+
+          if (hasSub) {
+              return (
+                  <div key={index} className="space-y-1">
+                      <button
+                        onClick={() => toggleMenu(item.label)}
+                        className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 hover:bg-[#1a1a1a] hover:text-white text-gray-500`}
+                      >
+                         <div className="flex items-center gap-4">
+                            <span>{item.icon}</span>
+                            {item.label}
+                         </div>
+                         {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      </button>
+
+                      {isExpanded && (
+                          <div className="space-y-1">
+                              {item.subItems!.map((sub, subIndex) => {
+                                  const isSubActive = activeItem === sub.label;
+                                  return (
+                                    <button
+                                        key={subIndex}
+                                        onClick={() => onNavigate(sub.label)}
+                                        className={`w-full flex items-center gap-4 pl-12 pr-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200
+                                            ${isSubActive
+                                            ? 'bg-[#1a1a1a] text-white border-l-4 border-white' 
+                                            : 'hover:bg-[#1a1a1a] hover:text-white border-l-4 border-transparent text-gray-500'}`}
+                                    >
+                                        <span className={`${isSubActive ? 'text-white' : 'text-gray-500'}`}>{sub.icon}</span>
+                                        {sub.label}
+                                    </button>
+                                  )
+                              })}
+                          </div>
+                      )}
+                  </div>
+              );
+          }
+
           return (
             <button
               key={index}
               onClick={() => onNavigate(item.label)}
               className={`w-full flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200
-                ${isActive
+                ${isParentActive
                   ? 'bg-[#1a1a1a] text-white border-l-4 border-white' 
-                  : 'hover:bg-[#1a1a1a] hover:text-white border-l-4 border-transparent'}`}
+                  : 'hover:bg-[#1a1a1a] hover:text-white border-l-4 border-transparent text-gray-500'}`}
             >
-              <span className={`${isActive ? 'text-white' : 'text-gray-500'}`}>{item.icon}</span>
+              <span className={`${isParentActive ? 'text-white' : 'text-gray-500'}`}>{item.icon}</span>
               {item.label}
             </button>
           );

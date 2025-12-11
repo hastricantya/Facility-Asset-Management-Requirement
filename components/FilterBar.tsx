@@ -12,6 +12,58 @@ interface Props {
 
 export const FilterBar: React.FC<Props> = ({ tabs, activeTab, onTabChange, onAddClick, searchPlaceholder = "Search by Employee, Item...", moduleName }) => {
   
+  // Specific layout for Daftar Aset (Vehicle) module
+  if (moduleName === 'Daftar Aset') {
+    return (
+        <div className="mb-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                {/* Tabs as Buttons */}
+                <div className="flex items-center border border-gray-300 rounded-md overflow-hidden bg-white">
+                    {tabs.map((tab) => {
+                        const isActive = activeTab === tab;
+                        return (
+                            <button
+                                key={tab}
+                                onClick={() => onTabChange(tab)}
+                                className={`px-8 py-2 text-sm font-semibold transition-colors ${
+                                    isActive 
+                                    ? 'bg-black text-white' 
+                                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                                }`}
+                            >
+                                {tab}
+                            </button>
+                        )
+                    })}
+                </div>
+
+                {/* Right Side: Search & Filter */}
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                    <div className="relative flex-1 md:w-80">
+                        <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+                        <input 
+                            type="text" 
+                            placeholder={searchPlaceholder} 
+                            className="w-full bg-white pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-200 focus:border-gray-400 outline-none transition-all"
+                        />
+                    </div>
+                    <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap">
+                        <Filter size={16} />
+                        Filter
+                    </button>
+                    <button 
+                        onClick={onAddClick}
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-black rounded-md hover:bg-gray-800 transition-colors shadow-sm whitespace-nowrap"
+                    >
+                        <Plus size={16} />
+                        Tambah
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+  }
+
   // Specific layout for Timesheet module
   if (moduleName === 'Timesheet') {
     return (

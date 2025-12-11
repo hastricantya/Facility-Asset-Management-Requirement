@@ -77,3 +77,13 @@ export interface SidebarItem {
   icon: React.ReactNode;
   active?: boolean;
 }
+
+export interface VehicleRecord {
+  id: number;
+  noRegistrasi: string;
+  nama: string;
+  noPolisi: string;
+  channel: string;
+  cabang: string;
+  status: 'Aktif' | 'Tidak Aktif';
+}

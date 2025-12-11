@@ -1,4 +1,4 @@
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord } from './types';
 
 export const MOCK_DATA: AssetRecord[] = [
   {
@@ -331,5 +331,98 @@ export const MOCK_VENDOR_DATA: VendorRecord[] = [
         vendorName: 'PT Indo Makmur Energy',
         vendorCode: '2209010032',
         status: 'Active'
+    }
+];
+
+export const MOCK_VEHICLE_DATA: VehicleRecord[] = [
+    {
+        id: 1,
+        noRegistrasi: '301-00208',
+        nama: 'Toyota Avanza 1.3 CVT E Warna Putih Q2 BM Purwokerto',
+        noPolisi: 'B 1708 CZY',
+        channel: 'Human Capital Operation',
+        cabang: 'Pusat',
+        status: 'Aktif'
+    },
+    {
+        id: 2,
+        noRegistrasi: '301-00155',
+        nama: 'MOBIL MITSUBISHI L-300/PICK-UP/FLAT DECK - 2016_PURWOKERTO',
+        noPolisi: 'R 9747 IR',
+        channel: 'Management',
+        cabang: 'Purwokerto',
+        status: 'Aktif'
+    },
+    {
+        id: 3,
+        noRegistrasi: '301-00108',
+        nama: 'MITSUBISHI L-300. MEDAN (BK 8627 CB)',
+        noPolisi: 'BK 8627 CB',
+        channel: 'Traditional',
+        cabang: 'Pekanbaru',
+        status: 'Aktif'
+    },
+    {
+        id: 4,
+        noRegistrasi: '301-00193',
+        nama: 'MITSUBISHI L-300 PU FLAT DECK-2021 U/ CAB. PEKANBARU',
+        noPolisi: 'BM 8511 QA',
+        channel: 'Traditional',
+        cabang: 'Pekanbaru',
+        status: 'Aktif'
+    },
+    {
+        id: 5,
+        noRegistrasi: '301-00161',
+        nama: 'MOBIL PICK-UP / FLAT DECK L-300 2016, MITSUBISHI_PALEMBANG',
+        noPolisi: 'BE 9353 YD',
+        channel: 'Traditional',
+        cabang: 'Palembang',
+        status: 'Aktif'
+    },
+    {
+        id: 6,
+        noRegistrasi: '301-00207',
+        nama: 'Toyota Avanza 1.3 CVT E Warna Putih Q2 BM Medan',
+        noPolisi: 'B 1025 CZZ',
+        channel: 'HR',
+        cabang: 'Pusat',
+        status: 'Aktif'
+    },
+    {
+        id: 7,
+        noRegistrasi: '301-00199',
+        nama: 'MITSUBISHI L300 PU FLAT DECK 2021 DB 8956 LM-U/ CAB. MENADO',
+        noPolisi: 'DB 8956 LM',
+        channel: 'Traditional',
+        cabang: 'Manado',
+        status: 'Aktif'
+    },
+    {
+        id: 8,
+        noRegistrasi: '301-00132',
+        nama: 'MITS L-300/PICK UP/2012 U/ MLG (L 9232 J)',
+        noPolisi: 'L 9371 GK',
+        channel: 'Traditional',
+        cabang: 'Malang',
+        status: 'Aktif'
+    },
+    {
+        id: 9,
+        noRegistrasi: '301-00148',
+        nama: 'TUNAS RID_MOBIL TOYOTA INNOVA TYPE G A/T-TH.2014 PUTIH_PUSAT',
+        noPolisi: 'B 1134 CKK',
+        channel: 'Traditional',
+        cabang: 'Malang',
+        status: 'Aktif'
+    },
+    {
+        id: 10,
+        noRegistrasi: '301-00185',
+        nama: 'MOBIL AVANZA TYPE G/AT-PUTIH 2020, TOYOTA_BM SMG,KDR,SBY',
+        noPolisi: 'B 1756 CZN',
+        channel: 'Traditional',
+        cabang: 'Kediri',
+        status: 'Aktif'
     }
 ];
