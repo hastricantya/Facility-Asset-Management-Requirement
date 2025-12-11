@@ -1,45 +1,39 @@
 import React from 'react';
-import { ContractRecord } from '../types';
-import { ChevronsUpDown, Eye, FolderX, Pencil } from 'lucide-react';
+import { TaxKirRecord } from '../types';
+import { ChevronsUpDown, Eye, FolderX } from 'lucide-react';
 
 interface Props {
-  data: ContractRecord[];
+  data: TaxKirRecord[];
 }
 
-export const ContractTable: React.FC<Props> = ({ data }) => {
+export const TaxKirTable: React.FC<Props> = ({ data }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden min-h-[500px]">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[1400px] text-left border-collapse">
+        <table className="w-full min-w-[1200px] text-left border-collapse">
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200 text-xs font-semibold text-gray-700 uppercase tracking-wider">
               <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Asset Category
+                  No Request
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
               <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Asset Number
+                  No Polisi
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
               <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Address
+                  Tgl Request
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
               <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Type
-                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
-                <div className="flex items-center justify-between">
-                  Location (Branch)
+                  Jenis
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
@@ -51,7 +45,7 @@ export const ContractTable: React.FC<Props> = ({ data }) => {
               </th>
               <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Sub - Location
+                  Cabang
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
@@ -61,7 +55,13 @@ export const ContractTable: React.FC<Props> = ({ data }) => {
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
-              <th className="p-4 w-24 text-center">
+              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
+                <div className="flex items-center justify-between">
+                  Status Approval
+                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
+                </div>
+              </th>
+              <th className="p-4 w-16 text-center">
                  Action
               </th>
             </tr>
@@ -70,40 +70,42 @@ export const ContractTable: React.FC<Props> = ({ data }) => {
             {data.length > 0 ? (
                 data.map((item) => (
                     <tr key={item.id} className="bg-white hover:bg-gray-50 transition-colors cursor-pointer group">
-                        <td className="p-4 font-medium text-gray-900">{item.assetCategory}</td>
-                        <td className="p-4 font-medium text-gray-900">{item.assetNumber}</td>
-                        <td className="p-4 text-gray-600 truncate max-w-[200px]">{item.address}</td>
-                        <td className="p-4 text-gray-600">{item.type}</td>
-                        <td className="p-4 text-gray-600">{item.location}</td>
+                        <td className="p-4 font-medium text-gray-900">{item.id}</td>
+                        <td className="p-4 font-medium text-gray-900">{item.noPolisi}</td>
+                        <td className="p-4 text-gray-600">{item.tglRequest}</td>
+                        <td className="p-4 text-gray-600">{item.jenis}</td>
                         <td className="p-4 text-gray-600">{item.channel}</td>
-                        <td className="p-4 text-gray-600">{item.subLocation}</td>
+                        <td className="p-4 text-gray-600">{item.cabang}</td>
                         <td className="p-4">
-                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${item.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
                                 {item.status}
                             </span>
                         </td>
-                        <td className="p-4 text-center">
-                             <div className="flex items-center justify-center gap-2">
-                                <button className="text-gray-400 hover:text-gray-600 transition-colors">
-                                    <Eye size={18} />
-                                </button>
-                                <button className="text-gray-400 hover:text-gray-600 transition-colors">
-                                    <Pencil size={18} />
-                                </button>
+                        <td className="p-4">
+                            <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-400 font-bold text-xs">
+                                {item.statusApproval}
                             </div>
+                        </td>
+                        <td className="p-4 text-center">
+                            <button 
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <Eye size={18} />
+                            </button>
                         </td>
                     </tr>
                 ))
             ) : (
                 <tr>
                     <td colSpan={9} className="p-12 text-center">
-                        <div className="flex flex-col items-center justify-center min-h-[400px]">
+                        <div className="flex flex-col items-center justify-center">
                              <div className="bg-gradient-to-br from-gray-100 to-gray-200 p-6 rounded-2xl mb-4 relative border border-gray-200">
                                 <FolderX size={48} className="text-gray-500 z-10 relative" />
-                                {/* Simple decoration */}
+                                {/* Simple decoration to mimic the illustration's feel */}
                                 <div className="absolute -right-2 -bottom-2 w-8 h-8 bg-gray-300 rounded-full opacity-50"></div>
                              </div>
-                             <h3 className="text-lg font-bold text-gray-900">Tidak ada data...</h3>
+                             <h3 className="text-lg font-bold text-gray-900">Belum ada data</h3>
+                             <p className="text-gray-500 text-sm mt-1">Belum ada permintaan Pajak & KIR yang dibuat.</p>
                         </div>
                     </td>
                 </tr>

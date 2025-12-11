@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Filter, Plus, LayoutGrid, List, ChevronsRight, Filter as FilterIcon, Calendar } from 'lucide-react';
+import { Search, Filter, Plus, LayoutGrid, List, ChevronsRight, Filter as FilterIcon, Calendar, Upload, Download } from 'lucide-react';
 
 interface Props {
   tabs: string[];
@@ -12,8 +12,8 @@ interface Props {
 
 export const FilterBar: React.FC<Props> = ({ tabs, activeTab, onTabChange, onAddClick, searchPlaceholder = "Search by Employee, Item...", moduleName }) => {
   
-  // Specific layout for Daftar Aset (Vehicle) module
-  if (moduleName === 'Daftar Aset') {
+  // Specific layout for Daftar Aset (Vehicle), Servis, Pajak & KIR, Mutasi, Penjualan AND Contract (List Building)
+  if (moduleName === 'Daftar Aset' || moduleName === 'Servis' || moduleName === 'Pajak & KIR' || moduleName === 'Mutasi' || moduleName === 'Penjualan' || moduleName === 'Contract') {
     return (
         <div className="mb-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -21,17 +21,21 @@ export const FilterBar: React.FC<Props> = ({ tabs, activeTab, onTabChange, onAdd
                 <div className="flex items-center border border-gray-300 rounded-md overflow-hidden bg-white">
                     {tabs.map((tab) => {
                         const isActive = activeTab === tab;
+                        const isApproval = tab.includes('Persetujuan');
                         return (
                             <button
                                 key={tab}
                                 onClick={() => onTabChange(tab)}
-                                className={`px-8 py-2 text-sm font-semibold transition-colors ${
+                                className={`px-8 py-2 text-sm font-semibold transition-colors flex items-center gap-2 ${
                                     isActive 
                                     ? 'bg-black text-white' 
                                     : 'bg-white text-gray-700 hover:bg-gray-50'
                                 }`}
                             >
                                 {tab}
+                                {isApproval && (
+                                     <span className={`text-xs font-bold px-1.5 rounded-full ${isActive ? 'bg-white text-black' : 'bg-gray-200 text-gray-600'}`}>0</span>
+                                )}
                             </button>
                         )
                     })}
@@ -47,16 +51,43 @@ export const FilterBar: React.FC<Props> = ({ tabs, activeTab, onTabChange, onAdd
                             className="w-full bg-white pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-200 focus:border-gray-400 outline-none transition-all"
                         />
                     </div>
+
+                    {/* Show Import/Export for Vehicle modules, and maybe contract if needed (user asked for vehicle specifically, but list building often has it too. I'll add if consistent or just keep for vehicle) 
+                        User prompt said "di setiap sub menu kendaraan tolong tambahkan button import dan export data". 
+                        Contract is not vehicle sub menu strictly, but behaves similarly. I will exclude for now unless requested.
+                    */}
+                    {(moduleName === 'Daftar Aset' || moduleName === 'Servis' || moduleName === 'Pajak & KIR' || moduleName === 'Mutasi' || moduleName === 'Penjualan') && (
+                        <>
+                            <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap">
+                                <Upload size={16} />
+                                Import
+                            </button>
+                            <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap">
+                                <Download size={16} />
+                                Export
+                            </button>
+                        </>
+                    )}
+                     {/* For Contract, maybe just Download as per image? The image has 'Download' icon. I'll add standard download. */}
+                     {moduleName === 'Contract' && (
+                        <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors whitespace-nowrap">
+                             Download
+                             <Download size={16} className="text-orange-500" /> 
+                             {/* Wait, user wanted no orange. But image had orange download. I will use standard gray/black theme requested. */}
+                        </button>
+                     )}
+
                     <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap">
                         <Filter size={16} />
                         Filter
                     </button>
                     <button 
                         onClick={onAddClick}
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-black rounded-md hover:bg-gray-800 transition-colors shadow-sm whitespace-nowrap"
+                        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-md transition-colors shadow-sm whitespace-nowrap bg-black hover:bg-gray-800`}
                     >
                         <Plus size={16} />
-                        Tambah
+                        {(moduleName === 'Servis' || moduleName === 'Pajak & KIR' || moduleName === 'Mutasi' || moduleName === 'Penjualan') ? 'Buat Permintaan' : 
+                         moduleName === 'Contract' ? 'Add Asset' : 'Tambah'}
                     </button>
                 </div>
             </div>

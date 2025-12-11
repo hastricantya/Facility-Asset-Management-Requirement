@@ -8,170 +8,394 @@ import { ContractTable } from './components/ContractTable';
 import { TimesheetTable } from './components/TimesheetTable';
 import { VendorTable } from './components/VendorTable';
 import { VehicleTable } from './components/VehicleTable';
+import { ServiceTable } from './components/ServiceTable';
+import { TaxKirTable } from './components/TaxKirTable';
+import { MutationTable } from './components/MutationTable';
+import { SalesTable } from './components/SalesTable';
+import { GeneralMasterTable } from './components/GeneralMasterTable';
 import { AddStockModal } from './components/AddStockModal';
-import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_CONTRACT_DATA, MOCK_TIMESHEET_DATA, MOCK_VENDOR_DATA, MOCK_VEHICLE_DATA } from './constants';
-import { VehicleRecord } from './types';
+import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_CONTRACT_DATA, MOCK_TIMESHEET_DATA, MOCK_VENDOR_DATA, MOCK_VEHICLE_DATA, MOCK_SERVICE_DATA, MOCK_TAX_KIR_DATA, MOCK_MUTATION_DATA, MOCK_SALES_DATA } from './constants';
+import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, TaxKirRecord, ContractRecord, GeneralMasterItem } from './types';
 
 const App: React.FC = () => {
-  const [activeModule, setActiveModule] = useState('ATK'); // 'ATK' | 'ARK' | 'Contract' | 'Timesheet' | 'Vendor' | 'Daftar Aset'
+  const [activeModule, setActiveModule] = useState('ATK'); 
   const [activeTab, setActiveTab] = useState('Pengguna');
-  const [isModalOpen, setIsModalOpen] = useState(false);
   
-  // State for Vehicle Data to allow adding new items
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
+  
+  // State for Vehicle Data
   const [vehicleData, setVehicleData] = useState<VehicleRecord[]>(MOCK_VEHICLE_DATA);
+  const [selectedVehicle, setSelectedVehicle] = useState<VehicleRecord | null>(null);
+
+  // State for Service Data
+  const [serviceData, setServiceData] = useState<ServiceRecord[]>(MOCK_SERVICE_DATA);
+  const [selectedService, setSelectedService] = useState<ServiceRecord | null>(null);
+
+  // State for Mutation Data
+  const [mutationData, setMutationData] = useState<MutationRecord[]>(MOCK_MUTATION_DATA);
+  const [selectedMutation, setSelectedMutation] = useState<MutationRecord | null>(null);
+
+  // State for Sales Data
+  const [salesData, setSalesData] = useState<SalesRecord[]>(MOCK_SALES_DATA);
+  const [selectedSales, setSelectedSales] = useState<SalesRecord | null>(null);
+
+  // State for Contract Data (Building Asset)
+  const [contractData, setContractData] = useState<ContractRecord[]>(MOCK_CONTRACT_DATA);
+  const [selectedContract, setSelectedContract] = useState<ContractRecord | null>(null);
+
+  // State for General Masters (Dynamic)
+  // Initializing with some dummy data to show integration
+  const [masters, setMasters] = useState<Record<string, GeneralMasterItem[]>>({
+    'Jenis Pajak': [{id: 1, name: 'Pajak Tahunan'}, {id: 2, name: 'Pajak 5 Tahunan'}],
+    'Jenis Pembayaran': [{id: 1, name: 'Kasbon'}, {id: 2, name: 'Reimburse'}, {id: 3, name: 'Langsung'}],
+    'Jenis Servis': [{id: 1, name: 'Servis Rutin'}, {id: 2, name: 'Perbaikan'}, {id: 3, name: 'Ganti Sparepart'}],
+    'Status Mutasi': [{id: 1, name: 'Requested'}, {id: 2, name: 'On Progress'}, {id: 3, name: 'Completed'}],
+    'Status Penjualan': [{id: 1, name: 'Draft'}, {id: 2, name: 'Sold'}],
+    'Status Request': [{id: 1, name: 'Draft'}, {id: 2, name: 'Submitted'}],
+    'Tipe Mutasi': [{id: 1, name: 'Kirim'}, {id: 2, name: 'Terima'}],
+    'Tipe Vendor': [{id: 1, name: 'Bengkel'}, {id: 2, name: 'Sparepart'}, {id: 3, name: 'Jasa'}],
+    'Role': [{id: 1, name: 'Admin'}, {id: 2, name: 'User'}, {id: 3, name: 'Approver'}],
+    'Master Vendor': [{id: 1, name: 'PT. Astra International'}, {id: 2, name: 'Bengkel Resmi Toyota'}],
+    'Sync Branchs': [{id: 1, name: 'Pusat'}, {id: 2, name: 'Purwokerto'}, {id: 3, name: 'Pekanbaru'}, {id: 4, name: 'Palembang'}, {id: 5, name: 'Manado'}, {id: 6, name: 'Malang'}, {id: 7, name: 'Kediri'}],
+    'Sync Channels': [{id: 1, name: 'Human Capital Operation'}, {id: 2, name: 'Management'}, {id: 3, name: 'Traditional'}, {id: 4, name: 'HR'}, {id: 5, name: 'Warehouse & Distribution'}]
+  });
+  const [selectedMasterItem, setSelectedMasterItem] = useState<GeneralMasterItem | null>(null);
 
   const handleModuleNavigate = (module: string) => {
     setActiveModule(module);
     if (module === 'Contract') {
-        setActiveTab('Active');
+        setActiveTab('Own');
     } else if (module === 'Timesheet') {
         setActiveTab('Active');
     } else if (module === 'Vendor') {
         setActiveTab('Active');
     } else if (module === 'Daftar Aset') {
         setActiveTab('Aktif');
+    } else if (module === 'Servis' || module === 'Pajak & KIR' || module === 'Mutasi' || module === 'Penjualan') {
+        setActiveTab('Semua');
     } else {
         setActiveTab('Pengguna');
     }
   };
 
+  const isMasterModule = (module: string) => {
+    const masterModules = ['Jenis Pajak', 'Jenis Pembayaran', 'Jenis Servis', 'Status Mutasi', 'Status Penjualan', 'Status Request', 'Tipe Mutasi', 'Tipe Vendor', 'Role', 'Master Vendor'];
+    return masterModules.includes(module);
+  };
+
   const handleAddClick = () => {
-    // Open modal for Masters, Contract, Vendor, or Vehicle
-    if (activeTab.includes('Master') || activeModule === 'Contract' || activeModule === 'Vendor' || activeModule === 'Daftar Aset') {
-      setIsModalOpen(true);
-    } else {
-        console.log('Tambah clicked on', activeTab);
+    setModalMode('create');
+    setSelectedVehicle(null);
+    setSelectedService(null);
+    setSelectedMutation(null);
+    setSelectedSales(null);
+    setSelectedContract(null);
+    setSelectedMasterItem(null);
+    setIsModalOpen(true);
+  };
+
+  // --- Handlers for Master CRUD ---
+  const handleEditMaster = (item: GeneralMasterItem) => {
+    setSelectedMasterItem(item);
+    setModalMode('edit');
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteMaster = (id: number) => {
+    if (confirm('Are you sure you want to delete this item?')) {
+        setMasters(prev => ({
+            ...prev,
+            [activeModule]: prev[activeModule].filter(item => item.id !== id)
+        }));
     }
   };
 
-  const handleSaveVehicle = (newVehicle: Partial<VehicleRecord>) => {
-      const vehicle: VehicleRecord = {
-          id: vehicleData.length + 1,
-          noRegistrasi: newVehicle.noRegistrasi || '',
-          nama: newVehicle.nama || '',
-          noPolisi: newVehicle.noPolisi || '',
-          channel: newVehicle.channel || '',
-          cabang: newVehicle.cabang || '',
-          status: 'Aktif'
-      };
-      setVehicleData([vehicle, ...vehicleData]);
+  const handleSaveMaster = (formData: Partial<GeneralMasterItem>) => {
+    const currentList = masters[activeModule] || [];
+    if (modalMode === 'create') {
+        const newId = Math.max(...currentList.map(m => m.id), 0) + 1;
+        const newItem: GeneralMasterItem = {
+            id: newId,
+            name: formData.name || ''
+        };
+        setMasters(prev => ({
+            ...prev,
+            [activeModule]: [...currentList, newItem]
+        }));
+    } else if (modalMode === 'edit' && selectedMasterItem) {
+        setMasters(prev => ({
+            ...prev,
+            [activeModule]: currentList.map(item => item.id === selectedMasterItem.id ? { ...item, name: formData.name || '' } : item)
+        }));
+    }
+    setIsModalOpen(false);
   };
 
-  // Determine tabs based on active module
-  const getTabs = () => {
-    if (activeModule === 'ATK') return ['Pengguna', 'Master ATK', 'All'];
-    if (activeModule === 'ARK') return ['Pengguna', 'Master ARK', 'All'];
-    if (activeModule === 'Contract') return ['Active', 'Inactive', 'All'];
-    if (activeModule === 'Timesheet') return ['Active', 'Inactive', 'All'];
-    if (activeModule === 'Vendor') return ['Active', 'Inactive', 'All'];
-    if (activeModule === 'Daftar Aset') return ['Aktif', 'Tidak Aktif'];
-    return ['Pengguna', 'Master', 'All']; // Fallback
+
+  // --- Handlers for Vehicle ---
+  const handleEditVehicle = (vehicle: VehicleRecord) => {
+      setSelectedVehicle(vehicle);
+      setModalMode('edit');
+      setIsModalOpen(true);
   };
 
-  // Determine data based on active module and tab
-  const getCurrentData = () => {
+  const handleViewVehicle = (vehicle: VehicleRecord) => {
+      setSelectedVehicle(vehicle);
+      setModalMode('view');
+      setIsModalOpen(true);
+  };
+
+  // --- Handlers for Service ---
+  const handleEditService = (service: ServiceRecord) => {
+      setSelectedService(service);
+      setModalMode('edit');
+      setIsModalOpen(true);
+  };
+
+  const handleViewService = (service: ServiceRecord) => {
+      setSelectedService(service);
+      setModalMode('view');
+      setIsModalOpen(true);
+  };
+
+  // --- Handlers for Mutation ---
+  const handleEditMutation = (mutation: MutationRecord) => {
+      setSelectedMutation(mutation);
+      setModalMode('edit');
+      setIsModalOpen(true);
+  };
+
+  const handleViewMutation = (mutation: MutationRecord) => {
+      setSelectedMutation(mutation);
+      setModalMode('view');
+      setIsModalOpen(true);
+  };
+
+  // --- Handlers for Sales ---
+  const handleEditSales = (sales: SalesRecord) => {
+      setSelectedSales(sales);
+      setModalMode('edit');
+      setIsModalOpen(true);
+  };
+
+  const handleViewSales = (sales: SalesRecord) => {
+      setSelectedSales(sales);
+      setModalMode('view');
+      setIsModalOpen(true);
+  };
+  
+  // --- Handlers for Tax KIR ---
+  const handleEditTaxKir = (item: TaxKirRecord) => { console.log("Edit Tax Kir", item); };
+  const handleViewTaxKir = (item: TaxKirRecord) => { console.log("View Tax Kir", item); };
+
+
+  const handleSaveVehicle = (formData: Partial<VehicleRecord>) => {
+    if (modalMode === 'create') {
+        const newId = Math.max(...vehicleData.map(v => v.id), 0) + 1;
+        const newVehicle: VehicleRecord = {
+            id: newId,
+            noRegistrasi: formData.noRegistrasi || '',
+            nama: formData.nama || '',
+            noPolisi: formData.noPolisi || '',
+            channel: formData.channel || '',
+            cabang: formData.cabang || '',
+            status: 'Aktif',
+            ...formData
+        } as VehicleRecord;
+        setVehicleData([...vehicleData, newVehicle]);
+    } else if (modalMode === 'edit' && selectedVehicle) {
+        setVehicleData(prev => prev.map(item => item.id === selectedVehicle.id ? { ...item, ...formData } : item));
+    }
+    setIsModalOpen(false);
+  };
+
+  const handleSaveService = (formData: Partial<ServiceRecord>) => {
+      if (modalMode === 'create') {
+        const newId = `S202406${(Math.floor(Math.random() * 9000) + 1000)}`; 
+        const selectedAsset = vehicleData.find(v => v.id.toString() === formData.aset);
+        
+        const newService: ServiceRecord = {
+            id: newId,
+            noPolisi: selectedAsset ? selectedAsset.noPolisi : '-',
+            tglRequest: new Date().toLocaleString(),
+            channel: 'Warehouse & Distribution', 
+            cabang: 'Pusat',
+            status: 'Draf',
+            statusApproval: '-',
+            ...formData
+        } as ServiceRecord;
+
+        setServiceData([newService, ...serviceData]);
+      } else if (modalMode === 'edit' && selectedService) {
+        setServiceData(prev => prev.map(item => item.id === selectedService.id ? { ...item, ...formData } : item));
+      }
+      setIsModalOpen(false);
+  };
+
+  const handleSaveMutation = (formData: Partial<MutationRecord>) => {
+    if (modalMode === 'create') {
+        const newId = `M202407${(Math.floor(Math.random() * 9000) + 1000)}`;
+        const selectedAsset = vehicleData.find(v => v.id.toString() === formData.asetId);
+        
+        const newMutation: MutationRecord = {
+            id: newId,
+            noPolisi: selectedAsset ? selectedAsset.noPolisi : '-',
+            cabangAset: selectedAsset ? selectedAsset.cabang : '-',
+            tipeMutasi: formData.tipeMutasi || 'Kirim',
+            tglPermintaan: new Date().toLocaleString(),
+            lokasiAsal: formData.lokasiAsal || '',
+            lokasiTujuan: formData.lokasiTujuan || '',
+            status: 'Requested',
+            statusApproval: 'PENDING',
+            ...formData
+        } as MutationRecord;
+
+        setMutationData([newMutation, ...mutationData]);
+    } else if (modalMode === 'edit' && selectedMutation) {
+        setMutationData(prev => prev.map(item => item.id === selectedMutation.id ? { ...item, ...formData } : item));
+    }
+    setIsModalOpen(false);
+  };
+
+  const handleSaveSales = (formData: Partial<SalesRecord>) => {
+    if (modalMode === 'create') {
+      const newId = `J202309${(Math.floor(Math.random() * 9000) + 1000)}`;
+      const selectedAsset = vehicleData.find(v => v.id.toString() === formData.asetId);
+      
+      const newSales: SalesRecord = {
+          id: newId,
+          noPolisi: selectedAsset ? selectedAsset.noPolisi : '-',
+          tglRequest: new Date().toLocaleString(),
+          channel: selectedAsset ? selectedAsset.channel : '-',
+          cabang: selectedAsset ? selectedAsset.cabang : '-',
+          hargaTertinggi: formData.offers && formData.offers.length > 0 ? formData.offers[0].price : 'Rp0',
+          status: 'Requested',
+          statusApproval: 'PENDING',
+          ...formData
+      } as SalesRecord;
+
+      setSalesData([newSales, ...salesData]);
+    } else if (modalMode === 'edit' && selectedSales) {
+      setSalesData(prev => prev.map(item => item.id === selectedSales.id ? { ...item, ...formData } : item));
+    }
+    setIsModalOpen(false);
+  };
+
+  const handleSaveContract = (formData: Partial<ContractRecord>) => {
+      if (modalMode === 'create') {
+          const newId = Math.max(...contractData.map(c => c.id), 0) + 1;
+          const newContract: ContractRecord = {
+              id: newId,
+              status: 'Active',
+              ...formData
+          } as ContractRecord;
+          setContractData([...contractData, newContract]);
+      } else if (modalMode === 'edit' && selectedContract) {
+          setContractData(prev => prev.map(item => item.id === selectedContract.id ? { ...item, ...formData } : item));
+      }
+      setIsModalOpen(false);
+  };
+
+  const renderContent = () => {
     if (activeModule === 'ATK') {
-        if (activeTab === 'Master ATK') return MOCK_MASTER_DATA;
-        return MOCK_DATA;
+      if (activeTab === 'Master') return <MasterAtkTable data={MOCK_MASTER_DATA} />;
+      return <AssetTable data={MOCK_DATA} />;
     }
     if (activeModule === 'ARK') {
-        if (activeTab === 'Master ARK') return MOCK_MASTER_ARK_DATA;
-        return MOCK_ARK_DATA;
+        if (activeTab === 'Master') return <MasterAtkTable data={MOCK_MASTER_ARK_DATA} />;
+        return <AssetTable data={MOCK_ARK_DATA} />;
     }
-    if (activeModule === 'Contract') {
-        return MOCK_CONTRACT_DATA;
+    if (activeModule === 'Contract') return <ContractTable data={contractData} />;
+    if (activeModule === 'Timesheet') return <TimesheetTable data={MOCK_TIMESHEET_DATA} />;
+    if (activeModule === 'Vendor') return <VendorTable data={MOCK_VENDOR_DATA} />;
+    
+    // Vehicle Sub-modules
+    if (activeModule === 'Daftar Aset') return <VehicleTable data={vehicleData} onEdit={handleEditVehicle} onView={handleViewVehicle} />;
+    if (activeModule === 'Servis') return <ServiceTable data={serviceData} onEdit={handleEditService} onView={handleViewService} />;
+    if (activeModule === 'Pajak & KIR') return <TaxKirTable data={MOCK_TAX_KIR_DATA} />;
+    if (activeModule === 'Mutasi') return <MutationTable data={mutationData} onEdit={handleEditMutation} onView={handleViewMutation} />;
+    if (activeModule === 'Penjualan') return <SalesTable data={salesData} onEdit={handleEditSales} onView={handleViewSales} />;
+
+    // Master General Modules
+    if (isMasterModule(activeModule)) {
+        return (
+            <GeneralMasterTable 
+                data={masters[activeModule] || []} 
+                onEdit={handleEditMaster}
+                onDelete={handleDeleteMaster}
+            />
+        );
     }
-    if (activeModule === 'Timesheet') {
-        return MOCK_TIMESHEET_DATA;
-    }
-    if (activeModule === 'Vendor') {
-        return MOCK_VENDOR_DATA;
-    }
-    if (activeModule === 'Daftar Aset') {
-        return vehicleData;
-    }
-    return [];
+
+    return <div className="p-8 text-center text-gray-500">Module {activeModule} under construction</div>;
   };
 
-  const isMasterView = activeTab.includes('Master');
-  const isContractView = activeModule === 'Contract';
-  const isTimesheetView = activeModule === 'Timesheet';
-  const isVendorView = activeModule === 'Vendor';
-  const isVehicleView = activeModule === 'Daftar Aset';
-  const currentData = getCurrentData();
-
-  // Determine placeholder text
-  const getSearchPlaceholder = () => {
-    if (activeModule === 'Contract') return "Nama Kontrak";
-    if (activeModule === 'Vendor') return "Nama Vendor";
-    if (activeModule === 'Daftar Aset') return "Cari";
-    return "Nama Pengguna/Jenis Barang";
+  const getFilterTabs = () => {
+    if (activeModule === 'ATK' || activeModule === 'ARK') return ['Pengguna', 'Master', 'Approval'];
+    if (activeModule === 'Contract') return ['Own', 'Rent'];
+    if (activeModule === 'Timesheet') return ['All', 'Permanent', 'Contract', 'Probation', 'Internship', 'Vendor'];
+    if (activeModule === 'Vendor') return ['Active', 'Inactive', 'Blacklist'];
+    if (activeModule === 'Daftar Aset') return ['Aktif', 'Tidak Aktif'];
+    if (activeModule === 'Servis' || activeModule === 'Pajak & KIR' || activeModule === 'Mutasi' || activeModule === 'Penjualan') return ['Semua', 'Persetujuan'];
+    if (isMasterModule(activeModule)) return []; // No tabs for master sub-modules
+    return ['All'];
   };
-
-  const getPageTitle = () => {
-      if (activeModule === 'Daftar Aset') return 'Daftar Aset Kendaraan';
-      return `${activeModule} Management`;
-  }
-
-  const getPageDescription = () => {
-      if (activeModule === 'Daftar Aset') return '';
-      return `Monitor all employee assets and inventory transactions for ${activeModule}`;
-  }
 
   return (
-    <div className="flex min-h-screen bg-white">
-      {/* Sidebar */}
+    <div className="flex bg-gray-50 min-h-screen font-sans">
       <Sidebar activeItem={activeModule} onNavigate={handleModuleNavigate} />
-
-      {/* Main Content Wrapper */}
-      <div className="flex-1 ml-64 flex flex-col transition-all duration-300">
-        
+      
+      <div className="flex-1 ml-64 flex flex-col">
         <TopBar />
+        
+        <main className="flex-1 p-8 overflow-y-auto">
+          {/* Breadcrumb & Title */}
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">
+                {activeModule === 'Daftar Aset' ? 'Daftar Aset Kendaraan' : 
+                 activeModule === 'Servis' ? 'Servis Kendaraan' :
+                 activeModule === 'Pajak & KIR' ? 'Pajak & KIR Kendaraan' :
+                 activeModule === 'Mutasi' ? 'Mutasi Kendaraan' :
+                 activeModule === 'Penjualan' ? 'Penjualan Kendaraan' :
+                 activeModule === 'Contract' ? 'List Building' :
+                 isMasterModule(activeModule) ? `Master ${activeModule}` :
+                 activeModule}
+            </h1>
+          </div>
 
-        {/* Content Area */}
-        <main className="p-8 flex-1 bg-gray-50">
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">{getPageTitle()}</h1>
-                {getPageDescription() && (
-                    <p className="text-gray-500 text-sm mt-1">{getPageDescription()}</p>
-                )}
-            </div>
+          <FilterBar 
+            tabs={getFilterTabs()} 
+            activeTab={activeTab} 
+            onTabChange={setActiveTab} 
+            onAddClick={handleAddClick}
+            moduleName={activeModule}
+          />
 
-            {/* White Card Container */}
-            <div className={`${isTimesheetView || isVehicleView ? 'bg-transparent shadow-none border-none p-0' : 'bg-white p-6 rounded-xl shadow-sm border border-gray-200'}`}>
-                <FilterBar 
-                  tabs={getTabs()}
-                  activeTab={activeTab} 
-                  onTabChange={setActiveTab} 
-                  onAddClick={handleAddClick}
-                  searchPlaceholder={getSearchPlaceholder()}
-                  moduleName={activeModule}
-                />
-                
-                {isContractView ? (
-                    <ContractTable data={currentData as any} />
-                ) : isVendorView ? (
-                    <VendorTable data={currentData as any} />
-                ) : isMasterView ? (
-                    // We can reuse MasterAtkTable as it has the same structure for both ATK and ARK masters
-                    <MasterAtkTable data={currentData as any} /> 
-                ) : isTimesheetView ? (
-                    <TimesheetTable data={currentData as any} />
-                ) : isVehicleView ? (
-                    <VehicleTable data={currentData as any} />
-                ) : (
-                    <AssetTable data={currentData as any} />
-                )}
-            </div>
+          {renderContent()}
         </main>
       </div>
 
-      {/* Modals */}
       <AddStockModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         moduleName={activeModule}
         onSaveVehicle={handleSaveVehicle}
+        onSaveService={handleSaveService}
+        onSaveMutation={handleSaveMutation}
+        onSaveSales={handleSaveSales}
+        onSaveContract={handleSaveContract}
+        onSaveMaster={handleSaveMaster} // Pass Master Save Handler
+        initialVehicleData={selectedVehicle || undefined}
+        initialServiceData={selectedService || undefined}
+        initialMutationData={selectedMutation || undefined}
+        initialSalesData={selectedSales || undefined}
+        initialContractData={selectedContract || undefined}
+        initialMasterData={selectedMasterItem || undefined} // Pass Selected Master Item
+        mode={modalMode}
+        vehicleList={vehicleData}
+        masterData={masters} // Pass Dynamic Masters to Modal
       />
     </div>
   );

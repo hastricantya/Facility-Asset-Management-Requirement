@@ -18,7 +18,8 @@ import {
   Send,
   DollarSign,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Settings
 } from 'lucide-react';
 import { SidebarItem } from '../types';
 
@@ -34,7 +35,7 @@ interface MenuItem {
 }
 
 export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Master Asset']);
 
   const toggleMenu = (label: string) => {
     setExpandedMenus(prev => 
@@ -61,7 +62,22 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
     { label: 'Timesheet', icon: <Clock size={20} /> },
     { label: 'Vendor', icon: <Users size={20} /> },
     { label: 'Credit Card', icon: <CreditCard size={20} /> },
-    { label: 'Master Asset', icon: <Home size={20} /> },
+    { 
+      label: 'Master Asset', 
+      icon: <Home size={20} />,
+      subItems: [
+        { label: 'Jenis Pajak', icon: <Wrench size={18} /> },
+        { label: 'Jenis Pembayaran', icon: <Wrench size={18} /> },
+        { label: 'Jenis Servis', icon: <Wrench size={18} /> },
+        { label: 'Status Mutasi', icon: <Wrench size={18} /> },
+        { label: 'Status Penjualan', icon: <Wrench size={18} /> },
+        { label: 'Status Request', icon: <Wrench size={18} /> },
+        { label: 'Tipe Mutasi', icon: <Wrench size={18} /> },
+        { label: 'Tipe Vendor', icon: <Wrench size={18} /> },
+        { label: 'Role', icon: <Wrench size={18} /> },
+        { label: 'Master Vendor', icon: <Users size={18} /> },
+      ]
+    },
     { label: 'Log Book', icon: <BookOpen size={20} /> },
     { label: 'Project Mgmt', icon: <BarChart size={20} /> },
   ];

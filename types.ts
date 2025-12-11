@@ -33,13 +33,15 @@ export interface MasterItem {
 
 export interface ContractRecord {
   id: number;
-  contractName: string;
-  contractImage: string;
-  category: string;
-  startDate: string;
-  endDate: string;
-  reminderLevel: string;
-  documentName: string;
+  assetNumber: string;
+  assetCategory: string;
+  type: string;
+  ownership: string;
+  location: string;
+  channel: string;
+  department: string;
+  subLocation: string;
+  address: string;
   status: 'Active' | 'Inactive';
 }
 
@@ -86,4 +88,116 @@ export interface VehicleRecord {
   channel: string;
   cabang: string;
   status: 'Aktif' | 'Tidak Aktif';
+  
+  // Details
+  merek?: string;
+  tipeKendaraan?: string;
+  jenis?: string;
+  model?: string;
+  tahunPembuatan?: string;
+  warna?: string;
+  isiSilinder?: string;
+  noRangka?: string;
+  noMesin?: string;
+  
+  // Pengguna
+  pengguna?: string;
+
+  // Surat
+  noBpkb?: string;
+  keteranganBpkb?: string;
+  masaBerlaku1?: string;
+  masaBerlaku5?: string;
+  masaBerlakuKir?: string;
+
+  // Pembelian
+  tglBeli?: string;
+  hargaBeli?: string;
+
+  // Asuransi
+  noPolisAsuransi?: string;
+  jangkaPertanggungan?: string;
+}
+
+export interface ServiceRecord {
+  id: string; // e.g. "S2024060003"
+  noPolisi: string;
+  tglRequest: string;
+  channel: string;
+  cabang: string;
+  status: string; // e.g. "Draf"
+  statusApproval: string; // e.g. "-"
+  
+  // Form Details
+  aset?: string;
+  tglStnk?: string;
+  jenisServis?: string;
+  vendor?: string;
+  targetSelesai?: string;
+  kmKendaraan?: string;
+  masalah?: string;
+  penyebab?: string;
+  estimasiBiaya?: string;
+  jenisPembayaran?: string;
+  namaBank?: string;
+  nomorRekening?: string;
+}
+
+export interface TaxKirRecord {
+  id: string;
+  noPolisi: string;
+  tglRequest: string;
+  jenis: string;
+  channel: string;
+  cabang: string;
+  status: string;
+  statusApproval: string;
+}
+
+export interface MutationRecord {
+  id: string;
+  noPolisi: string;
+  cabangAset: string;
+  tipeMutasi: string;
+  tglPermintaan: string;
+  lokasiAsal: string;
+  lokasiTujuan: string;
+  status: string;
+  statusApproval: string;
+
+  // Form Details
+  channelAsal?: string;
+  channelTujuan?: string;
+  asetId?: string;
+  alasan?: string;
+}
+
+export interface SalesOffer {
+  nama: string;
+  pic: string;
+  phone: string;
+  price: string;
+}
+
+export interface SalesRecord {
+  id: string;
+  noPolisi: string;
+  tglRequest: string;
+  channel: string;
+  cabang: string;
+  hargaTertinggi: string;
+  status: string;
+  statusApproval: string;
+
+  // Form Details
+  asetId?: string;
+  targetSelesai?: string;
+  alasan?: string;
+  catatan?: string;
+  offers?: SalesOffer[];
+}
+
+export interface GeneralMasterItem {
+  id: number;
+  name: string;
 }

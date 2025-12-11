@@ -1,4 +1,4 @@
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord } from './types';
 
 export const MOCK_DATA: AssetRecord[] = [
   {
@@ -228,19 +228,7 @@ export const MOCK_MASTER_ARK_DATA: MasterItem[] = [
     }
   ];
 
-export const MOCK_CONTRACT_DATA: ContractRecord[] = [
-  {
-    id: 1,
-    contractName: 'Mobil Innova B 1122 OKE, Tahun 2022 dipakai Pak Jack',
-    contractImage: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=200&h=150',
-    category: 'Mobil',
-    startDate: '02/08/2022',
-    endDate: '01/08/2023',
-    reminderLevel: 'High',
-    documentName: 'DO16078320240315160249805.pdf',
-    status: 'Active'
-  }
-];
+export const MOCK_CONTRACT_DATA: ContractRecord[] = [];
 
 export const MOCK_TIMESHEET_DATA: TimesheetRecord[] = [
     {
@@ -425,4 +413,63 @@ export const MOCK_VEHICLE_DATA: VehicleRecord[] = [
         cabang: 'Kediri',
         status: 'Aktif'
     }
+];
+
+export const MOCK_SERVICE_DATA: ServiceRecord[] = [
+    {
+        id: 'S2024060003',
+        noPolisi: 'B 9433 CCA',
+        tglRequest: '28 Jun 2024 17:24',
+        channel: 'Warehouse & Distribution',
+        cabang: 'Pusat',
+        status: 'Draf',
+        statusApproval: '-'
+    },
+    {
+        id: 'S2024060002',
+        noPolisi: 'B 9433 CCA',
+        tglRequest: '28 Jun 2024 17:15',
+        channel: 'Warehouse & Distribution',
+        cabang: 'Pusat',
+        status: 'Draf',
+        statusApproval: '-'
+    },
+    {
+        id: 'S2024060001',
+        noPolisi: 'B 9433 CCA',
+        tglRequest: '28 Jun 2024 17:12',
+        channel: 'Warehouse & Distribution',
+        cabang: 'Pusat',
+        status: 'Draf',
+        statusApproval: '-'
+    }
+];
+
+export const MOCK_TAX_KIR_DATA: TaxKirRecord[] = [];
+
+export const MOCK_MUTATION_DATA: MutationRecord[] = [
+    {
+        id: 'M2023090001',
+        noPolisi: 'BE 9353 YD',
+        cabangAset: 'Lampung',
+        tipeMutasi: 'Kirim',
+        tglPermintaan: '23 Sep 2023 21:18',
+        lokasiAsal: 'Lampung',
+        lokasiTujuan: 'Palembang',
+        status: 'Persetujuan Biaya Diterima',
+        statusApproval: 'COMPLETED'
+    }
+];
+
+export const MOCK_SALES_DATA: SalesRecord[] = [
+  {
+    id: 'J2023090001',
+    noPolisi: 'B 9433 CCA',
+    tglRequest: '20 Sep 2023 20:51',
+    channel: 'Warehouse & Distribution',
+    cabang: 'Pusat',
+    hargaTertinggi: 'Rp292.000.000',
+    status: 'Persetujuan Permintaan',
+    statusApproval: 'ONPROGRESS',
+  }
 ];

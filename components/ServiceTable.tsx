@@ -1,53 +1,59 @@
 import React from 'react';
-import { VehicleRecord } from '../types';
-import { ChevronsUpDown, Eye, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from 'lucide-react';
+import { ServiceRecord } from '../types';
+import { ChevronsUpDown, Eye, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Pencil } from 'lucide-react';
 
 interface Props {
-  data: VehicleRecord[];
-  onEdit?: (item: VehicleRecord) => void;
-  onView?: (item: VehicleRecord) => void;
+  data: ServiceRecord[];
+  onEdit?: (item: ServiceRecord) => void;
+  onView?: (item: ServiceRecord) => void;
 }
 
-export const VehicleTable: React.FC<Props> = ({ data, onEdit, onView }) => {
+export const ServiceTable: React.FC<Props> = ({ data, onEdit, onView }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1200px] text-left border-collapse">
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200 text-xs font-semibold text-gray-700 uppercase tracking-wider">
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
+              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  No Registrasi
+                  No Request
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
               <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Nama
-                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
-                <div className="flex items-center justify-between">
                   No Polisi
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
-              <th className="p-4 w-48 group cursor-pointer hover:bg-gray-200 transition-colors">
+              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
+                <div className="flex items-center justify-between">
+                  Tgl Request
+                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
+                </div>
+              </th>
+              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Channel
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
+              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Cabang
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
-              <th className="p-4 w-28 group cursor-pointer hover:bg-gray-200 transition-colors">
+              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Status
+                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
+                </div>
+              </th>
+              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
+                <div className="flex items-center justify-between">
+                  Status Approval
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
@@ -59,23 +65,24 @@ export const VehicleTable: React.FC<Props> = ({ data, onEdit, onView }) => {
           <tbody className="divide-y divide-gray-200 text-sm text-gray-700">
             {data.map((item) => (
               <tr key={item.id} className="bg-white hover:bg-gray-50 transition-colors cursor-pointer group">
-                <td className="p-4 font-medium text-gray-900">{item.noRegistrasi}</td>
-                <td className="p-4 font-semibold text-gray-900">{item.nama}</td>
-                <td className="p-4 text-gray-600 font-mono">{item.noPolisi}</td>
+                <td className="p-4 font-medium text-gray-900">{item.id}</td>
+                <td className="p-4 font-medium text-gray-900">{item.noPolisi}</td>
+                <td className="p-4 text-gray-600">{item.tglRequest}</td>
                 <td className="p-4 text-gray-600">{item.channel}</td>
                 <td className="p-4 text-gray-600">{item.cabang}</td>
                 <td className="p-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        item.status === 'Aktif' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
                         {item.status}
                     </span>
                 </td>
                 <td className="p-4">
-                    <div className="flex items-center justify-end gap-3">
-                        <button 
+                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-400 font-bold text-xs">
+                        {item.statusApproval}
+                    </div>
+                </td>
+                <td className="p-4 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                         <button 
                           onClick={(e) => { e.stopPropagation(); onView?.(item); }}
                           className="text-gray-400 hover:text-gray-600 transition-colors"
                         >
@@ -98,7 +105,7 @@ export const VehicleTable: React.FC<Props> = ({ data, onEdit, onView }) => {
       {/* Pagination Footer */}
       <div className="px-6 py-4 border-t border-gray-200 bg-white flex items-center justify-between">
             <div className="text-sm text-gray-900">
-                Showing 1 - 10 of <span className="text-green-500 font-semibold">{data.length}</span> Row(s)
+                Showing 1 - {data.length} of <span className="text-green-500 font-semibold">{data.length}</span> Row(s)
             </div>
             
             <div className="flex items-center gap-8">
