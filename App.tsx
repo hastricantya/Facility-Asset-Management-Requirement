@@ -6,11 +6,12 @@ import { AssetTable } from './components/AssetTable';
 import { MasterAtkTable } from './components/MasterAtkTable';
 import { ContractTable } from './components/ContractTable';
 import { TimesheetTable } from './components/TimesheetTable';
+import { VendorTable } from './components/VendorTable';
 import { AddStockModal } from './components/AddStockModal';
-import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_CONTRACT_DATA, MOCK_TIMESHEET_DATA } from './constants';
+import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_CONTRACT_DATA, MOCK_TIMESHEET_DATA, MOCK_VENDOR_DATA } from './constants';
 
 const App: React.FC = () => {
-  const [activeModule, setActiveModule] = useState('ATK'); // 'ATK' | 'ARK' | 'Contract' | 'Timesheet' etc
+  const [activeModule, setActiveModule] = useState('ATK'); // 'ATK' | 'ARK' | 'Contract' | 'Timesheet' | 'Vendor' etc
   const [activeTab, setActiveTab] = useState('Pengguna');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -20,14 +21,16 @@ const App: React.FC = () => {
         setActiveTab('Active');
     } else if (module === 'Timesheet') {
         setActiveTab('Active');
+    } else if (module === 'Vendor') {
+        setActiveTab('Active');
     } else {
         setActiveTab('Pengguna');
     }
   };
 
   const handleAddClick = () => {
-    // Open modal if we are in a Master tab or Contract
-    if (activeTab.includes('Master') || activeModule === 'Contract') {
+    // Open modal for Masters, Contract, or Vendor
+    if (activeTab.includes('Master') || activeModule === 'Contract' || activeModule === 'Vendor') {
       setIsModalOpen(true);
     } else {
         console.log('Tambah clicked on', activeTab);
@@ -40,6 +43,7 @@ const App: React.FC = () => {
     if (activeModule === 'ARK') return ['Pengguna', 'Master ARK', 'All'];
     if (activeModule === 'Contract') return ['Active', 'Inactive', 'All'];
     if (activeModule === 'Timesheet') return ['Active', 'Inactive', 'All'];
+    if (activeModule === 'Vendor') return ['Active', 'Inactive', 'All'];
     return ['Pengguna', 'Master', 'All']; // Fallback
   };
 
@@ -59,17 +63,22 @@ const App: React.FC = () => {
     if (activeModule === 'Timesheet') {
         return MOCK_TIMESHEET_DATA;
     }
+    if (activeModule === 'Vendor') {
+        return MOCK_VENDOR_DATA;
+    }
     return [];
   };
 
   const isMasterView = activeTab.includes('Master');
   const isContractView = activeModule === 'Contract';
   const isTimesheetView = activeModule === 'Timesheet';
+  const isVendorView = activeModule === 'Vendor';
   const currentData = getCurrentData();
 
   // Determine placeholder text
   const getSearchPlaceholder = () => {
     if (activeModule === 'Contract') return "Nama Kontrak";
+    if (activeModule === 'Vendor') return "Nama Vendor";
     return "Nama Pengguna/Jenis Barang";
   };
 
@@ -103,6 +112,8 @@ const App: React.FC = () => {
                 
                 {isContractView ? (
                     <ContractTable data={currentData as any} />
+                ) : isVendorView ? (
+                    <VendorTable data={currentData as any} />
                 ) : isMasterView ? (
                     // We can reuse MasterAtkTable as it has the same structure for both ATK and ARK masters
                     <MasterAtkTable data={currentData as any} /> 

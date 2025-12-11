@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, RefreshCcw, Calendar, Upload } from 'lucide-react';
+import { X, RefreshCcw, Calendar, Upload, Paperclip } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -11,6 +11,14 @@ export const AddStockModal: React.FC<Props> = ({ isOpen, onClose, moduleName = '
   if (!isOpen) return null;
 
   const isContract = moduleName === 'Contract';
+  const isVendor = moduleName === 'Vendor';
+  const isArk = moduleName === 'ARK';
+
+  const getTitle = () => {
+    if (isContract) return 'Reminder Kontrak > NEW';
+    if (isVendor) return 'Master Vendor > New Vendor';
+    return `Master ${moduleName} > Tambah Stock`;
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
@@ -18,7 +26,7 @@ export const AddStockModal: React.FC<Props> = ({ isOpen, onClose, moduleName = '
         {/* Modal Header */}
         <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
           <h2 className="text-sm font-semibold tracking-wide">
-            {isContract ? 'Reminder Kontrak > NEW' : `Master ${moduleName} > Tambah Stock`}
+            {getTitle()}
           </h2>
           <div className="flex items-center gap-4">
             <button className="text-gray-400 hover:text-white transition-colors">
@@ -125,6 +133,163 @@ export const AddStockModal: React.FC<Props> = ({ isOpen, onClose, moduleName = '
                 </div>
 
             </div>
+          ) : isVendor ? (
+            /* --- VENDOR FORM --- */
+            <div className="space-y-6">
+                <h3 className="text-blue-400 font-semibold text-sm mb-4">Vendor</h3>
+
+                {/* Form Grid */}
+                <div className="grid grid-cols-12 gap-x-8 gap-y-4">
+                    
+                    {/* Row 1: Kode Vendor */}
+                    <div className="col-span-6 grid grid-cols-12 items-center gap-2">
+                        <label className="col-span-4 text-sm font-bold text-gray-700">Kode Vendor</label>
+                        <div className="col-span-8">
+                            <input type="text" defaultValue="2209010002" className="w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none" />
+                        </div>
+                    </div>
+                    <div className="col-span-6"></div>
+
+                     {/* Row 2: Nama Perusahaan */}
+                     <div className="col-span-6 grid grid-cols-12 items-center gap-2">
+                        <label className="col-span-4 text-sm font-bold text-gray-700">Nama Perusahaan</label>
+                        <div className="col-span-8">
+                            <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500" />
+                        </div>
+                    </div>
+                    <div className="col-span-6"></div>
+
+                    {/* Row 3: Nama PIC */}
+                    <div className="col-span-6 grid grid-cols-12 items-center gap-2">
+                        <label className="col-span-4 text-sm font-bold text-gray-700">Nama PIC</label>
+                        <div className="col-span-8">
+                            <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500" />
+                        </div>
+                    </div>
+                    <div className="col-span-6"></div>
+
+                    {/* Row 4: Tgl Bergabung & Nama Penerima */}
+                    <div className="col-span-6 grid grid-cols-12 items-center gap-2">
+                        <label className="col-span-4 text-sm font-bold text-gray-700">Tanggal Bergabung</label>
+                        <div className="col-span-8 relative">
+                            <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 pr-8" />
+                            <Calendar className="absolute right-2 top-2 text-gray-400" size={16} />
+                        </div>
+                    </div>
+                    <div className="col-span-6 grid grid-cols-12 items-center gap-2">
+                        <label className="col-span-3 text-sm font-bold text-gray-700">Nama Penerima</label>
+                        <div className="col-span-9">
+                            <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500" />
+                        </div>
+                    </div>
+
+                    {/* Row 5: NPWP & Rekening */}
+                    <div className="col-span-6 grid grid-cols-12 items-center gap-2">
+                        <label className="col-span-4 text-sm font-bold text-gray-700">Nomor NPWP</label>
+                        <div className="col-span-8">
+                            <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500" />
+                        </div>
+                    </div>
+                    <div className="col-span-6 grid grid-cols-12 items-center gap-2">
+                        <label className="col-span-3 text-sm font-bold text-gray-700">Nomor Rekening</label>
+                        <div className="col-span-9">
+                            <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500" />
+                        </div>
+                    </div>
+
+                    {/* Row 6: Alamat & Kota */}
+                    <div className="col-span-6 grid grid-cols-12 items-start gap-2">
+                        <label className="col-span-4 text-sm font-bold text-gray-700 pt-2">Alamat</label>
+                        <div className="col-span-8">
+                            <textarea rows={3} className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 resize-none" />
+                        </div>
+                    </div>
+                    <div className="col-span-6 grid grid-cols-12 items-start gap-2">
+                        <label className="col-span-3 text-sm font-bold text-gray-700 pt-2">Kota</label>
+                        <div className="col-span-9">
+                            <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Row 7: No Telepon & Email */}
+                    <div className="col-span-6 grid grid-cols-12 items-center gap-2">
+                        <label className="col-span-4 text-sm font-bold text-gray-700">No Telepon</label>
+                        <div className="col-span-8">
+                            <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500" />
+                        </div>
+                    </div>
+                    <div className="col-span-6 grid grid-cols-12 items-center gap-2">
+                        <label className="col-span-3 text-sm font-bold text-gray-700">Email</label>
+                        <div className="col-span-9">
+                            <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500" />
+                        </div>
+                    </div>
+
+                    {/* Row 8: Kantor Cabang & Status */}
+                    <div className="col-span-6 grid grid-cols-12 items-start gap-2">
+                        <label className="col-span-4 text-sm font-bold text-gray-700 pt-2">Kantor Cabang</label>
+                        <div className="col-span-8">
+                             <textarea rows={3} className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 resize-none" />
+                        </div>
+                    </div>
+                     <div className="col-span-6 grid grid-cols-12 items-start gap-2">
+                        <label className="col-span-3 text-sm font-bold text-gray-700 pt-2">Status</label>
+                        <div className="col-span-9 pt-2">
+                            <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="toggle" className="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer checked:right-0 right-5"/>
+                                <label htmlFor="toggle" className="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer checked:bg-black"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Row 9: Specialist */}
+                    <div className="col-span-6 grid grid-cols-12 items-center gap-2">
+                        <label className="col-span-4 text-sm font-bold text-gray-700">Specialist</label>
+                        <div className="col-span-8">
+                             <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr className="border-gray-200 my-6" />
+
+                {/* History Project Table */}
+                <div>
+                     <h3 className="text-blue-400 font-semibold text-sm mb-4">History Project</h3>
+                     <div className="border-t border-gray-200">
+                         <table className="w-full text-left">
+                             <thead className="bg-gray-100 border-b border-gray-200 text-xs font-bold text-gray-700">
+                                <tr>
+                                    <th className="p-3 w-10 text-center">No</th>
+                                    <th className="p-3">Nomor Project</th>
+                                    <th className="p-3">Tanggal Mulai</th>
+                                    <th className="p-3">Selesai</th>
+                                    <th className="p-3">Period</th>
+                                    <th className="p-3">Total Cost</th>
+                                    <th className="p-3">Status Project</th>
+                                </tr>
+                             </thead>
+                             <tbody className="bg-white text-sm">
+                                <tr>
+                                    <td className="p-3 text-center text-gray-500">1.</td>
+                                    <td className="p-3 text-blue-500 font-medium cursor-pointer">PMT-BD2402000232</td>
+                                    <td className="p-3 font-semibold text-gray-900">01/03/2022</td>
+                                    <td className="p-3 font-semibold text-gray-900">12/05/2022</td>
+                                    <td className="p-3 font-semibold text-gray-900">2 Bulan 11 Hari</td>
+                                    <td className="p-3 font-bold text-gray-900">Rp. 4.500.000</td>
+                                    <td className="p-3 font-medium text-gray-900">Closed</td>
+                                </tr>
+                             </tbody>
+                         </table>
+                     </div>
+                </div>
+            </div>
+
           ) : (
             /* --- STOCK MASTER FORM (Existing) --- */
             <>
@@ -250,16 +415,17 @@ export const AddStockModal: React.FC<Props> = ({ isOpen, onClose, moduleName = '
                 {/* Section 3: History Table */}
                 <div>
                     <h3 className="text-blue-500 font-semibold text-sm mb-4">History Pembelian {moduleName}</h3>
-                    <div className="border border-gray-200 rounded overflow-hidden">
-                        <table className="w-full text-left">
+                    <div className="border border-gray-200 rounded overflow-hidden overflow-x-auto">
+                        <table className="w-full text-left min-w-[900px]">
                             <thead className="bg-gray-100 border-b border-gray-200 text-xs font-bold text-gray-700">
                                 <tr>
                                     <th className="p-3 w-12 text-center">No</th>
-                                    <th className="p-3">Tanggal Pembelian</th>
-                                    <th className="p-3 text-center">Jumlah Barang</th>
-                                    <th className="p-3">Satuan</th>
-                                    <th className="p-3 text-right">Harga Barang</th>
-                                    <th className="p-3 text-right">Harga Rata-Rata</th>
+                                    <th className="p-3 w-32">Tanggal Pembelian</th>
+                                    <th className="p-3 w-32 text-center">Jumlah Barang</th>
+                                    <th className="p-3 w-20">Satuan</th>
+                                    <th className="p-3 w-40 text-right">Harga Barang</th>
+                                    <th className="p-3 w-40 text-right">Harga Rata-Rata</th>
+                                    {isArk && <th className="p-3 w-24 text-center">Attachment</th>}
                                     <th className="p-3">Keterangan</th>
                                 </tr>
                             </thead>
@@ -270,7 +436,7 @@ export const AddStockModal: React.FC<Props> = ({ isOpen, onClose, moduleName = '
                                     <td className="p-3 text-center font-semibold">1</td>
                                     <td className="p-3">PCS</td>
                                     <td className="p-3 text-right">
-                                        <div className="flex justify-between w-full min-w-[80px]">
+                                        <div className="flex justify-between w-full">
                                             <span className="text-gray-500">IDR</span>
                                             <span>1,231</span>
                                         </div>
@@ -280,7 +446,7 @@ export const AddStockModal: React.FC<Props> = ({ isOpen, onClose, moduleName = '
                                         </div>
                                     </td>
                                     <td className="p-3 text-right">
-                                        <div className="flex justify-between w-full min-w-[80px]">
+                                        <div className="flex justify-between w-full">
                                             <span className="text-gray-500">IDR</span>
                                             <span>1,231</span>
                                         </div>
@@ -289,6 +455,13 @@ export const AddStockModal: React.FC<Props> = ({ isOpen, onClose, moduleName = '
                                             <span>1,231</span>
                                         </div>
                                     </td>
+                                    {isArk && (
+                                        <td className="p-3 text-center">
+                                            <button className="text-gray-400 hover:text-blue-500 transition-colors p-1 hover:bg-gray-100 rounded">
+                                                <Paperclip size={16} />
+                                            </button>
+                                        </td>
+                                    )}
                                     <td className="p-3 font-medium">Pembelian Q1</td>
                                 </tr>
                             </tbody>

@@ -1,4 +1,4 @@
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord } from './types';
 
 export const MOCK_DATA: AssetRecord[] = [
   {
@@ -322,5 +322,14 @@ export const MOCK_TIMESHEET_DATA: TimesheetRecord[] = [
         clockOut: '17:38',
         status: 'Tepat Waktu',
         photos: []
+    }
+];
+
+export const MOCK_VENDOR_DATA: VendorRecord[] = [
+    {
+        id: 1,
+        vendorName: 'PT Indo Makmur Energy',
+        vendorCode: '2209010032',
+        status: 'Active'
     }
 ];

@@ -55,6 +55,23 @@ export interface TimesheetRecord {
   photos: string[];
 }
 
+export interface VendorRecord {
+  id: number;
+  vendorName: string;
+  vendorCode: string;
+  status: 'Active' | 'Inactive';
+}
+
+export interface VendorProjectHistory {
+  id: number;
+  projectNumber: string;
+  startDate: string;
+  endDate: string;
+  period: string;
+  totalCost: string;
+  status: string;
+}
+
 export interface SidebarItem {
   label: string;
   icon: React.ReactNode;
