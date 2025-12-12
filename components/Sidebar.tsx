@@ -21,7 +21,8 @@ import {
   ChevronDown,
   ChevronUp,
   Settings,
-  List
+  List,
+  ClipboardCheck
 } from 'lucide-react';
 import { SidebarItem } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -75,6 +76,7 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
         icon: <PenTool size={20} />,
         subItems: [
              { label: 'Daftar ATK', icon: <List size={18} /> },
+             { label: 'Stationery Request Approval', icon: <ClipboardCheck size={18} /> },
              { label: 'Master ATK', icon: <Database size={18} /> }
         ]
     },

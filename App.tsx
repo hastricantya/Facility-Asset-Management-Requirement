@@ -92,6 +92,8 @@ const App: React.FC = () => {
         setActiveTab('Pengguna');
     } else if (module === 'Daftar ATK') {
         setActiveTab('All');
+    } else if (module === 'Stationery Request Approval') {
+        setActiveTab('Pending');
     } else {
         // Default
         setActiveTab('Pengguna');
@@ -360,6 +362,16 @@ const App: React.FC = () => {
       // 'All' shows everything including Pending
       return <AssetTable data={filteredData} />;
     }
+    if (activeModule === 'Stationery Request Approval') {
+        let filteredData = MOCK_DATA;
+        if (activeTab === 'Pending') filteredData = MOCK_DATA.filter(item => item.status === 'Pending');
+        else if (activeTab === 'Approved') filteredData = MOCK_DATA.filter(item => item.status === 'Approved');
+        else if (activeTab === 'Rejected') filteredData = MOCK_DATA.filter(item => item.status === 'Rejected');
+        // Default to Pending if just switched and 'All' isn't valid, but for safety:
+        else if (activeTab === 'All') filteredData = MOCK_DATA; 
+        
+        return <AssetTable data={filteredData} />;
+    }
     if (activeModule === 'Master ATK') {
       return <MasterAtkTable data={MOCK_MASTER_DATA} />;
     }
@@ -405,6 +417,7 @@ const App: React.FC = () => {
 
   const getFilterTabs = () => {
     if (activeModule === 'Daftar ATK') return ['All', 'Approved', 'Rejected', 'Closed'];
+    if (activeModule === 'Stationery Request Approval') return ['Pending', 'Approved', 'Rejected'];
     if (activeModule === 'Master ATK') return []; 
     if (activeModule === 'ARK') return ['Pengguna', 'Master', 'Approval'];
     if (activeModule === 'Contract') return ['Own', 'Rent'];
