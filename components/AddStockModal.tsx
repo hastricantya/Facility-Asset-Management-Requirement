@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, RefreshCcw, Plus, Trash2, Image as ImageIcon, List } from 'lucide-react';
+import { X, RefreshCcw, Plus, Trash2, Image as ImageIcon, List, Calendar } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, SalesOffer, ContractRecord, GeneralMasterItem, MasterVendorRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -278,6 +278,7 @@ export const AddStockModal: React.FC<Props> = ({
   const isMutation = moduleName === 'Mutasi';
   const isSales = moduleName === 'Penjualan';
   const isMasterVendor = moduleName === 'Master Vendor';
+  const isMasterATK = moduleName === 'Master ATK';
   
   const isMaster = !isContract && !isVendor && !isVehicle && !isService && !isMutation && !isSales && !isMasterVendor && !moduleName?.includes('ATK') && !moduleName?.includes('ARK') && moduleName !== 'Timesheet';
 
@@ -292,6 +293,7 @@ export const AddStockModal: React.FC<Props> = ({
     if (isService) return t('Request Servis');
     if (isMutation) return t('Permintaan Mutasi Kendaraan');
     if (isSales) return t('Permintaan Penjualan');
+    if (isMasterATK) return `${t('Master ATK')} > ${t('Tambah Stock')}`;
     if (isMaster) return `Master ${t(moduleName || '')}`;
     return `Master ${t(moduleName || '')} > ${t('Tambah Stock')}`;
   }
@@ -309,12 +311,12 @@ export const AddStockModal: React.FC<Props> = ({
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
       <div className={`bg-white w-full ${isMaster ? 'max-w-md' : (isVehicle || isService || isMutation || isSales || isContract || isMasterVendor ? 'max-w-7xl' : 'max-w-5xl')} rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]`}>
         {/* Modal Header */}
-        <div className={`px-6 py-4 flex items-center justify-between ${isService || isMutation || isSales || isContract || isMaster || isMasterVendor ? 'bg-white border-b border-gray-200 text-gray-900' : 'bg-black text-white'}`}>
-          <h2 className="text-sm font-bold tracking-wide">
+        <div className={`px-6 py-4 flex items-center justify-between ${isService || isMutation || isSales || isContract || isMaster || isMasterVendor || isMasterATK ? 'bg-white border-b border-gray-200 text-gray-900' : 'bg-black text-white'}`}>
+          <h2 className={`text-sm font-bold tracking-wide ${isMasterATK || isMasterVendor || isService || isSales || isMutation || isContract || isMaster ? '' : 'text-white'}`}>
             {getTitle()}
           </h2>
           <div className="flex items-center gap-4">
-            <button className={`${isService || isMutation || isSales || isContract || isMaster || isMasterVendor ? 'text-gray-400 hover:text-gray-600' : 'text-gray-400 hover:text-white'} transition-colors`}>
+            <button className={`${isService || isMutation || isSales || isContract || isMaster || isMasterVendor || isMasterATK ? 'text-gray-400 hover:text-gray-600' : 'text-gray-400 hover:text-white'} transition-colors`}>
               <X size={20} onClick={onClose} className="cursor-pointer"/>
             </button>
           </div>
@@ -323,7 +325,189 @@ export const AddStockModal: React.FC<Props> = ({
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gray-50">
           
-          {isMaster ? (
+          {isMasterATK ? (
+            /* --- MASTER ATK FORM --- */
+            <div className="space-y-6">
+                {/* Section 1: Header Info */}
+                <div className="bg-blue-50/50 p-6 rounded-lg border border-blue-100">
+                    <h3 className="text-blue-500 font-bold text-sm mb-4">Stationery Master</h3>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                        <div className="grid grid-cols-12 gap-4 items-center">
+                            <div className="col-span-3">
+                                <label className="block text-sm font-semibold text-gray-700">Category <Required/></label>
+                            </div>
+                            <div className="col-span-9">
+                                <select className="w-full bg-[#FFF9C4] border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
+                                    <option value="Pulpen">Pulpen</option>
+                                    <option value="Kertas">Kertas</option>
+                                    <option value="Tinta">Tinta</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-12 gap-4 items-center">
+                            <div className="col-span-3">
+                                <label className="block text-sm font-semibold text-gray-700">Item Name <Required/></label>
+                            </div>
+                            <div className="col-span-9">
+                                <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
+                                    <option value="KENKO">KENKO Joyko K-1 0.5 mm Hitam</option>
+                                </select>
+                            </div>
+                        </div>
+                        {/* Removed read-only Remaining Stock from here */}
+                    </div>
+                </div>
+
+                {/* Section 2: Transaction Input */}
+                <div className="bg-white pt-2 space-y-4 border-t border-gray-100">
+                    
+                    {/* Remaining Stock & Unit (Replaces Quantity) */}
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">Remaining Stock <Required/></label>
+                        </div>
+                        <div className="col-span-4">
+                             <input type="number" defaultValue="48" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                        </div>
+                        <div className="col-span-1 text-right">
+                             <label className="block text-sm font-semibold text-gray-700">Unit</label>
+                        </div>
+                         <div className="col-span-4">
+                             <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
+                                <option>PCS</option>
+                                <option>RIM</option>
+                                <option>BOX</option>
+                             </select>
+                        </div>
+                    </div>
+
+                    {/* Minimum & Maximum Stock */}
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">Minimum Stock</label>
+                        </div>
+                        <div className="col-span-3">
+                             <input type="number" defaultValue="10" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                        </div>
+                         <div className="col-span-3 text-right">
+                            <label className="block text-sm font-semibold text-gray-700">Maximum Stock</label>
+                        </div>
+                        <div className="col-span-3">
+                             <input type="number" defaultValue="100" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                        </div>
+                    </div>
+
+                    {/* Requested Stock */}
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">Requested Stock</label>
+                        </div>
+                        <div className="col-span-9">
+                             <input type="number" defaultValue="0" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                        </div>
+                    </div>
+
+                    {/* Purchase Date */}
+                     <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">Purchase Date <Required/></label>
+                        </div>
+                        <div className="col-span-4 relative">
+                             <input type="date" defaultValue="2024-03-16" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                        </div>
+                    </div>
+
+                    {/* Prices */}
+                     <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">Item Price <Required/></label>
+                        </div>
+                        <div className="col-span-2">
+                             <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
+                                <option>IDR</option>
+                                <option>USD</option>
+                             </select>
+                        </div>
+                         <div className="col-span-7">
+                             <input type="text" defaultValue="100.000" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">Average Price</label>
+                        </div>
+                         <div className="col-span-6">
+                             <input type="text" defaultValue="1.000" readOnly className="w-full bg-gray-50 border border-gray-200 rounded px-3 py-2 text-sm text-gray-500 focus:outline-none" />
+                        </div>
+                    </div>
+
+                    {/* Description */}
+                    <div className="grid grid-cols-12 gap-4 items-start">
+                        <div className="col-span-3 pt-2">
+                            <label className="block text-sm font-semibold text-gray-700">Description <Required/></label>
+                        </div>
+                         <div className="col-span-6">
+                             <textarea rows={3} defaultValue="Pembelian Q2" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black resize-none" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Section 3: History Table */}
+                <div className="mt-8">
+                    <h3 className="text-blue-500 font-bold text-sm mb-4">Stationery Purchase History</h3>
+                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-gray-100 border-b border-gray-200 font-semibold text-gray-700">
+                                <tr>
+                                    <th className="px-4 py-3 w-12">No</th>
+                                    <th className="px-4 py-3">Purchase Date</th>
+                                    <th className="px-4 py-3 text-center">Quantity</th>
+                                    <th className="px-4 py-3">Unit</th>
+                                    <th className="px-4 py-3 text-right">Item Price</th>
+                                    <th className="px-4 py-3 text-right">Average Price</th>
+                                    <th className="px-4 py-3">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200 text-gray-700">
+                                <tr className="hover:bg-gray-50">
+                                    <td className="px-4 py-3 text-gray-500">1.</td>
+                                    <td className="px-4 py-3 text-blue-600 underline cursor-pointer">10 Jan 2024</td>
+                                    <td className="px-4 py-3 text-center font-medium">1</td>
+                                    <td className="px-4 py-3 font-semibold">PCS</td>
+                                    <td className="px-4 py-3 text-right">
+                                        <div className="flex justify-between gap-2">
+                                            <span>IDR</span>
+                                            <span>1,231</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-3 text-right">
+                                        <div className="flex justify-between gap-2">
+                                            <span>IDR</span>
+                                            <span>1,231</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-3 font-medium">Pembelian Q1</td>
+                                </tr>
+                            </tbody>
+                            <tfoot className="bg-white font-bold text-gray-800">
+                                <tr>
+                                    <td colSpan={4} className="px-4 py-3 text-right">Total IDR</td>
+                                    <td className="px-4 py-3 text-right">1,231</td>
+                                    <td className="px-4 py-3 text-right flex justify-between">
+                                        <span>IDR</span>
+                                        <span>1,231</span>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+          ) : isMaster ? (
               /* --- GENERIC MASTER FORM --- */
               <div className="space-y-4">
                   <div>
@@ -753,13 +937,13 @@ export const AddStockModal: React.FC<Props> = ({
             <div className="px-8 py-4 bg-white border-t border-gray-200 flex justify-end gap-3">
             <button 
                 onClick={onClose}
-                className="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className={`px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ${isMasterATK ? 'rounded-full' : ''}`}
             >
                 {t('Draft')}
             </button>
             <button 
                 onClick={handleSave}
-                className={`px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors shadow-sm ${isMasterVendor ? 'bg-orange-500 hover:bg-orange-600' : 'bg-black hover:bg-gray-800'}`}
+                className={`px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors shadow-sm ${isMasterVendor ? 'bg-orange-500 hover:bg-orange-600' : isMasterATK ? 'bg-black hover:bg-gray-800 rounded-full' : 'bg-black hover:bg-gray-800'}`}
             >
                 {isMasterVendor ? t('Submit') : t('Simpan')}
             </button>
