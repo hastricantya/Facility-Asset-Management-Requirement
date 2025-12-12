@@ -9,42 +9,35 @@ interface Props {
 export const MasterAtkTable: React.FC<Props> = ({ data }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto custom-scrollbar pb-2">
+      <div className="overflow-x-auto">
         <table className="w-full min-w-[1600px] text-left border-collapse">
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200 text-xs font-semibold text-gray-700 uppercase tracking-wider">
-              {/* Sticky Header Columns */}
-              <th className="p-4 w-12 text-center sticky left-0 z-20 bg-gray-100 border-r border-gray-200/50">No</th>
-              
-              <th className="p-4 w-40 group cursor-pointer hover:bg-gray-200 transition-colors sticky left-[48px] z-20 bg-gray-100 border-r border-gray-200/50">
+              <th className="p-4 w-12 text-center">No</th>
+              <th className="p-4 w-40 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Category
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
-              
-              <th className="p-4 w-56 group cursor-pointer hover:bg-gray-200 transition-colors sticky left-[208px] z-20 bg-gray-100 border-r border-gray-200/50">
+              <th className="p-4 w-56 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Item Name
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
-              
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors sticky left-[432px] z-20 bg-gray-100 border-r border-gray-200 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)]">
+              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Item Code
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
-              
-               {/* Scrollable Header Columns */}
                <th className="p-4 w-24 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   UoM
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
-
               <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Remaining Stock
@@ -92,13 +85,13 @@ export const MasterAtkTable: React.FC<Props> = ({ data }) => {
           <tbody className="divide-y divide-gray-200 text-sm text-gray-700">
             {data.map((item, index) => (
               <tr key={item.id} className="bg-white hover:bg-gray-50 transition-colors cursor-pointer group">
-                <td className="p-4 text-center font-medium text-gray-500 sticky left-0 z-10 bg-white group-hover:bg-gray-50 border-r border-gray-100">{index + 1}</td>
+                <td className="p-4 text-center font-medium text-gray-500">{index + 1}</td>
                 
-                <td className="p-4 font-medium sticky left-[48px] z-10 bg-white group-hover:bg-gray-50 border-r border-gray-100">{item.category}</td>
+                <td className="p-4 font-medium">{item.category}</td>
                 
-                <td className="p-4 font-semibold text-gray-900 sticky left-[208px] z-10 bg-white group-hover:bg-gray-50 border-r border-gray-100">{item.itemName}</td>
+                <td className="p-4 font-semibold text-gray-900">{item.itemName}</td>
                 
-                <td className="p-4 font-mono text-xs text-gray-600 sticky left-[432px] z-10 bg-white group-hover:bg-gray-50 border-r border-gray-200 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)]">{item.itemCode}</td>
+                <td className="p-4 font-mono text-xs text-gray-600">{item.itemCode}</td>
                 
                 <td className="p-4 text-gray-600">{item.uom}</td>
 

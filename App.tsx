@@ -17,10 +17,12 @@ import { MasterVendorTable } from './components/MasterVendorTable';
 import { AddStockModal } from './components/AddStockModal';
 import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_CONTRACT_DATA, MOCK_TIMESHEET_DATA, MOCK_VENDOR_DATA, MOCK_VEHICLE_DATA, MOCK_SERVICE_DATA, MOCK_TAX_KIR_DATA, MOCK_MUTATION_DATA, MOCK_SALES_DATA, MOCK_MASTER_VENDOR_DATA } from './constants';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, TaxKirRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord } from './types';
+import { useLanguage } from './contexts/LanguageContext';
 
 const App: React.FC = () => {
+  const { t } = useLanguage();
   const [activeModule, setActiveModule] = useState('Daftar ATK'); 
-  const [activeTab, setActiveTab] = useState('Pengguna');
+  const [activeTab, setActiveTab] = useState('All');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
   // Modal State
@@ -89,7 +91,7 @@ const App: React.FC = () => {
     } else if (module === 'ARK') {
         setActiveTab('Pengguna');
     } else if (module === 'Daftar ATK') {
-        setActiveTab('Pengguna');
+        setActiveTab('All');
     } else {
         // Default
         setActiveTab('Pengguna');
@@ -351,7 +353,12 @@ const App: React.FC = () => {
 
   const renderContent = () => {
     if (activeModule === 'Daftar ATK') {
-      return <AssetTable data={MOCK_DATA} />;
+      let filteredData = MOCK_DATA;
+      if (activeTab === 'Approved') filteredData = MOCK_DATA.filter(item => item.status === 'Approved');
+      else if (activeTab === 'Rejected') filteredData = MOCK_DATA.filter(item => item.status === 'Rejected');
+      else if (activeTab === 'Closed') filteredData = MOCK_DATA.filter(item => item.status === 'Closed');
+      // 'All' shows everything including Pending
+      return <AssetTable data={filteredData} />;
     }
     if (activeModule === 'Master ATK') {
       return <MasterAtkTable data={MOCK_MASTER_DATA} />;
@@ -397,7 +404,7 @@ const App: React.FC = () => {
   };
 
   const getFilterTabs = () => {
-    if (activeModule === 'Daftar ATK') return ['Pengguna', 'Approval'];
+    if (activeModule === 'Daftar ATK') return ['All', 'Approved', 'Rejected', 'Closed'];
     if (activeModule === 'Master ATK') return []; 
     if (activeModule === 'ARK') return ['Pengguna', 'Master', 'Approval'];
     if (activeModule === 'Contract') return ['Own', 'Rent'];
@@ -425,17 +432,17 @@ const App: React.FC = () => {
           {/* Breadcrumb & Title */}
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900">
-                {activeModule === 'Daftar Aset' ? 'Daftar Aset Kendaraan' : 
-                 activeModule === 'Servis' ? 'Servis Kendaraan' :
-                 activeModule === 'Pajak & KIR' ? 'Pajak & KIR Kendaraan' :
-                 activeModule === 'Mutasi' ? 'Mutasi Kendaraan' :
-                 activeModule === 'Penjualan' ? 'Penjualan Kendaraan' :
-                 activeModule === 'Daftar ATK' ? 'Daftar Aset ATK' :
-                 activeModule === 'Master ATK' ? 'Master Data ATK' :
-                 activeModule === 'Contract' ? 'List Building' :
-                 activeModule === 'Master Vendor' ? 'Master Vendor' :
-                 isMasterModule(activeModule) ? `Master ${activeModule}` :
-                 activeModule}
+                {activeModule === 'Daftar Aset' ? t('Daftar Aset Kendaraan') : 
+                 activeModule === 'Servis' ? t('Servis Kendaraan') :
+                 activeModule === 'Pajak & KIR' ? t('Pajak & KIR Kendaraan') :
+                 activeModule === 'Mutasi' ? t('Mutasi Kendaraan') :
+                 activeModule === 'Penjualan' ? t('Penjualan Kendaraan') :
+                 activeModule === 'Daftar ATK' ? t('Daftar Aset ATK') :
+                 activeModule === 'Master ATK' ? t('Master Data ATK') :
+                 activeModule === 'Contract' ? t('List Building') :
+                 activeModule === 'Master Vendor' ? t('Master Vendor') :
+                 isMasterModule(activeModule) ? `Master ${t(activeModule)}` :
+                 t(activeModule)}
             </h1>
           </div>
 
