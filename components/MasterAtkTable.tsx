@@ -9,7 +9,7 @@ interface Props {
 export const MasterAtkTable: React.FC<Props> = ({ data }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto custom-scrollbar">
+      <div className="overflow-x-auto custom-scrollbar pb-2">
         <table className="w-full min-w-[1600px] text-left border-collapse">
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200 text-xs font-semibold text-gray-700 uppercase tracking-wider">
@@ -30,21 +30,21 @@ export const MasterAtkTable: React.FC<Props> = ({ data }) => {
                 </div>
               </th>
               
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors sticky left-[432px] z-20 bg-gray-100 border-r border-gray-200/50">
+              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors sticky left-[432px] z-20 bg-gray-100 border-r border-gray-200 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)]">
                 <div className="flex items-center justify-between">
                   Item Code
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
               
-               <th className="p-4 w-24 group cursor-pointer hover:bg-gray-200 transition-colors sticky left-[560px] z-20 bg-gray-100 border-r border-gray-200 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)]">
+               {/* Scrollable Header Columns */}
+               <th className="p-4 w-24 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   UoM
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
 
-              {/* Scrollable Header Columns */}
               <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Remaining Stock
@@ -98,9 +98,9 @@ export const MasterAtkTable: React.FC<Props> = ({ data }) => {
                 
                 <td className="p-4 font-semibold text-gray-900 sticky left-[208px] z-10 bg-white group-hover:bg-gray-50 border-r border-gray-100">{item.itemName}</td>
                 
-                <td className="p-4 font-mono text-xs text-gray-600 sticky left-[432px] z-10 bg-white group-hover:bg-gray-50 border-r border-gray-100">{item.itemCode}</td>
+                <td className="p-4 font-mono text-xs text-gray-600 sticky left-[432px] z-10 bg-white group-hover:bg-gray-50 border-r border-gray-200 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)]">{item.itemCode}</td>
                 
-                <td className="p-4 text-gray-600 sticky left-[560px] z-10 bg-white group-hover:bg-gray-50 border-r border-gray-200 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)]">{item.uom}</td>
+                <td className="p-4 text-gray-600">{item.uom}</td>
 
                 <td className="p-4 font-mono font-medium text-gray-900 pl-8">{item.remainingStock}</td>
                 
