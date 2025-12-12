@@ -17,7 +17,7 @@ export interface AssetRecord {
   date: string;
   remainingStock: number;
   itemCode: string;
-  status: 'Approved' | 'Pending' | 'Rejected' | 'Closed';
+  status: 'Approved' | 'Pending' | 'Rejected' | 'Closed' | 'Draft';
 }
 
 export interface MasterItem {

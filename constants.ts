@@ -1,3 +1,4 @@
+
 import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord } from './types';
 
 export const MOCK_DATA: AssetRecord[] = [
@@ -85,6 +86,23 @@ export const MOCK_DATA: AssetRecord[] = [
     remainingStock: 8,
     itemCode: 'SPD-WB001',
     status: 'Approved'
+  },
+  {
+    id: 6,
+    employee: {
+      name: 'Budi Santoso',
+      phone: '1209.1122',
+      role: 'General Affair',
+      avatar: 'https://picsum.photos/id/55/100/100'
+    },
+    category: 'Kertas',
+    itemName: 'HVS A4 80 1 Rim',
+    itemDescription: 'PaperOne High Quality',
+    qty: 5,
+    date: '20/03/2024',
+    remainingStock: 48,
+    itemCode: 'KR-A480',
+    status: 'Draft'
   }
 ];
 

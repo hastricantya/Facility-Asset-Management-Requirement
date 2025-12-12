@@ -1,6 +1,6 @@
 import React from 'react';
 import { AssetRecord } from '../types';
-import { ChevronsUpDown, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from 'lucide-react';
+import { ChevronsUpDown, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Eye } from 'lucide-react';
 
 interface Props {
   data: AssetRecord[];
@@ -13,7 +13,7 @@ export const AssetTable: React.FC<Props> = ({ data }) => {
         <table className="w-full min-w-[1000px] text-left border-collapse">
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200 text-xs font-semibold text-gray-700 uppercase tracking-wider">
-              <th className="p-4 w-12 text-center">No</th>
+              <th className="p-4 w-12 text-left pl-6">No</th>
               <th className="p-4 w-64 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Employee Name
@@ -32,17 +32,17 @@ export const AssetTable: React.FC<Props> = ({ data }) => {
                     <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
-              <th className="p-4 w-20 text-center">Jumlah</th>
-              <th className="p-4 w-32">Tanggal</th>
-              <th className="p-4 w-24 text-center">Sisa Stock</th>
-              <th className="p-4 w-32">Kode Barang</th>
-              {/* Status Column Removed */}
+              <th className="p-4 w-20 text-left">Jumlah</th>
+              <th className="p-4 w-32 text-left">Tanggal</th>
+              <th className="p-4 w-24 text-left">Sisa Stock</th>
+              <th className="p-4 w-32 text-left">Kode Barang</th>
+              <th className="p-4 w-20 text-center">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 text-sm text-gray-700">
             {data.map((item, index) => (
               <tr key={item.id} className="bg-white hover:bg-gray-50 transition-colors cursor-pointer group">
-                <td className="p-4 text-center font-medium text-gray-500">{index + 1}</td>
+                <td className="p-4 text-left font-medium text-gray-500 pl-6">{index + 1}</td>
                 
                 {/* Employee Cell (Rich Content) */}
                 <td className="p-4">
@@ -67,12 +67,16 @@ export const AssetTable: React.FC<Props> = ({ data }) => {
                     <p className="text-xs text-gray-500">{item.itemDescription}</p>
                 </td>
                 
-                <td className="p-4 text-center font-semibold">{item.qty}</td>
-                <td className="p-4 text-gray-500">{item.date}</td>
-                <td className="p-4 text-center font-mono font-medium text-gray-900">{item.remainingStock}</td>
-                <td className="p-4 font-mono text-xs">{item.itemCode}</td>
+                <td className="p-4 text-left font-semibold">{item.qty}</td>
+                <td className="p-4 text-left text-gray-500">{item.date}</td>
+                <td className="p-4 text-left font-mono font-medium text-gray-900">{item.remainingStock}</td>
+                <td className="p-4 text-left font-mono text-xs">{item.itemCode}</td>
                 
-                {/* Status Cell Removed */}
+                <td className="p-4 text-center">
+                    <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                        <Eye size={18} />
+                    </button>
+                </td>
               </tr>
             ))}
           </tbody>

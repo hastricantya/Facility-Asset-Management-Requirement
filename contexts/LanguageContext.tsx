@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 type Language = 'id' | 'en';
@@ -87,6 +86,7 @@ const translations: Record<string, Record<Language, string>> = {
   'Penjualan Kendaraan': { id: 'Penjualan Kendaraan', en: 'Vehicle Sales' },
   'List Building': { id: 'Daftar Gedung', en: 'Building List' },
   'Daftar Aset ATK': { id: 'Permintaan ATK', en: 'Stationery Request' },
+  'Header Stationery Request Approval': { id: 'Persetujuan Permintaan ATK', en: 'Stationery Request Approval' },
   'Master Data ATK': { id: 'Master Data ATK', en: 'Master Stationery Data' },
   
   // Filter Bar specific

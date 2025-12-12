@@ -1,9 +1,12 @@
-
 import React, { useState } from 'react';
 import { Bell, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
-export const TopBar: React.FC = () => {
+interface Props {
+  breadcrumbs?: string[];
+}
+
+export const TopBar: React.FC<Props> = ({ breadcrumbs = ['Home', 'Asset Monitoring'] }) => {
   const { language, setLanguage } = useLanguage();
   const [isLangOpen, setIsLangOpen] = useState(false);
 
@@ -15,7 +18,12 @@ export const TopBar: React.FC = () => {
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-10 shadow-sm">
       <div className="flex items-center gap-2 text-sm text-gray-500">
-         <span className="font-medium text-gray-900">Home</span> / <span className="text-gray-900 font-medium">Asset Monitoring</span>
+         {breadcrumbs.map((item, index) => (
+             <React.Fragment key={index}>
+                 <span className="font-medium text-gray-900">{item}</span>
+                 {index < breadcrumbs.length - 1 && <span>/</span>}
+             </React.Fragment>
+         ))}
       </div>
 
       <div className="flex items-center gap-6">

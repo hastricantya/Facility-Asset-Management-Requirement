@@ -353,13 +353,22 @@ const App: React.FC = () => {
       setIsModalOpen(false);
   };
 
+  const getBreadcrumbs = () => {
+    if (['Daftar ATK', 'Stationery Request Approval', 'Master ATK'].includes(activeModule)) return ['Home', t('ATK'), t(activeModule)];
+    if (['Daftar Aset', 'Servis', 'Pajak & KIR', 'Mutasi', 'Penjualan'].includes(activeModule)) return ['Home', t('Kendaraan'), t(activeModule)];
+    if (['Jenis Pajak', 'Jenis Pembayaran', 'Jenis Servis', 'Status Mutasi', 'Status Penjualan', 'Status Request', 'Tipe Mutasi', 'Tipe Vendor', 'Role', 'Master Vendor'].includes(activeModule)) return ['Home', t('Master Data'), t(activeModule)];
+    
+    return ['Home', t(activeModule)];
+  };
+
   const renderContent = () => {
     if (activeModule === 'Daftar ATK') {
       let filteredData = MOCK_DATA;
       if (activeTab === 'Approved') filteredData = MOCK_DATA.filter(item => item.status === 'Approved');
       else if (activeTab === 'Rejected') filteredData = MOCK_DATA.filter(item => item.status === 'Rejected');
       else if (activeTab === 'Closed') filteredData = MOCK_DATA.filter(item => item.status === 'Closed');
-      // 'All' shows everything including Pending
+      else if (activeTab === 'Draft') filteredData = MOCK_DATA.filter(item => item.status === 'Draft');
+      // 'All' shows everything
       return <AssetTable data={filteredData} />;
     }
     if (activeModule === 'Stationery Request Approval') {
@@ -367,8 +376,8 @@ const App: React.FC = () => {
         if (activeTab === 'Pending') filteredData = MOCK_DATA.filter(item => item.status === 'Pending');
         else if (activeTab === 'Approved') filteredData = MOCK_DATA.filter(item => item.status === 'Approved');
         else if (activeTab === 'Rejected') filteredData = MOCK_DATA.filter(item => item.status === 'Rejected');
-        // Default to Pending if just switched and 'All' isn't valid, but for safety:
-        else if (activeTab === 'All') filteredData = MOCK_DATA; 
+        else if (activeTab === 'Draft') filteredData = MOCK_DATA.filter(item => item.status === 'Draft');
+        else if (activeTab === 'Closed') filteredData = MOCK_DATA.filter(item => item.status === 'Closed');
         
         return <AssetTable data={filteredData} />;
     }
@@ -416,8 +425,8 @@ const App: React.FC = () => {
   };
 
   const getFilterTabs = () => {
-    if (activeModule === 'Daftar ATK') return ['All', 'Approved', 'Rejected', 'Closed'];
-    if (activeModule === 'Stationery Request Approval') return ['Pending', 'Approved', 'Rejected'];
+    if (activeModule === 'Daftar ATK') return ['All', 'Draft', 'Approved', 'Rejected', 'Closed'];
+    if (activeModule === 'Stationery Request Approval') return ['All', 'Draft', 'Pending', 'Approved', 'Rejected', 'Closed'];
     if (activeModule === 'Master ATK') return []; 
     if (activeModule === 'ARK') return ['Pengguna', 'Master', 'Approval'];
     if (activeModule === 'Contract') return ['Own', 'Rent'];
@@ -439,7 +448,7 @@ const App: React.FC = () => {
       />
       
       <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
-        <TopBar />
+        <TopBar breadcrumbs={getBreadcrumbs()} />
         
         <main className="flex-1 p-8 overflow-y-auto">
           {/* Breadcrumb & Title */}
@@ -451,6 +460,7 @@ const App: React.FC = () => {
                  activeModule === 'Mutasi' ? t('Mutasi Kendaraan') :
                  activeModule === 'Penjualan' ? t('Penjualan Kendaraan') :
                  activeModule === 'Daftar ATK' ? t('Daftar Aset ATK') :
+                 activeModule === 'Stationery Request Approval' ? t('Header Stationery Request Approval') :
                  activeModule === 'Master ATK' ? t('Master Data ATK') :
                  activeModule === 'Contract' ? t('List Building') :
                  activeModule === 'Master Vendor' ? t('Master Vendor') :
