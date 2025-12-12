@@ -103,6 +103,23 @@ export const MOCK_DATA: AssetRecord[] = [
     remainingStock: 48,
     itemCode: 'KR-A480',
     status: 'Draft'
+  },
+  {
+    id: 7,
+    employee: {
+      name: 'Dewi Sartika',
+      phone: '1010.2233',
+      role: 'Finance Staff',
+      avatar: 'https://picsum.photos/id/237/100/100'
+    },
+    category: 'Stapler',
+    itemName: 'Stapler HD-10',
+    itemDescription: 'Max Stapler',
+    qty: 1,
+    date: '15/03/2024',
+    remainingStock: 5,
+    itemCode: 'ST-MX10',
+    status: 'Closed'
   }
 ];
 

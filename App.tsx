@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
-import { FilterBar } from './components/FilterBar';
+import { FilterBar, FilterItem } from './components/FilterBar';
 import { AssetTable } from './components/AssetTable';
 import { MasterAtkTable } from './components/MasterAtkTable';
 import { ContractTable } from './components/ContractTable';
@@ -25,6 +25,11 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
+  // Filter State for Stationery Request
+  const [atkFilters, setAtkFilters] = useState<FilterItem[]>([]);
+  // Filter State for Master ATK
+  const [masterAtkFilters, setMasterAtkFilters] = useState<FilterItem[]>([]);
+
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
@@ -92,8 +97,13 @@ const App: React.FC = () => {
         setActiveTab('Pengguna');
     } else if (module === 'Daftar ATK') {
         setActiveTab('All');
+        setAtkFilters([]); // Reset filters when module resets
     } else if (module === 'Stationery Request Approval') {
         setActiveTab('Pending');
+        setAtkFilters([]);
+    } else if (module === 'Master ATK') {
+        setActiveTab('All');
+        setMasterAtkFilters([]);
     } else {
         // Default
         setActiveTab('Pengguna');
@@ -362,27 +372,49 @@ const App: React.FC = () => {
   };
 
   const renderContent = () => {
-    if (activeModule === 'Daftar ATK') {
+    if (activeModule === 'Daftar ATK' || activeModule === 'Stationery Request Approval') {
       let filteredData = MOCK_DATA;
-      if (activeTab === 'Approved') filteredData = MOCK_DATA.filter(item => item.status === 'Approved');
-      else if (activeTab === 'Rejected') filteredData = MOCK_DATA.filter(item => item.status === 'Rejected');
-      else if (activeTab === 'Closed') filteredData = MOCK_DATA.filter(item => item.status === 'Closed');
-      else if (activeTab === 'Draft') filteredData = MOCK_DATA.filter(item => item.status === 'Draft');
-      // 'All' shows everything
+      
+      // Filter by Tab
+      if (activeTab === 'Approved') filteredData = filteredData.filter(item => item.status === 'Approved');
+      else if (activeTab === 'Rejected') filteredData = filteredData.filter(item => item.status === 'Rejected');
+      else if (activeTab === 'Closed') filteredData = filteredData.filter(item => item.status === 'Closed');
+      else if (activeTab === 'Draft') filteredData = filteredData.filter(item => item.status === 'Draft');
+      else if (activeTab === 'Pending') filteredData = filteredData.filter(item => item.status === 'Pending');
+      
+      // Filter by Dynamic Filters (AND logic)
+      if (atkFilters.length > 0) {
+        filteredData = filteredData.filter(item => {
+            return atkFilters.every(filter => {
+                const val = filter.value.toLowerCase();
+                if (filter.field === 'Employee Name') return item.employee.name.toLowerCase().includes(val);
+                if (filter.field === 'Category') return item.category.toLowerCase().includes(val);
+                if (filter.field === 'Item Name') return item.itemName.toLowerCase().includes(val);
+                if (filter.field === 'Item Code') return item.itemCode.toLowerCase().includes(val);
+                return true;
+            });
+        });
+      }
+
       return <AssetTable data={filteredData} />;
     }
-    if (activeModule === 'Stationery Request Approval') {
-        let filteredData = MOCK_DATA;
-        if (activeTab === 'Pending') filteredData = MOCK_DATA.filter(item => item.status === 'Pending');
-        else if (activeTab === 'Approved') filteredData = MOCK_DATA.filter(item => item.status === 'Approved');
-        else if (activeTab === 'Rejected') filteredData = MOCK_DATA.filter(item => item.status === 'Rejected');
-        else if (activeTab === 'Draft') filteredData = MOCK_DATA.filter(item => item.status === 'Draft');
-        else if (activeTab === 'Closed') filteredData = MOCK_DATA.filter(item => item.status === 'Closed');
-        
-        return <AssetTable data={filteredData} />;
-    }
+    
     if (activeModule === 'Master ATK') {
-      return <MasterAtkTable data={MOCK_MASTER_DATA} />;
+      let filteredData = MOCK_MASTER_DATA;
+      // Filter by Dynamic Filters (AND logic)
+      if (masterAtkFilters.length > 0) {
+        filteredData = filteredData.filter(item => {
+            return masterAtkFilters.every(filter => {
+                const val = filter.value.toLowerCase();
+                if (filter.field === 'Category') return item.category.toLowerCase().includes(val);
+                if (filter.field === 'Item Name') return item.itemName.toLowerCase().includes(val);
+                if (filter.field === 'Item Code') return item.itemCode.toLowerCase().includes(val);
+                if (filter.field === 'UOM') return item.uom.toLowerCase().includes(val);
+                return true;
+            });
+        });
+      }
+      return <MasterAtkTable data={filteredData} />;
     }
     if (activeModule === 'ARK') {
         if (activeTab === 'Master') return <MasterAtkTable data={MOCK_MASTER_ARK_DATA} />;
@@ -425,7 +457,7 @@ const App: React.FC = () => {
   };
 
   const getFilterTabs = () => {
-    if (activeModule === 'Daftar ATK') return ['All', 'Draft', 'Approved', 'Rejected', 'Closed'];
+    if (activeModule === 'Daftar ATK') return ['All', 'Draft', 'Pending', 'Approved', 'Rejected', 'Closed'];
     if (activeModule === 'Stationery Request Approval') return ['All', 'Draft', 'Pending', 'Approved', 'Rejected', 'Closed'];
     if (activeModule === 'Master ATK') return []; 
     if (activeModule === 'ARK') return ['Pengguna', 'Master', 'Approval'];
@@ -475,6 +507,9 @@ const App: React.FC = () => {
             onTabChange={setActiveTab} 
             onAddClick={handleAddClick}
             moduleName={activeModule}
+            // Pass dynamic filter props
+            activeFilters={activeModule === 'Master ATK' ? masterAtkFilters : atkFilters}
+            onFilterChange={activeModule === 'Master ATK' ? setMasterAtkFilters : setAtkFilters}
           />
 
           {renderContent()}
