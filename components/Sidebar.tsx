@@ -19,7 +19,8 @@ import {
   DollarSign,
   ChevronDown,
   ChevronUp,
-  Settings
+  Settings,
+  List
 } from 'lucide-react';
 import { SidebarItem } from '../types';
 
@@ -35,7 +36,7 @@ interface MenuItem {
 }
 
 export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Master Data']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Master Data', 'ATK']);
 
   const toggleMenu = (label: string) => {
     setExpandedMenus(prev => 
@@ -56,7 +57,14 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
             { label: 'Penjualan', icon: <DollarSign size={18} /> },
         ]
     },
-    { label: 'ATK', icon: <PenTool size={20} /> },
+    { 
+        label: 'ATK', 
+        icon: <PenTool size={20} />,
+        subItems: [
+             { label: 'Daftar ATK', icon: <List size={18} /> },
+             { label: 'Master ATK', icon: <Database size={18} /> }
+        ]
+    },
     { label: 'ARK', icon: <ShoppingCart size={20} /> },
     { label: 'Contract', icon: <FileText size={20} /> },
     { label: 'Timesheet', icon: <Clock size={20} /> },
@@ -111,14 +119,14 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
           const hasSub = item.subItems && item.subItems.length > 0;
           const isExpanded = expandedMenus.includes(item.label);
           // Check if parent or any child is active
-          const isParentActive = activeItem === item.label; 
+          const isParentActive = activeItem === item.label || (item.subItems && item.subItems.some(sub => sub.label === activeItem)); 
 
           if (hasSub) {
               return (
                   <div key={index} className="space-y-1">
                       <button
                         onClick={() => toggleMenu(item.label)}
-                        className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 hover:bg-[#1a1a1a] hover:text-white text-gray-500`}
+                        className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 hover:bg-[#1a1a1a] hover:text-white ${isParentActive ? 'text-white bg-[#1a1a1a]' : 'text-gray-500'}`}
                       >
                          <div className="flex items-center gap-4">
                             <span>{item.icon}</span>

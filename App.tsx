@@ -19,7 +19,7 @@ import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, TaxKirRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord } from './types';
 
 const App: React.FC = () => {
-  const [activeModule, setActiveModule] = useState('ATK'); 
+  const [activeModule, setActiveModule] = useState('Daftar ATK'); 
   const [activeTab, setActiveTab] = useState('Pengguna');
   
   // Modal State
@@ -81,7 +81,12 @@ const App: React.FC = () => {
         setActiveTab('Aktif');
     } else if (module === 'Servis' || module === 'Pajak & KIR' || module === 'Mutasi' || module === 'Penjualan') {
         setActiveTab('Semua');
+    } else if (module === 'ARK') {
+        setActiveTab('Pengguna');
+    } else if (module === 'Daftar ATK') {
+        setActiveTab('Pengguna');
     } else {
+        // Default
         setActiveTab('Pengguna');
     }
   };
@@ -340,9 +345,11 @@ const App: React.FC = () => {
   };
 
   const renderContent = () => {
-    if (activeModule === 'ATK') {
-      if (activeTab === 'Master') return <MasterAtkTable data={MOCK_MASTER_DATA} />;
+    if (activeModule === 'Daftar ATK') {
       return <AssetTable data={MOCK_DATA} />;
+    }
+    if (activeModule === 'Master ATK') {
+      return <MasterAtkTable data={MOCK_MASTER_DATA} />;
     }
     if (activeModule === 'ARK') {
         if (activeTab === 'Master') return <MasterAtkTable data={MOCK_MASTER_ARK_DATA} />;
@@ -385,7 +392,9 @@ const App: React.FC = () => {
   };
 
   const getFilterTabs = () => {
-    if (activeModule === 'ATK' || activeModule === 'ARK') return ['Pengguna', 'Master', 'Approval'];
+    if (activeModule === 'Daftar ATK') return ['Pengguna', 'Approval'];
+    if (activeModule === 'Master ATK') return []; 
+    if (activeModule === 'ARK') return ['Pengguna', 'Master', 'Approval'];
     if (activeModule === 'Contract') return ['Own', 'Rent'];
     if (activeModule === 'Timesheet') return ['All', 'Permanent', 'Contract', 'Probation', 'Internship', 'Vendor'];
     if (activeModule === 'Vendor') return ['Active', 'Inactive', 'Blacklist'];
@@ -411,6 +420,8 @@ const App: React.FC = () => {
                  activeModule === 'Pajak & KIR' ? 'Pajak & KIR Kendaraan' :
                  activeModule === 'Mutasi' ? 'Mutasi Kendaraan' :
                  activeModule === 'Penjualan' ? 'Penjualan Kendaraan' :
+                 activeModule === 'Daftar ATK' ? 'Daftar Aset ATK' :
+                 activeModule === 'Master ATK' ? 'Master Data ATK' :
                  activeModule === 'Contract' ? 'List Building' :
                  activeModule === 'Master Vendor' ? 'Master Vendor' :
                  isMasterModule(activeModule) ? `Master ${activeModule}` :

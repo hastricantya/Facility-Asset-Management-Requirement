@@ -25,7 +25,11 @@ export interface MasterItem {
   category: string;
   itemName: string;
   itemCode: string;
+  uom: string;
   remainingStock: number;
+  minimumStock: number;
+  maximumStock: number;
+  requestedStock: number;
   purchaseDate: string;
   lastPurchasePrice: string;
   averagePrice: string;

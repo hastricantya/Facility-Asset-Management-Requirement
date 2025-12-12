@@ -10,49 +10,73 @@ export const MasterAtkTable: React.FC<Props> = ({ data }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[1000px] text-left border-collapse">
+        <table className="w-full min-w-[1600px] text-left border-collapse">
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200 text-xs font-semibold text-gray-700 uppercase tracking-wider">
               <th className="p-4 w-12 text-center">No</th>
-              <th className="p-4 w-48 group cursor-pointer hover:bg-gray-200 transition-colors">
+              <th className="p-4 w-40 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Kategori
+                  Category
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
-              <th className="p-4 w-64 group cursor-pointer hover:bg-gray-200 transition-colors">
+              <th className="p-4 w-56 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Jenis
+                  Item Name
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
               <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Kode Barang
+                  Item Code
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
-              <th className="p-4 w-24 group cursor-pointer hover:bg-gray-200 transition-colors">
+               <th className="p-4 w-24 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Sisa Stock
+                  UoM
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
               <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Tanggal Pembelian
+                  Remaining Stock
+                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
+                </div>
+              </th>
+              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
+                <div className="flex items-center justify-between">
+                  Minimum Stock
+                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
+                </div>
+              </th>
+              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
+                <div className="flex items-center justify-between">
+                  Maximum Stock
+                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
+                </div>
+              </th>
+              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
+                <div className="flex items-center justify-between">
+                  Requested Stock
+                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
+                </div>
+              </th>
+              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
+                <div className="flex items-center justify-between">
+                  Purchase Date
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
               <th className="p-4 w-40 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Harga Pembelian Terakhir
+                  Last Purchase Price
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
               <th className="p-4 w-40 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
-                  Harga Rata-Rata
+                  Average Price
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
@@ -69,7 +93,15 @@ export const MasterAtkTable: React.FC<Props> = ({ data }) => {
                 
                 <td className="p-4 font-mono text-xs text-gray-600">{item.itemCode}</td>
                 
+                <td className="p-4 text-gray-600">{item.uom}</td>
+
                 <td className="p-4 font-mono font-medium text-gray-900 pl-8">{item.remainingStock}</td>
+                
+                <td className="p-4 font-mono font-medium text-gray-600 pl-8">{item.minimumStock}</td>
+                
+                <td className="p-4 font-mono font-medium text-gray-600 pl-8">{item.maximumStock}</td>
+                
+                <td className="p-4 font-mono font-medium text-gray-600 pl-8">{item.requestedStock}</td>
                 
                 <td className="p-4 text-gray-500">{item.purchaseDate}</td>
                 
