@@ -1,4 +1,4 @@
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord } from './types';
 
 export const MOCK_DATA: AssetRecord[] = [
   {
@@ -319,6 +319,109 @@ export const MOCK_VENDOR_DATA: VendorRecord[] = [
         vendorName: 'PT Indo Makmur Energy',
         vendorCode: '2209010032',
         status: 'Active'
+    }
+];
+
+export const MOCK_MASTER_VENDOR_DATA: MasterVendorRecord[] = [
+    {
+        id: 1,
+        nama: 'PT. Mitra Ananta Megah',
+        merek: 'Toyota',
+        alamat: 'Bintaro komersial CBD B7 kavling A1/02.Bintaro jaya, Pd. Jaya, Kec. Pd. Aren, Kota Tangerang Selatan, Banten 15224',
+        noTelp: '081289841070',
+        tipe: 'Vendor Mutasi',
+        cabang: 'Pusat',
+        aktif: true
+    },
+    {
+        id: 2,
+        nama: 'PT. Cipta Kreasi Muda Segara',
+        merek: '',
+        alamat: 'Jl. Raya Lenteng Agung No. 49 CKM, jakarta Selatan, 12610',
+        noTelp: '082122153395',
+        tipe: 'Vendor Mutasi',
+        cabang: 'Pusat',
+        aktif: true
+    },
+    {
+        id: 3,
+        nama: 'SAMSAT Cengkareng',
+        merek: '',
+        alamat: 'SAMSAT Cengkareng',
+        noTelp: '082121280010',
+        tipe: 'Vendor Pajak & KIR',
+        cabang: 'Pusat',
+        aktif: true
+    },
+    {
+        id: 4,
+        nama: 'Biro Jasa Bersama',
+        merek: '',
+        alamat: 'LTC Glodok',
+        noTelp: '082114484749',
+        tipe: 'Vendor Pajak & KIR',
+        cabang: 'Pusat',
+        aktif: true
+    },
+    {
+        id: 5,
+        nama: 'PT. Akindo Karya Gemilang (AKASTRA)',
+        merek: 'Toyota',
+        alamat: 'Jalan Raya Kebayoran Lama, Jl. Palmerah Barat VII No.26, RT.1/RW.2, North Sukabumi, Kebonjeruk, Jakarta 11540',
+        noTelp: '081293865735',
+        tipe: 'Vendor Servis',
+        cabang: 'Pusat',
+        aktif: true
+    },
+    {
+        id: 6,
+        nama: 'PT. Tunas Ridean Tbk. (Tunas Toyota)',
+        merek: 'Toyota',
+        alamat: '7, Jl. Mampang Prapatan XI No.83-85, RT.7/RW.1, Tegal Parang, Kec. Mampang Prpt., Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12790',
+        noTelp: '081290036644',
+        tipe: 'Vendor Servis',
+        cabang: 'Pusat',
+        aktif: true
+    },
+    {
+        id: 7,
+        nama: 'PT. Plaza Auto Prima (Plaza Toyota)',
+        merek: 'Toyota',
+        alamat: 'Jl. Kapten Tendean No.9A, RT.1/RW.2, Kuningan Bar., Kec. Mampang Prpt., Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12710',
+        noTelp: '081310303036',
+        tipe: 'Vendor Servis',
+        cabang: 'Pusat',
+        aktif: true
+    },
+    {
+        id: 8,
+        nama: 'PT. Astra International Tbk. (Auto2000)',
+        merek: 'Toyota',
+        alamat: 'Jl. Prof. DR. Soepomo SH No.46, RT.5/RW.1, Menteng Dalam, Kec. Tebet, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12870',
+        noTelp: '089513954093',
+        tipe: 'Vendor Servis',
+        cabang: 'Pusat',
+        aktif: true
+    },
+    {
+        id: 9,
+        nama: 'PT. Bumen Redja Abadi',
+        merek: 'Mitsubishi',
+        alamat: 'Jl. Raya Serang No.KM 13, Bitung Jaya, Kec. Cikupa, Kabupaten Tangerang, Banten 15710',
+        noTelp: '082113952632',
+        tipe: 'Vendor Servis',
+        cabang: 'Pusat',
+        aktif: true
+    },
+    {
+        id: 10,
+        nama: 'PT. Srikandi Diamond Motors',
+        merek: 'Mitsubishi',
+        alamat: 'Jl. MH. Thamrin No.88, RT.005/RW.001, Cikokol, Kec. Tangerang, Kota Tangerang, Banten 15117',
+        noTelp: '081319757537',
+        tipe: 'Vendor Servis',
+        cabang: 'Pusat',
+        aktif: true
     }
 ];
 

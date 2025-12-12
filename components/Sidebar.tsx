@@ -35,7 +35,7 @@ interface MenuItem {
 }
 
 export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Master Asset']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Master Data']);
 
   const toggleMenu = (label: string) => {
     setExpandedMenus(prev => 
@@ -63,7 +63,7 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
     { label: 'Vendor', icon: <Users size={20} /> },
     { label: 'Credit Card', icon: <CreditCard size={20} /> },
     { 
-      label: 'Master Asset', 
+      label: 'Master Data', 
       icon: <Home size={20} />,
       subItems: [
         { label: 'Jenis Pajak', icon: <Wrench size={18} /> },

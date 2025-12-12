@@ -13,9 +13,10 @@ import { TaxKirTable } from './components/TaxKirTable';
 import { MutationTable } from './components/MutationTable';
 import { SalesTable } from './components/SalesTable';
 import { GeneralMasterTable } from './components/GeneralMasterTable';
+import { MasterVendorTable } from './components/MasterVendorTable';
 import { AddStockModal } from './components/AddStockModal';
-import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_CONTRACT_DATA, MOCK_TIMESHEET_DATA, MOCK_VENDOR_DATA, MOCK_VEHICLE_DATA, MOCK_SERVICE_DATA, MOCK_TAX_KIR_DATA, MOCK_MUTATION_DATA, MOCK_SALES_DATA } from './constants';
-import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, TaxKirRecord, ContractRecord, GeneralMasterItem } from './types';
+import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_CONTRACT_DATA, MOCK_TIMESHEET_DATA, MOCK_VENDOR_DATA, MOCK_VEHICLE_DATA, MOCK_SERVICE_DATA, MOCK_TAX_KIR_DATA, MOCK_MUTATION_DATA, MOCK_SALES_DATA, MOCK_MASTER_VENDOR_DATA } from './constants';
+import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, TaxKirRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord } from './types';
 
 const App: React.FC = () => {
   const [activeModule, setActiveModule] = useState('ATK'); 
@@ -45,6 +46,11 @@ const App: React.FC = () => {
   const [contractData, setContractData] = useState<ContractRecord[]>(MOCK_CONTRACT_DATA);
   const [selectedContract, setSelectedContract] = useState<ContractRecord | null>(null);
 
+  // State for Master Vendor Data
+  const [masterVendorData, setMasterVendorData] = useState<MasterVendorRecord[]>(MOCK_MASTER_VENDOR_DATA);
+  const [selectedMasterVendor, setSelectedMasterVendor] = useState<MasterVendorRecord | null>(null);
+
+
   // State for General Masters (Dynamic)
   // Initializing with some dummy data to show integration
   const [masters, setMasters] = useState<Record<string, GeneralMasterItem[]>>({
@@ -57,7 +63,7 @@ const App: React.FC = () => {
     'Tipe Mutasi': [{id: 1, name: 'Kirim'}, {id: 2, name: 'Terima'}],
     'Tipe Vendor': [{id: 1, name: 'Bengkel'}, {id: 2, name: 'Sparepart'}, {id: 3, name: 'Jasa'}],
     'Role': [{id: 1, name: 'Admin'}, {id: 2, name: 'User'}, {id: 3, name: 'Approver'}],
-    'Master Vendor': [{id: 1, name: 'PT. Astra International'}, {id: 2, name: 'Bengkel Resmi Toyota'}],
+    // 'Master Vendor' is handled separately now
     'Sync Branchs': [{id: 1, name: 'Pusat'}, {id: 2, name: 'Purwokerto'}, {id: 3, name: 'Pekanbaru'}, {id: 4, name: 'Palembang'}, {id: 5, name: 'Manado'}, {id: 6, name: 'Malang'}, {id: 7, name: 'Kediri'}],
     'Sync Channels': [{id: 1, name: 'Human Capital Operation'}, {id: 2, name: 'Management'}, {id: 3, name: 'Traditional'}, {id: 4, name: 'HR'}, {id: 5, name: 'Warehouse & Distribution'}]
   });
@@ -81,7 +87,7 @@ const App: React.FC = () => {
   };
 
   const isMasterModule = (module: string) => {
-    const masterModules = ['Jenis Pajak', 'Jenis Pembayaran', 'Jenis Servis', 'Status Mutasi', 'Status Penjualan', 'Status Request', 'Tipe Mutasi', 'Tipe Vendor', 'Role', 'Master Vendor'];
+    const masterModules = ['Jenis Pajak', 'Jenis Pembayaran', 'Jenis Servis', 'Status Mutasi', 'Status Penjualan', 'Status Request', 'Tipe Mutasi', 'Tipe Vendor', 'Role'];
     return masterModules.includes(module);
   };
 
@@ -93,6 +99,7 @@ const App: React.FC = () => {
     setSelectedSales(null);
     setSelectedContract(null);
     setSelectedMasterItem(null);
+    setSelectedMasterVendor(null);
     setIsModalOpen(true);
   };
 
@@ -185,6 +192,40 @@ const App: React.FC = () => {
       setModalMode('view');
       setIsModalOpen(true);
   };
+
+  // --- Handlers for Master Vendor ---
+  const handleEditMasterVendor = (item: MasterVendorRecord) => {
+      setSelectedMasterVendor(item);
+      setModalMode('edit');
+      setIsModalOpen(true);
+  };
+
+  const handleViewMasterVendor = (item: MasterVendorRecord) => {
+      setSelectedMasterVendor(item);
+      setModalMode('view');
+      setIsModalOpen(true);
+  };
+
+  const handleSaveMasterVendor = (formData: Partial<MasterVendorRecord>) => {
+      if (modalMode === 'create') {
+          const newId = Math.max(...masterVendorData.map(v => v.id), 0) + 1;
+          const newVendor: MasterVendorRecord = {
+              id: newId,
+              nama: formData.nama || '',
+              merek: formData.merek || '',
+              alamat: formData.alamat || '',
+              noTelp: formData.noTelp || '',
+              tipe: formData.tipe || 'Vendor Servis',
+              cabang: formData.cabang || 'Pusat',
+              aktif: formData.aktif !== undefined ? formData.aktif : true,
+              pic: formData.pic || ''
+          };
+          setMasterVendorData([...masterVendorData, newVendor]);
+      } else if (modalMode === 'edit' && selectedMasterVendor) {
+          setMasterVendorData(prev => prev.map(item => item.id === selectedMasterVendor.id ? { ...item, ...formData } : item));
+      }
+      setIsModalOpen(false);
+  }
   
   // --- Handlers for Tax KIR ---
   const handleEditTaxKir = (item: TaxKirRecord) => { console.log("Edit Tax Kir", item); };
@@ -318,6 +359,17 @@ const App: React.FC = () => {
     if (activeModule === 'Mutasi') return <MutationTable data={mutationData} onEdit={handleEditMutation} onView={handleViewMutation} />;
     if (activeModule === 'Penjualan') return <SalesTable data={salesData} onEdit={handleEditSales} onView={handleViewSales} />;
 
+    // Master Vendor
+    if (activeModule === 'Master Vendor') {
+        return (
+            <MasterVendorTable 
+                data={masterVendorData} 
+                onEdit={handleEditMasterVendor} 
+                onView={handleViewMasterVendor} 
+            />
+        );
+    }
+
     // Master General Modules
     if (isMasterModule(activeModule)) {
         return (
@@ -339,7 +391,7 @@ const App: React.FC = () => {
     if (activeModule === 'Vendor') return ['Active', 'Inactive', 'Blacklist'];
     if (activeModule === 'Daftar Aset') return ['Aktif', 'Tidak Aktif'];
     if (activeModule === 'Servis' || activeModule === 'Pajak & KIR' || activeModule === 'Mutasi' || activeModule === 'Penjualan') return ['Semua', 'Persetujuan'];
-    if (isMasterModule(activeModule)) return []; // No tabs for master sub-modules
+    if (isMasterModule(activeModule) || activeModule === 'Master Vendor') return []; // No tabs for master sub-modules
     return ['All'];
   };
 
@@ -360,6 +412,7 @@ const App: React.FC = () => {
                  activeModule === 'Mutasi' ? 'Mutasi Kendaraan' :
                  activeModule === 'Penjualan' ? 'Penjualan Kendaraan' :
                  activeModule === 'Contract' ? 'List Building' :
+                 activeModule === 'Master Vendor' ? 'Master Vendor' :
                  isMasterModule(activeModule) ? `Master ${activeModule}` :
                  activeModule}
             </h1>
@@ -386,16 +439,18 @@ const App: React.FC = () => {
         onSaveMutation={handleSaveMutation}
         onSaveSales={handleSaveSales}
         onSaveContract={handleSaveContract}
-        onSaveMaster={handleSaveMaster} // Pass Master Save Handler
+        onSaveMaster={handleSaveMaster} 
+        onSaveMasterVendor={handleSaveMasterVendor}
         initialVehicleData={selectedVehicle || undefined}
         initialServiceData={selectedService || undefined}
         initialMutationData={selectedMutation || undefined}
         initialSalesData={selectedSales || undefined}
         initialContractData={selectedContract || undefined}
-        initialMasterData={selectedMasterItem || undefined} // Pass Selected Master Item
+        initialMasterData={selectedMasterItem || undefined}
+        initialMasterVendorData={selectedMasterVendor || undefined}
         mode={modalMode}
         vehicleList={vehicleData}
-        masterData={masters} // Pass Dynamic Masters to Modal
+        masterData={masters} 
       />
     </div>
   );

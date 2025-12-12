@@ -201,3 +201,15 @@ export interface GeneralMasterItem {
   id: number;
   name: string;
 }
+
+export interface MasterVendorRecord {
+  id: number;
+  nama: string;
+  merek: string;
+  alamat: string;
+  noTelp: string;
+  tipe: string;
+  cabang: string;
+  aktif: boolean;
+  pic?: string;
+}

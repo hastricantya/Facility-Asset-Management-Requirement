@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Filter, Plus, LayoutGrid, List, ChevronsRight, Filter as FilterIcon, Calendar, Upload, Download } from 'lucide-react';
+import { Search, Filter, Plus, LayoutGrid, List, ChevronsRight, Filter as FilterIcon, Calendar, Upload, Download, FileText } from 'lucide-react';
 
 interface Props {
   tabs: string[];
@@ -13,37 +13,41 @@ interface Props {
 export const FilterBar: React.FC<Props> = ({ tabs, activeTab, onTabChange, onAddClick, searchPlaceholder = "Search by Employee, Item...", moduleName }) => {
   
   // Specific layout for Daftar Aset (Vehicle), Servis, Pajak & KIR, Mutasi, Penjualan AND Contract (List Building)
-  if (moduleName === 'Daftar Aset' || moduleName === 'Servis' || moduleName === 'Pajak & KIR' || moduleName === 'Mutasi' || moduleName === 'Penjualan' || moduleName === 'Contract') {
+  if (moduleName === 'Daftar Aset' || moduleName === 'Servis' || moduleName === 'Pajak & KIR' || moduleName === 'Mutasi' || moduleName === 'Penjualan' || moduleName === 'Contract' || moduleName === 'Master Vendor') {
     return (
         <div className="mb-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                {/* Tabs as Buttons */}
-                <div className="flex items-center border border-gray-300 rounded-md overflow-hidden bg-white">
-                    {tabs.map((tab) => {
-                        const isActive = activeTab === tab;
-                        const isApproval = tab.includes('Persetujuan');
-                        return (
-                            <button
-                                key={tab}
-                                onClick={() => onTabChange(tab)}
-                                className={`px-8 py-2 text-sm font-semibold transition-colors flex items-center gap-2 ${
-                                    isActive 
-                                    ? 'bg-black text-white' 
-                                    : 'bg-white text-gray-700 hover:bg-gray-50'
-                                }`}
-                            >
-                                {tab}
-                                {isApproval && (
-                                     <span className={`text-xs font-bold px-1.5 rounded-full ${isActive ? 'bg-white text-black' : 'bg-gray-200 text-gray-600'}`}>0</span>
-                                )}
-                            </button>
-                        )
-                    })}
-                </div>
+                {/* Tabs as Buttons - Only show if there are actual tabs (length > 1 or specific modules) */}
+                {tabs.length > 0 && (
+                    <div className="flex items-center border border-gray-300 rounded-md overflow-hidden bg-white">
+                        {tabs.map((tab) => {
+                            const isActive = activeTab === tab;
+                            const isApproval = tab.includes('Persetujuan');
+                            return (
+                                <button
+                                    key={tab}
+                                    onClick={() => onTabChange(tab)}
+                                    className={`px-8 py-2 text-sm font-semibold transition-colors flex items-center gap-2 ${
+                                        isActive 
+                                        ? 'bg-black text-white' 
+                                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                                    }`}
+                                >
+                                    {tab}
+                                    {isApproval && (
+                                        <span className={`text-xs font-bold px-1.5 rounded-full ${isActive ? 'bg-white text-black' : 'bg-gray-200 text-gray-600'}`}>0</span>
+                                    )}
+                                </button>
+                            )
+                        })}
+                    </div>
+                )}
+                
+                {/* If no tabs and not Master Vendor, show empty div to push search right? No, standard flex justify-between works. */}
 
                 {/* Right Side: Search & Filter */}
-                <div className="flex items-center gap-3 w-full md:w-auto">
-                    <div className="relative flex-1 md:w-80">
+                <div className={`flex items-center gap-3 w-full md:w-auto ${tabs.length === 0 ? 'flex-1' : ''}`}>
+                    <div className={`relative ${tabs.length === 0 ? 'w-64' : 'flex-1 md:w-80'}`}>
                         <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
                         <input 
                             type="text" 
@@ -52,10 +56,7 @@ export const FilterBar: React.FC<Props> = ({ tabs, activeTab, onTabChange, onAdd
                         />
                     </div>
 
-                    {/* Show Import/Export for Vehicle modules, and maybe contract if needed (user asked for vehicle specifically, but list building often has it too. I'll add if consistent or just keep for vehicle) 
-                        User prompt said "di setiap sub menu kendaraan tolong tambahkan button import dan export data". 
-                        Contract is not vehicle sub menu strictly, but behaves similarly. I will exclude for now unless requested.
-                    */}
+                    {/* Show Import/Export for Vehicle modules */}
                     {(moduleName === 'Daftar Aset' || moduleName === 'Servis' || moduleName === 'Pajak & KIR' || moduleName === 'Mutasi' || moduleName === 'Penjualan') && (
                         <>
                             <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap">
@@ -68,12 +69,18 @@ export const FilterBar: React.FC<Props> = ({ tabs, activeTab, onTabChange, onAdd
                             </button>
                         </>
                     )}
-                     {/* For Contract, maybe just Download as per image? The image has 'Download' icon. I'll add standard download. */}
+
                      {moduleName === 'Contract' && (
                         <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors whitespace-nowrap">
                              Download
-                             <Download size={16} className="text-orange-500" /> 
-                             {/* Wait, user wanted no orange. But image had orange download. I will use standard gray/black theme requested. */}
+                             <Download size={16} /> 
+                        </button>
+                     )}
+                     
+                     {moduleName === 'Master Vendor' && (
+                        <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap">
+                             <FileText size={16} />
+                             Import Data Vendor
                         </button>
                      )}
 
@@ -87,7 +94,8 @@ export const FilterBar: React.FC<Props> = ({ tabs, activeTab, onTabChange, onAdd
                     >
                         <Plus size={16} />
                         {(moduleName === 'Servis' || moduleName === 'Pajak & KIR' || moduleName === 'Mutasi' || moduleName === 'Penjualan') ? 'Buat Permintaan' : 
-                         moduleName === 'Contract' ? 'Add Asset' : 'Tambah'}
+                         moduleName === 'Contract' ? 'Add Asset' : 
+                         moduleName === 'Master Vendor' ? 'Tambah Vendor' : 'Tambah'}
                     </button>
                 </div>
             </div>
