@@ -12,6 +12,7 @@ import {
   BarChart, 
   Search,
   ChevronLeft,
+  ChevronRight,
   Car,
   Database,
   Wrench,
@@ -27,6 +28,8 @@ import { SidebarItem } from '../types';
 interface Props {
   activeItem: string;
   onNavigate: (label: string) => void;
+  isCollapsed: boolean;
+  onToggle: () => void;
 }
 
 interface MenuItem {
@@ -35,13 +38,20 @@ interface MenuItem {
     subItems?: MenuItem[];
 }
 
-export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
+export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, onToggle }) => {
   const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Master Data', 'ATK']);
 
   const toggleMenu = (label: string) => {
-    setExpandedMenus(prev => 
-        prev.includes(label) ? prev.filter(item => item !== label) : [...prev, label]
-    );
+    if (isCollapsed) {
+        onToggle(); // Auto-expand if clicking a menu while collapsed
+        if (!expandedMenus.includes(label)) {
+             setExpandedMenus(prev => [...prev, label]);
+        }
+    } else {
+        setExpandedMenus(prev => 
+            prev.includes(label) ? prev.filter(item => item !== label) : [...prev, label]
+        );
+    }
   };
 
   const menuItems: MenuItem[] = [
@@ -91,25 +101,35 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
   ];
 
   return (
-    <div className="w-64 bg-black text-gray-400 flex flex-col h-screen fixed left-0 top-0 border-r border-gray-800 z-20 transition-all duration-300">
+    <div className={`${isCollapsed ? 'w-20' : 'w-64'} bg-black text-gray-400 flex flex-col h-screen fixed left-0 top-0 border-r border-gray-800 z-20 transition-all duration-300`}>
       {/* Logo Area */}
-      <div className="p-6 flex items-center gap-3 text-white mb-2">
-        <div className="w-8 h-8 bg-white text-black rounded-full flex items-center justify-center font-bold text-xl">M</div>
-        <div>
-          <h1 className="font-bold text-lg leading-none">MODENA</h1>
-          <p className="text-xs text-gray-500">Asset Management</p>
-        </div>
+      <div className={`p-6 flex items-center gap-3 text-white mb-2 ${isCollapsed ? 'justify-center' : ''}`}>
+        <div className="w-8 h-8 min-w-8 bg-white text-black rounded-full flex items-center justify-center font-bold text-xl">M</div>
+        {!isCollapsed && (
+            <div className="overflow-hidden whitespace-nowrap">
+                <h1 className="font-bold text-lg leading-none">MODENA</h1>
+                <p className="text-xs text-gray-500">Asset Management</p>
+            </div>
+        )}
       </div>
 
       {/* Search Menu Input */}
       <div className="px-4 mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-2.5 text-gray-600" size={16} />
-          <input 
-            type="text" 
-            placeholder="Search Menu" 
-            className="w-full bg-[#1a1a1a] text-sm text-gray-300 pl-10 pr-4 py-2 rounded border border-gray-800 focus:outline-none focus:border-gray-600 placeholder-gray-600"
-          />
+        <div className={`relative flex ${isCollapsed ? 'justify-center' : ''}`}>
+          {isCollapsed ? (
+             <button className="w-full h-10 flex items-center justify-center hover:bg-[#1a1a1a] rounded transition-colors">
+                <Search className="text-gray-600" size={16} />
+             </button>
+          ) : (
+            <>
+                <Search className="absolute left-3 top-2.5 text-gray-600" size={16} />
+                <input 
+                    type="text" 
+                    placeholder="Search Menu" 
+                    className="w-full bg-[#1a1a1a] text-sm text-gray-300 pl-10 pr-4 py-2 rounded border border-gray-800 focus:outline-none focus:border-gray-600 placeholder-gray-600"
+                />
+            </>
+          )}
         </div>
       </div>
 
@@ -126,16 +146,18 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
                   <div key={index} className="space-y-1">
                       <button
                         onClick={() => toggleMenu(item.label)}
-                        className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 hover:bg-[#1a1a1a] hover:text-white ${isParentActive ? 'text-white bg-[#1a1a1a]' : 'text-gray-500'}`}
+                        className={`w-full flex items-center ${isCollapsed ? 'justify-center px-0' : 'justify-between px-4'} py-3 text-sm font-medium rounded-lg transition-colors duration-200 hover:bg-[#1a1a1a] hover:text-white ${isParentActive ? 'text-white bg-[#1a1a1a]' : 'text-gray-500'}`}
+                        title={isCollapsed ? item.label : undefined}
                       >
-                         <div className="flex items-center gap-4">
+                         <div className={`flex items-center ${isCollapsed ? 'gap-0' : 'gap-4'}`}>
                             <span>{item.icon}</span>
-                            {item.label}
+                            {!isCollapsed && item.label}
                          </div>
-                         {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                         {!isCollapsed && (isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
                       </button>
 
-                      {isExpanded && (
+                      {/* Only show subitems if expanded AND NOT collapsed. If collapsed, hiding subitems keeps it clean */}
+                      {isExpanded && !isCollapsed && (
                           <div className="space-y-1">
                               {item.subItems!.map((sub, subIndex) => {
                                   const isSubActive = activeItem === sub.label;
@@ -163,13 +185,14 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
             <button
               key={index}
               onClick={() => onNavigate(item.label)}
-              className={`w-full flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200
+              className={`w-full flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-4 px-4'} py-3 text-sm font-medium rounded-lg transition-colors duration-200
                 ${isParentActive
                   ? 'bg-[#1a1a1a] text-white border-l-4 border-white' 
                   : 'hover:bg-[#1a1a1a] hover:text-white border-l-4 border-transparent text-gray-500'}`}
+              title={isCollapsed ? item.label : undefined}
             >
               <span className={`${isParentActive ? 'text-white' : 'text-gray-500'}`}>{item.icon}</span>
-              {item.label}
+              {!isCollapsed && item.label}
             </button>
           );
         })}
@@ -177,11 +200,15 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate }) => {
 
       {/* Footer / Minimize */}
       <div className="p-4 border-t border-gray-900">
-        <button className="flex items-center gap-2 text-sm text-gray-500 hover:text-white transition-colors">
+        <button 
+            onClick={onToggle}
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-2'} text-sm text-gray-500 hover:text-white transition-colors`}
+            title="Toggle Sidebar"
+        >
           <div className="bg-gray-900 p-1 rounded-full">
-            <ChevronLeft size={14} />
+            {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           </div>
-          Minimize menu
+          {!isCollapsed && "Minimize menu"}
         </button>
       </div>
     </div>

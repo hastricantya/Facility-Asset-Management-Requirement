@@ -21,6 +21,7 @@ import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, TaxKirRecord
 const App: React.FC = () => {
   const [activeModule, setActiveModule] = useState('Daftar ATK'); 
   const [activeTab, setActiveTab] = useState('Pengguna');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,6 +69,10 @@ const App: React.FC = () => {
     'Sync Channels': [{id: 1, name: 'Human Capital Operation'}, {id: 2, name: 'Management'}, {id: 3, name: 'Traditional'}, {id: 4, name: 'HR'}, {id: 5, name: 'Warehouse & Distribution'}]
   });
   const [selectedMasterItem, setSelectedMasterItem] = useState<GeneralMasterItem | null>(null);
+
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
 
   const handleModuleNavigate = (module: string) => {
     setActiveModule(module);
@@ -406,9 +411,14 @@ const App: React.FC = () => {
 
   return (
     <div className="flex bg-gray-50 min-h-screen font-sans">
-      <Sidebar activeItem={activeModule} onNavigate={handleModuleNavigate} />
+      <Sidebar 
+        activeItem={activeModule} 
+        onNavigate={handleModuleNavigate} 
+        isCollapsed={isSidebarCollapsed}
+        onToggle={toggleSidebar}
+      />
       
-      <div className="flex-1 ml-64 flex flex-col">
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
         <TopBar />
         
         <main className="flex-1 p-8 overflow-y-auto">
