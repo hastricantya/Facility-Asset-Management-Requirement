@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
@@ -16,7 +17,7 @@ import { GeneralMasterTable } from './components/GeneralMasterTable';
 import { MasterVendorTable } from './components/MasterVendorTable';
 import { AddStockModal } from './components/AddStockModal';
 import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_CONTRACT_DATA, MOCK_TIMESHEET_DATA, MOCK_VENDOR_DATA, MOCK_VEHICLE_DATA, MOCK_SERVICE_DATA, MOCK_TAX_KIR_DATA, MOCK_MUTATION_DATA, MOCK_SALES_DATA, MOCK_MASTER_VENDOR_DATA } from './constants';
-import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, TaxKirRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord } from './types';
+import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, TaxKirRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord } from './types';
 import { useLanguage } from './contexts/LanguageContext';
 
 const App: React.FC = () => {
@@ -62,6 +63,9 @@ const App: React.FC = () => {
   // State for General Masters (Dynamic)
   // Initializing with some dummy data to show integration
   const [masters, setMasters] = useState<Record<string, GeneralMasterItem[]>>({
+    'Master UOM': [{id: 1, name: 'Pcs'}, {id: 2, name: 'Box'}, {id: 3, name: 'Rim'}, {id: 4, name: 'Unit'}, {id: 5, name: 'Roll'}, {id: 6, name: 'Can'}, {id: 7, name: 'Pouch'}],
+    'Master Currency': [{id: 1, name: 'IDR'}, {id: 2, name: 'USD'}, {id: 3, name: 'EUR'}],
+    'Master Category': [{id: 1, name: 'ATK'}, {id: 2, name: 'Elektronik'}, {id: 3, name: 'Furniture'}, {id: 4, name: 'Kendaraan'}],
     'Jenis Pajak': [{id: 1, name: 'Pajak Tahunan'}, {id: 2, name: 'Pajak 5 Tahunan'}],
     'Jenis Pembayaran': [{id: 1, name: 'Kasbon'}, {id: 2, name: 'Reimburse'}, {id: 3, name: 'Langsung'}],
     'Jenis Servis': [{id: 1, name: 'Servis Rutin'}, {id: 2, name: 'Perbaikan'}, {id: 3, name: 'Ganti Sparepart'}],
@@ -102,7 +106,7 @@ const App: React.FC = () => {
         setActiveTab('Pending');
         setAtkFilters([]);
     } else if (module === 'Master ATK') {
-        setActiveTab('All');
+        setActiveTab('Items'); // Default tab for Master ATK
         setMasterAtkFilters([]);
     } else {
         // Default
@@ -111,9 +115,23 @@ const App: React.FC = () => {
   };
 
   const isMasterModule = (module: string) => {
-    const masterModules = ['Jenis Pajak', 'Jenis Pembayaran', 'Jenis Servis', 'Status Mutasi', 'Status Penjualan', 'Status Request', 'Tipe Mutasi', 'Tipe Vendor', 'Role'];
+    const masterModules = [
+        'Jenis Pajak', 'Jenis Pembayaran', 'Jenis Servis', 
+        'Status Mutasi', 'Status Penjualan', 'Status Request', 
+        'Tipe Mutasi', 'Tipe Vendor', 'Role'
+    ];
     return masterModules.includes(module);
   };
+
+  // Helper to determine the actual master key in the 'masters' state
+  const getCurrentMasterKey = () => {
+      if (activeModule === 'Master ATK') {
+          if (activeTab === 'UOM') return 'Master UOM';
+          if (activeTab === 'Currency') return 'Master Currency';
+          if (activeTab === 'Category') return 'Master Category';
+      }
+      return activeModule;
+  }
 
   const handleAddClick = () => {
     setModalMode('create');
@@ -136,15 +154,18 @@ const App: React.FC = () => {
 
   const handleDeleteMaster = (id: number) => {
     if (confirm('Are you sure you want to delete this item?')) {
+        const targetKey = getCurrentMasterKey();
         setMasters(prev => ({
             ...prev,
-            [activeModule]: prev[activeModule].filter(item => item.id !== id)
+            [targetKey]: prev[targetKey].filter(item => item.id !== id)
         }));
     }
   };
 
   const handleSaveMaster = (formData: Partial<GeneralMasterItem>) => {
-    const currentList = masters[activeModule] || [];
+    const targetKey = getCurrentMasterKey();
+    const currentList = masters[targetKey] || [];
+
     if (modalMode === 'create') {
         const newId = Math.max(...currentList.map(m => m.id), 0) + 1;
         const newItem: GeneralMasterItem = {
@@ -153,12 +174,12 @@ const App: React.FC = () => {
         };
         setMasters(prev => ({
             ...prev,
-            [activeModule]: [...currentList, newItem]
+            [targetKey]: [...currentList, newItem]
         }));
     } else if (modalMode === 'edit' && selectedMasterItem) {
         setMasters(prev => ({
             ...prev,
-            [activeModule]: currentList.map(item => item.id === selectedMasterItem.id ? { ...item, name: formData.name || '' } : item)
+            [targetKey]: currentList.map(item => item.id === selectedMasterItem.id ? { ...item, name: formData.name || '' } : item)
         }));
     }
     setIsModalOpen(false);
@@ -363,6 +384,13 @@ const App: React.FC = () => {
       setIsModalOpen(false);
   };
 
+  const handleSaveStationeryRequest = (request: Partial<StationeryRequestRecord>) => {
+      console.log("Saving stationery request:", request);
+      // Logic to save the request goes here. 
+      // For now, we just log it as the table data for requests isn't fully mocked to receive this.
+      alert(`Request Submitted for ${request.items?.length} items!`);
+  }
+
   const getBreadcrumbs = () => {
     if (['Daftar ATK', 'Stationery Request Approval', 'Master ATK'].includes(activeModule)) return ['Home', t('ATK'), t(activeModule)];
     if (['Daftar Aset', 'Servis', 'Pajak & KIR', 'Mutasi', 'Penjualan'].includes(activeModule)) return ['Home', t('Kendaraan'), t(activeModule)];
@@ -400,6 +428,36 @@ const App: React.FC = () => {
     }
     
     if (activeModule === 'Master ATK') {
+      // Tab handling for Master ATK
+      if (activeTab === 'UOM') {
+          return (
+            <GeneralMasterTable 
+                data={masters['Master UOM']} 
+                onEdit={handleEditMaster}
+                onDelete={handleDeleteMaster}
+            />
+          );
+      }
+      if (activeTab === 'Currency') {
+          return (
+            <GeneralMasterTable 
+                data={masters['Master Currency']} 
+                onEdit={handleEditMaster}
+                onDelete={handleDeleteMaster}
+            />
+          );
+      }
+      if (activeTab === 'Category') {
+          return (
+            <GeneralMasterTable 
+                data={masters['Master Category']} 
+                onEdit={handleEditMaster}
+                onDelete={handleDeleteMaster}
+            />
+          );
+      }
+
+      // Default: Items Tab
       let filteredData = MOCK_MASTER_DATA;
       // Filter by Dynamic Filters (AND logic)
       if (masterAtkFilters.length > 0) {
@@ -459,7 +517,7 @@ const App: React.FC = () => {
   const getFilterTabs = () => {
     if (activeModule === 'Daftar ATK') return ['All', 'Draft', 'Pending', 'Approved', 'Rejected', 'Closed'];
     if (activeModule === 'Stationery Request Approval') return ['All', 'Draft', 'Pending', 'Approved', 'Rejected', 'Closed'];
-    if (activeModule === 'Master ATK') return []; 
+    if (activeModule === 'Master ATK') return ['Items', 'UOM', 'Currency', 'Category']; 
     if (activeModule === 'ARK') return ['Pengguna', 'Master', 'Approval'];
     if (activeModule === 'Contract') return ['Own', 'Rent'];
     if (activeModule === 'Timesheet') return ['All', 'Permanent', 'Contract', 'Probation', 'Internship', 'Vendor'];
@@ -469,6 +527,16 @@ const App: React.FC = () => {
     if (isMasterModule(activeModule) || activeModule === 'Master Vendor') return []; // No tabs for master sub-modules
     return ['All'];
   };
+
+  // Helper to get module name for modal. Maps tabs to specific master keys when needed.
+  const getModalModuleName = () => {
+    if (activeModule === 'Master ATK') {
+        if (activeTab === 'UOM') return 'Master UOM';
+        if (activeTab === 'Currency') return 'Master Currency';
+        if (activeTab === 'Category') return 'Master Category';
+    }
+    return activeModule;
+  }
 
   return (
     <div className="flex bg-gray-50 min-h-screen font-sans">
@@ -519,7 +587,7 @@ const App: React.FC = () => {
       <AddStockModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        moduleName={activeModule}
+        moduleName={getModalModuleName()}
         onSaveVehicle={handleSaveVehicle}
         onSaveService={handleSaveService}
         onSaveMutation={handleSaveMutation}
@@ -527,6 +595,7 @@ const App: React.FC = () => {
         onSaveContract={handleSaveContract}
         onSaveMaster={handleSaveMaster} 
         onSaveMasterVendor={handleSaveMasterVendor}
+        onSaveStationeryRequest={handleSaveStationeryRequest}
         initialVehicleData={selectedVehicle || undefined}
         initialServiceData={selectedService || undefined}
         initialMutationData={selectedMutation || undefined}

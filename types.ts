@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export interface Employee {
@@ -216,4 +217,20 @@ export interface MasterVendorRecord {
   cabang: string;
   aktif: boolean;
   pic?: string;
+}
+
+// New Types for Stationery Request
+export interface StationeryRequestItem {
+    itemId: string;
+    qty: string;
+}
+
+export interface StationeryRequestRecord {
+    id: string;
+    type: string; // Pilih Kebutuhan
+    date: string;
+    remarks: string;
+    deliveryType: 'Dikirim' | 'Ambil di HO';
+    location: string;
+    items: StationeryRequestItem[];
 }

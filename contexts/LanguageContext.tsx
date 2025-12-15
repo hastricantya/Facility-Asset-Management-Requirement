@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 type Language = 'id' | 'en';
@@ -41,6 +42,12 @@ const translations: Record<string, Record<Language, string>> = {
   'Tipe Vendor': { id: 'Tipe Vendor', en: 'Vendor Type' },
   'Role': { id: 'Peran', en: 'Role' },
   'Master Vendor': { id: 'Master Vendor', en: 'Master Vendor' },
+  
+  // Tabs for Master ATK
+  'Items': { id: 'Barang', en: 'Items' },
+  'UOM': { id: 'Satuan (UOM)', en: 'UOM' },
+  'Currency': { id: 'Mata Uang', en: 'Currency' },
+  'Category': { id: 'Kategori', en: 'Category' },
 
   // Tabs & Buttons
   'Pengguna': { id: 'Pengguna', en: 'User' },
@@ -88,6 +95,7 @@ const translations: Record<string, Record<Language, string>> = {
   'Daftar Aset ATK': { id: 'Permintaan ATK', en: 'Stationery Request' },
   'Header Stationery Request Approval': { id: 'Persetujuan Permintaan ATK', en: 'Stationery Request Approval' },
   'Master Data ATK': { id: 'Master Data ATK', en: 'Master Stationery Data' },
+  'Request ATK / ARK': { id: 'Request ATK / ARK', en: 'Stationery / Household Request' },
   
   // Filter Bar specific
   'Employment Status': { id: 'Status Karyawan', en: 'Employment Status' },
@@ -95,8 +103,31 @@ const translations: Record<string, Record<Language, string>> = {
   'Select Date': { id: 'Pilih Tanggal', en: 'Select Date' },
   'Attendance Status': { id: 'Status Kehadiran', en: 'Attendance Status' },
   'Date Range': { id: 'Rentang Tanggal', en: 'Date Range' },
-  'Category': { id: 'Kategori', en: 'Category' },
   'Select Category...': { id: 'Pilih Kategori...', en: 'Select Category...' },
+
+  // Stationery Request Form
+  'Form Request': { id: 'Form Request', en: 'Request Form' },
+  'Pilih Kebutuhan': { id: 'Pilih Kebutuhan', en: 'Select Need' },
+  'Pilih jenis item ATK / ARK': { id: 'Pilih jenis item ATK / ARK', en: 'Select Stationery / Household Type' },
+  'Permintaan Bulanan': { id: 'Permintaan Bulanan', en: 'Monthly Request' },
+  'Permintaan Khusus': { id: 'Permintaan Khusus', en: 'Special Request' },
+  
+  'Pilih barang ATK': { id: 'Pilih barang ATK', en: 'Select Item' },
+  'Search ATK or ARK': { id: 'Cari ATK atau ARK', en: 'Search Stationery or Household' },
+  'Jumlah': { id: 'Jumlah', en: 'Quantity' },
+  'Add More': { id: 'Tambah', en: 'Add More' },
+  'Tanggal Request': { id: 'Tanggal Request', en: 'Request Date' },
+  'Remarks': { id: 'Keterangan', en: 'Remarks' },
+  'Dikirim': { id: 'Dikirim', en: 'Delivery' },
+  'Ambil di HO': { id: 'Ambil di HO', en: 'Pickup at HO' },
+  'Alamat Pengiriman': { id: 'Alamat Pengiriman', en: 'Delivery Address' },
+  'Pilih Tempat': { id: 'Pilih Tempat', en: 'Select Location' },
+  'Head Office': { id: 'Head Office', en: 'Head Office' },
+  'Warehouse Cakung': { id: 'Warehouse Cakung', en: 'Warehouse Cakung' },
+
+  'REVIEW REQUEST': { id: 'TINJAU PERMINTAAN', en: 'REVIEW REQUEST' },
+  'CANCEL': { id: 'BATAL', en: 'CANCEL' },
+  'Isi Remarks': { id: 'Isi Keterangan', en: 'Enter Remarks' },
 
   // Modal
   'Simpan': { id: 'Simpan', en: 'Save' },

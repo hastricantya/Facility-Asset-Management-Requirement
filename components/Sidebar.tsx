@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, 
@@ -77,7 +78,7 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
         subItems: [
              { label: 'Daftar ATK', icon: <List size={18} /> },
              { label: 'Stationery Request Approval', icon: <ClipboardCheck size={18} /> },
-             { label: 'Master ATK', icon: <Database size={18} /> }
+             { label: 'Master ATK', icon: <Database size={18} /> },
         ]
     },
     { label: 'ARK', icon: <ShoppingCart size={20} /> },
