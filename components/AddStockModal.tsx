@@ -225,8 +225,8 @@ export const AddStockModal: React.FC<Props> = ({
                 const formattedDate = `${y}-${m}-${d}`;
                 
                 // Find master ID to pre-select dropdown (Mapping logic)
-                // Note: In a real app, IDs would link directly. Here we search by name.
-                const masterList = moduleName === 'Daftar ARK' ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+                const isArk = moduleName === 'Daftar ARK' || moduleName === 'Household Request Approval';
+                const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
                 const matchedMaster = masterList.find(m => m.itemName === initialAssetData.itemName);
 
                 setStationeryRequestForm({
@@ -257,7 +257,7 @@ export const AddStockModal: React.FC<Props> = ({
             setSelectedMutationAsset(null);
         }
     }
-  }, [isOpen, initialVehicleData, initialServiceData, initialMutationData, initialSalesData, initialContractData, initialMasterData, initialMasterVendorData, initialDeliveryLocationData, initialAssetData, mode]);
+  }, [isOpen, initialVehicleData, initialServiceData, initialMutationData, initialSalesData, initialContractData, initialMasterData, initialMasterVendorData, initialDeliveryLocationData, initialAssetData, mode, moduleName]);
 
   const handleVehicleChange = (field: keyof VehicleRecord, value: string) => {
       setVehicleForm(prev => ({ ...prev, [field]: value }));
@@ -365,8 +365,9 @@ export const AddStockModal: React.FC<Props> = ({
   const isMasterVendor = moduleName === 'Master Vendor';
   const isMasterATK = moduleName === 'Master ATK';
   const isMasterARK = moduleName === 'Master ARK';
-  const isStationeryRequest = moduleName === 'Daftar ATK' || moduleName === 'Daftar ARK';
   const isDeliveryLocation = moduleName === 'Master Delivery Location';
+  // Check against all Stationery/Household modules (both Requests and Approvals)
+  const isStationeryRequest = moduleName === 'Daftar ATK' || moduleName === 'Daftar ARK' || moduleName === 'Stationery Request Approval' || moduleName === 'Household Request Approval';
   
   const isMaster = !isContract && !isVendor && !isVehicle && !isService && !isMutation && !isSales && !isMasterVendor && !isStationeryRequest && !isDeliveryLocation && !moduleName?.includes('ATK') && !moduleName?.includes('ARK') && moduleName !== 'Timesheet';
 
@@ -382,7 +383,13 @@ export const AddStockModal: React.FC<Props> = ({
     if (isMutation) return t('Permintaan Mutasi Kendaraan');
     if (isSales) return t('Permintaan Penjualan');
     if (isMasterATK || isMasterARK) return `${t(moduleName || '')} > ${t('Tambah Stock')}`;
-    if (isStationeryRequest) return isViewMode ? (moduleName === 'Daftar ATK' ? `Detail ${t('Request ATK')}` : `Detail ${t('Request ARK')}`) : (moduleName === 'Daftar ATK' ? t('Request ATK') : t('Request ARK'));
+    
+    if (isStationeryRequest) {
+        const isAtk = moduleName === 'Daftar ATK' || moduleName === 'Stationery Request Approval';
+        const label = isAtk ? t('Request ATK') : t('Request ARK');
+        return isViewMode ? `Detail ${label}` : label;
+    }
+
     if (isDeliveryLocation) return t('Delivery Location');
     if (isMaster) return `Master ${t(moduleName || '')}`;
     return `Master ${t(moduleName || '')} > ${t('Tambah Stock')}`;
@@ -398,7 +405,7 @@ export const AddStockModal: React.FC<Props> = ({
 
   // Full Screen Mode for Stationery/Household Request
   if (isStationeryRequest) {
-      const isArk = moduleName === 'Daftar ARK';
+      const isArk = moduleName === 'Daftar ARK' || moduleName === 'Household Request Approval';
       const itemLabel = isArk ? t('Search ARK') : t('Search ATK');
       const requestTypeLabel = isArk ? t('Pilih jenis item ARK') : t('Pilih jenis item ATK');
       const itemSelectLabel = isArk ? t('Pilih barang ARK') : t('Pilih barang ATK'); // Fallback if translation missing, though context handles generic
