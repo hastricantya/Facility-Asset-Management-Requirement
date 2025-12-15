@@ -77,6 +77,11 @@ const translations: Record<string, Record<Language, string>> = {
   'Semua': { id: 'Semua', en: 'All' },
   'Persetujuan': { id: 'Persetujuan', en: 'Approval' },
   
+  // Action Buttons
+  'Revise': { id: 'Revisi', en: 'Revise' },
+  'Reject': { id: 'Tolak', en: 'Reject' },
+  'Approve': { id: 'Setujui', en: 'Approve' },
+
   // UI Elements
   'Search': { id: 'Cari', en: 'Search' },
   'Search Menu': { id: 'Cari Menu', en: 'Search Menu' },

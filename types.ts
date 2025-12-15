@@ -10,6 +10,7 @@ export interface Employee {
 
 export interface AssetRecord {
   id: number;
+  transactionNumber?: string;
   employee: Employee;
   category: string;
   itemName: string;

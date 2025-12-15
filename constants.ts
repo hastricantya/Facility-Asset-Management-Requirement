@@ -4,6 +4,7 @@ import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord,
 export const MOCK_DATA: AssetRecord[] = [
   {
     id: 1,
+    transactionNumber: 'TRX/ATK/2008/001',
     employee: {
       name: 'Aan Junaidi',
       phone: '0808.0766',
@@ -21,6 +22,7 @@ export const MOCK_DATA: AssetRecord[] = [
   },
   {
     id: 2,
+    transactionNumber: 'TRX/ATK/2010/002',
     employee: {
       name: 'Abdul Gofur',
       phone: '1006.1123',
@@ -38,6 +40,7 @@ export const MOCK_DATA: AssetRecord[] = [
   },
   {
     id: 3,
+    transactionNumber: 'TRX/ATK/2020/003',
     employee: {
       name: 'Achfas Faisal Kharis',
       phone: '2006.2237',
@@ -55,6 +58,7 @@ export const MOCK_DATA: AssetRecord[] = [
   },
   {
     id: 4,
+    transactionNumber: 'TRX/ATK/2010/004',
     employee: {
       name: 'Achmad Alin Tamami S.H',
       phone: '2301.2522',
@@ -72,6 +76,7 @@ export const MOCK_DATA: AssetRecord[] = [
   },
   {
     id: 5,
+    transactionNumber: 'TRX/ATK/2020/005',
     employee: {
       name: 'Achmad Bachtiar',
       phone: '2309.2631',
@@ -89,6 +94,7 @@ export const MOCK_DATA: AssetRecord[] = [
   },
   {
     id: 6,
+    transactionNumber: 'TRX/ATK/2024/006',
     employee: {
       name: 'Budi Santoso',
       phone: '1209.1122',
@@ -106,6 +112,7 @@ export const MOCK_DATA: AssetRecord[] = [
   },
   {
     id: 7,
+    transactionNumber: 'TRX/ATK/2024/007',
     employee: {
       name: 'Dewi Sartika',
       phone: '1010.2233',
@@ -199,6 +206,7 @@ export const MOCK_MASTER_DATA: MasterItem[] = [
 export const MOCK_ARK_DATA: AssetRecord[] = [
     {
       id: 1,
+      transactionNumber: 'TRX/ARK/2010/001',
       employee: {
         name: 'Alam Anugrah Akbar',
         phone: 'SI2311.0013',
@@ -216,6 +224,7 @@ export const MOCK_ARK_DATA: AssetRecord[] = [
     },
     {
       id: 2,
+      transactionNumber: 'TRX/ARK/2010/002',
       employee: {
         name: 'Budi Santoso',
         phone: 'SI2001.0044',
@@ -233,6 +242,7 @@ export const MOCK_ARK_DATA: AssetRecord[] = [
     },
     {
         id: 3,
+        transactionNumber: 'TRX/ARK/2010/003',
         employee: {
           name: 'Siti Aminah',
           phone: 'SI2011.0022',

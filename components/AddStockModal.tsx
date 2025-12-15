@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, RefreshCcw, Plus, Trash2, Image as ImageIcon, List, Calendar, PlusCircle, Settings } from 'lucide-react';
+import { X, RefreshCcw, Plus, Trash2, Image as ImageIcon, List, Calendar, PlusCircle, Settings, Clock, CheckCircle, XCircle, FileText, Archive } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, SalesOffer, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA } from '../constants';
@@ -18,6 +18,7 @@ interface Props {
   onSaveMasterVendor?: (masterVendor: Partial<MasterVendorRecord>) => void;
   onSaveStationeryRequest?: (request: Partial<StationeryRequestRecord>) => void;
   onSaveDeliveryLocation?: (location: Partial<DeliveryLocationRecord>) => void;
+  onRevise?: () => void; // New prop for handling revision
   
   initialVehicleData?: VehicleRecord;
   initialServiceData?: ServiceRecord;
@@ -47,6 +48,7 @@ export const AddStockModal: React.FC<Props> = ({
     onSaveMasterVendor,
     onSaveStationeryRequest,
     onSaveDeliveryLocation,
+    onRevise,
     initialVehicleData,
     initialServiceData,
     initialMutationData,
@@ -412,6 +414,24 @@ export const AddStockModal: React.FC<Props> = ({
       
       const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
 
+      const trxNumber = initialAssetData?.transactionNumber || '[Auto Generated]';
+      const status = initialAssetData?.status || 'Draft';
+
+      const getStatusColor = (s: string) => {
+          if (s === 'Approved') return 'bg-green-50 border-green-100 text-green-700';
+          if (s === 'Rejected') return 'bg-red-50 border-red-100 text-red-700';
+          if (s === 'Closed') return 'bg-gray-100 border-gray-200 text-gray-700';
+          return 'bg-yellow-50 border-yellow-100 text-yellow-700';
+      }
+
+      const getStatusIcon = (s: string) => {
+        if (s === 'Approved') return <CheckCircle size={16} />;
+        if (s === 'Rejected') return <XCircle size={16} />;
+        if (s === 'Closed') return <Archive size={16} />;
+        if (s === 'Draft') return <FileText size={16} />;
+        return <Clock size={16} />;
+      }
+
       return (
         <div className="fixed inset-0 bg-gray-50 z-50 overflow-y-auto">
              <div className="max-w-4xl mx-auto py-8 px-4">
@@ -422,7 +442,32 @@ export const AddStockModal: React.FC<Props> = ({
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-                     <h3 className="font-bold text-gray-900 mb-6">{t('Form Request')}</h3>
+                     
+                     {/* Transaction Info Header - Visual Update */}
+                     {(mode === 'view' || mode === 'edit') && (
+                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-gray-100 pb-6">
+                            <h3 className="text-xl font-bold text-gray-900">Purchase Request</h3>
+                            
+                            <div className="flex items-center gap-4">
+                                {/* PR Number Badge */}
+                                <div className="px-4 py-2 bg-cyan-50 border border-cyan-100 rounded-lg text-sm text-cyan-700 font-medium">
+                                    <span className="text-cyan-500 mr-2">PR Number</span>
+                                    {trxNumber}
+                                </div>
+
+                                {/* Status Badge */}
+                                <div className={`px-4 py-2 rounded-lg text-sm font-medium border flex items-center gap-2 ${getStatusColor(status)}`}>
+                                    {getStatusIcon(status)}
+                                    <span className={`opacity-70`}>{t('Status')}</span>
+                                    <span className="font-bold">{status}</span>
+                                </div>
+                            </div>
+                         </div>
+                     )}
+
+                     {!mode.includes('view') && !mode.includes('edit') && (
+                         <h3 className="font-bold text-gray-900 mb-6">{t('Form Request')}</h3>
+                     )}
 
                      {/* Form Fields */}
                      <div className="space-y-6">
@@ -585,12 +630,32 @@ export const AddStockModal: React.FC<Props> = ({
                                 </button>
                              </>
                          ) : (
-                             <button 
-                                className="bg-[#2C333A] text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-gray-800 transition-colors"
-                                onClick={onClose}
-                             >
-                                 {t('Closed')}
-                             </button>
+                             <>
+                                <button 
+                                    className="bg-[#2C333A] text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-gray-800 transition-colors"
+                                    onClick={onClose}
+                                >
+                                    {t('Closed')}
+                                </button>
+                                <button 
+                                    className="bg-yellow-500 text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-yellow-600 transition-colors"
+                                    onClick={onRevise}
+                                >
+                                    {t('Revise')}
+                                </button>
+                                <button 
+                                    className="bg-red-500 text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-red-600 transition-colors"
+                                    onClick={() => { alert('Request Rejected'); onClose(); }}
+                                >
+                                    {t('Reject')}
+                                </button>
+                                <button 
+                                    className="bg-green-500 text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-green-600 transition-colors"
+                                    onClick={() => { alert('Request Approved'); onClose(); }}
+                                >
+                                    {t('Approve')}
+                                </button>
+                             </>
                          )}
                      </div>
 
@@ -891,62 +956,6 @@ export const AddStockModal: React.FC<Props> = ({
                             <option value="Aceh">Aceh</option>
                             <option value="Pusat">Pusat</option>
                         </select>
-                    </div>
-                </div>
-            </div>
-
-          ) : isContract ? (
-            /* --- CONTRACT (BUILDING ASSET) FORM --- */
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                {/* ... existing contract fields ... */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Asset Number</label>
-                         <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-400 italic focus:outline-none" value={contractForm.assetNumber || '[Auto Generate]'} readOnly />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Asset Category</label>
-                        <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={contractForm.assetCategory || 'Building'} onChange={(e) => handleContractChange('assetCategory', e.target.value)} disabled={isViewMode} />
-                    </div>
-                     <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Type <Required/></label>
-                        <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={contractForm.type || ''} onChange={(e) => handleContractChange('type', e.target.value)} disabled={isViewMode} />
-                    </div>
-                     <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Ownership</label>
-                        <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={contractForm.ownership || 'Rent'} onChange={(e) => handleContractChange('ownership', e.target.value)} disabled={isViewMode}>
-                            <option value="Rent">Rent</option>
-                            <option value="Owner">Owner</option>
-                        </select>
-                    </div>
-                     <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Asset Location <Required/></label>
-                        <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={contractForm.location || ''} onChange={(e) => handleContractChange('location', e.target.value)} disabled={isViewMode}>
-                            <option value="">Select...</option>
-                             <option value="Pusat">Pusat</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Channel <Required/></label>
-                        <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={contractForm.channel || ''} onChange={(e) => handleContractChange('channel', e.target.value)} disabled={isViewMode}>
-                            <option value="">Select...</option>
-                            <option value="Human Capital">Human Capital</option>
-                        </select>
-                    </div>
-                     <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Department <Required/></label>
-                        <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={contractForm.department || ''} onChange={(e) => handleContractChange('department', e.target.value)} disabled={isViewMode}>
-                            <option value="">Select...</option>
-                             <option value="IT">IT</option>
-                        </select>
-                    </div>
-                     <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Sub Location</label>
-                        <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={contractForm.subLocation || ''} onChange={(e) => handleContractChange('subLocation', e.target.value)} disabled={isViewMode} />
-                    </div>
-                     <div className="md:col-span-2">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">{t('Alamat')}</label>
-                        <textarea className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" rows={3} placeholder="(max. 255 characters)" value={contractForm.address || ''} onChange={(e) => handleContractChange('address', e.target.value)} disabled={isViewMode}></textarea>
                     </div>
                 </div>
             </div>

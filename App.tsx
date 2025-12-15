@@ -324,6 +324,11 @@ const App: React.FC = () => {
       setModalMode('view');
       setIsModalOpen(true);
   }
+
+  // --- Handler for Asset Revise ---
+  const handleRevise = () => {
+      setModalMode('edit');
+  };
   
   // --- Handlers for Tax KIR ---
   const handleEditTaxKir = (item: TaxKirRecord) => { console.log("Edit Tax Kir", item); };
@@ -695,6 +700,7 @@ const App: React.FC = () => {
         onSaveMasterVendor={handleSaveMasterVendor}
         onSaveStationeryRequest={handleSaveStationeryRequest}
         onSaveDeliveryLocation={handleSaveDeliveryLocation}
+        onRevise={handleRevise}
         initialVehicleData={selectedVehicle || undefined}
         initialServiceData={selectedService || undefined}
         initialMutationData={selectedMutation || undefined}

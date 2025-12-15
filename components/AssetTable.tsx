@@ -16,6 +16,12 @@ export const AssetTable: React.FC<Props> = ({ data, onView }) => {
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200 text-xs font-semibold text-gray-700 uppercase tracking-wider">
               <th className="p-4 w-12 text-left pl-6">No</th>
+              <th className="p-4 w-40 group cursor-pointer hover:bg-gray-200 transition-colors">
+                <div className="flex items-center justify-between">
+                  No Transaksi
+                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
+                </div>
+              </th>
               <th className="p-4 w-64 group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Employee Name
@@ -38,6 +44,7 @@ export const AssetTable: React.FC<Props> = ({ data, onView }) => {
               <th className="p-4 w-32 text-left">Tanggal</th>
               <th className="p-4 w-24 text-left">Sisa Stock</th>
               <th className="p-4 w-32 text-left">Kode Barang</th>
+              <th className="p-4 w-28 text-left">Status</th>
               <th className="p-4 w-20 text-center">Aksi</th>
             </tr>
           </thead>
@@ -46,6 +53,8 @@ export const AssetTable: React.FC<Props> = ({ data, onView }) => {
               <tr key={item.id} className="bg-white hover:bg-gray-50 transition-colors cursor-pointer group">
                 <td className="p-4 text-left font-medium text-gray-500 pl-6">{index + 1}</td>
                 
+                <td className="p-4 font-mono font-semibold text-gray-900">{item.transactionNumber}</td>
+
                 {/* Employee Cell (Rich Content) */}
                 <td className="p-4">
                   <div className="flex items-start gap-3">
@@ -74,6 +83,18 @@ export const AssetTable: React.FC<Props> = ({ data, onView }) => {
                 <td className="p-4 text-left font-mono font-medium text-gray-900">{item.remainingStock}</td>
                 <td className="p-4 text-left font-mono text-xs">{item.itemCode}</td>
                 
+                <td className="p-4 text-left">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
+                        ${item.status === 'Approved' ? 'bg-green-100 text-green-800' : 
+                          item.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 
+                          item.status === 'Rejected' ? 'bg-red-100 text-red-800' : 
+                          item.status === 'Closed' ? 'bg-gray-200 text-gray-800' : 
+                          'bg-gray-50 text-gray-600' // Draft
+                        }`}>
+                        {item.status}
+                    </span>
+                </td>
+
                 <td className="p-4 text-center">
                     <button 
                         onClick={(e) => { e.stopPropagation(); onView?.(item); }}
