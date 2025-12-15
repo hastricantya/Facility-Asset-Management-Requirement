@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, RefreshCcw, Plus, Trash2, Image as ImageIcon, List, Calendar, PlusCircle, Settings, Clock, CheckCircle, XCircle, FileText, Archive } from 'lucide-react';
+import { X, RefreshCcw, Plus, Trash2, Image as ImageIcon, List, Calendar, PlusCircle, Settings, Clock, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, Download, History, User } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, SalesOffer, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA } from '../constants';
@@ -186,6 +186,9 @@ export const AddStockModal: React.FC<Props> = ({
   const [deliveryLocationForm, setDeliveryLocationForm] = useState<Partial<DeliveryLocationRecord>>(defaultDeliveryLocationForm);
   const [salesOffers, setSalesOffers] = useState<SalesOffer[]>([{ nama: '', pic: '', phone: '', price: '' }]);
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '' }]);
+  
+  // State for Approval History Modal
+  const [showApprovalHistory, setShowApprovalHistory] = useState(false);
 
   // Derived state for mutation asset details
   const [selectedMutationAsset, setSelectedMutationAsset] = useState<VehicleRecord | null>(null);
@@ -257,6 +260,7 @@ export const AddStockModal: React.FC<Props> = ({
             setSalesOffers([{ nama: '', pic: '', phone: '', price: '' }]);
             setRequestItems([{ itemId: '', qty: '' }]);
             setSelectedMutationAsset(null);
+            setShowApprovalHistory(false);
         }
     }
   }, [isOpen, initialVehicleData, initialServiceData, initialMutationData, initialSalesData, initialContractData, initialMasterData, initialMasterVendorData, initialDeliveryLocationData, initialAssetData, mode, moduleName]);
@@ -405,13 +409,102 @@ export const AddStockModal: React.FC<Props> = ({
       <h3 className={`font-bold text-sm mb-4 border-b pb-2 ${orange ? 'text-orange-500 border-orange-200' : 'text-gray-900 border-gray-200'}`}>{title}</h3>
   );
 
+  // Approval History Modal Component (Inline)
+  const renderApprovalHistory = () => {
+    if (!showApprovalHistory) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center backdrop-blur-sm p-4">
+            <div className="bg-white w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                {/* Header */}
+                <div className="px-6 py-5 border-b border-gray-100 flex items-start justify-between">
+                    <div>
+                        <h2 className="text-lg font-bold text-gray-900">Approval History</h2>
+                        <p className="text-sm text-gray-500 mt-1">Document Number: {initialAssetData?.transactionNumber || 'PR/067/TNN/12.25'}</p>
+                    </div>
+                    <button 
+                        onClick={() => setShowApprovalHistory(false)}
+                        className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                    >
+                        <X size={24} />
+                    </button>
+                </div>
+
+                {/* Body */}
+                <div className="p-8 overflow-y-auto bg-gray-50/50">
+                    <div className="relative">
+                        {/* Vertical Line */}
+                        <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gray-200"></div>
+
+                        {/* Step 1: Completed */}
+                        <div className="relative flex gap-6 mb-8">
+                             {/* Icon */}
+                             <div className="relative z-10 w-12 h-12 rounded-full bg-[#00C853] flex items-center justify-center shadow-sm border-4 border-white">
+                                <CheckCircle className="text-white" size={20} />
+                             </div>
+                             
+                             {/* Card */}
+                             <div className="flex-1 bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
+                                <div className="flex justify-between items-start mb-2">
+                                    <h4 className="font-bold text-gray-900 text-sm">Approved by Ibnu Faisal Abbas</h4>
+                                    <span className="px-3 py-1 bg-green-50 text-green-600 text-xs font-medium rounded-full">Completed</span>
+                                </div>
+                                <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
+                                    <div className="flex items-center gap-1">
+                                        <User size={12} /> Ibnu Faisal Abbas
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <Calendar size={12} /> 2025-12-15 15:22:43
+                                    </div>
+                                </div>
+                                <div className="text-sm text-gray-800 mb-1">
+                                    <span className="font-bold">Remarks:</span> Add door assemble
+                                </div>
+                                <div className="text-xs text-gray-400">
+                                    Email: ibnu.faisal@modena.com
+                                </div>
+                             </div>
+                        </div>
+
+                        {/* Step 2: Pending */}
+                        <div className="relative flex gap-6">
+                             {/* Icon */}
+                             <div className="relative z-10 w-12 h-12 rounded-full bg-[#FFD600] flex items-center justify-center shadow-sm border-4 border-white">
+                                <Clock className="text-white" size={20} />
+                             </div>
+                             
+                             {/* Card */}
+                             <div className="flex-1 bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
+                                <div className="flex justify-between items-start mb-2">
+                                    <h4 className="font-bold text-gray-900 text-sm">Pending Approval</h4>
+                                    <span className="px-3 py-1 bg-[#FFF9C4] text-[#FBC02D] text-xs font-medium rounded-full">Pending</span>
+                                </div>
+                                <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
+                                    <div className="flex items-center gap-1">
+                                        <User size={12} /> Daniel Walter Aritonang
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <Calendar size={12} /> -
+                                    </div>
+                                </div>
+                                <div className="text-xs text-gray-400">
+                                    Email: daniel.aritonang@modena.com
+                                </div>
+                             </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+  }
+
   // Full Screen Mode for Stationery/Household Request
   if (isStationeryRequest) {
       const isArk = moduleName === 'Daftar ARK' || moduleName === 'Household Request Approval';
       const itemLabel = isArk ? t('Search ARK') : t('Search ATK');
       const requestTypeLabel = isArk ? t('Pilih jenis item ARK') : t('Pilih jenis item ATK');
-      const itemSelectLabel = isArk ? t('Pilih barang ARK') : t('Pilih barang ATK'); // Fallback if translation missing, though context handles generic
-      
       const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
 
       const trxNumber = initialAssetData?.transactionNumber || '[Auto Generated]';
@@ -431,55 +524,201 @@ export const AddStockModal: React.FC<Props> = ({
         if (s === 'Draft') return <FileText size={16} />;
         return <Clock size={16} />;
       }
+      
+      // If View Mode, use the new Full Page Layout from reference image
+      if (isViewMode) {
+          return (
+            <>
+            <div className="fixed inset-0 bg-gray-50 z-50 overflow-y-auto">
+                 {/* Top Navigation Bar Style Header */}
+                 <div className="bg-white border-b border-gray-200 sticky top-0 z-10 px-8 py-4 flex items-center justify-between">
+                     <div className="flex items-center gap-4">
+                        <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600">
+                             <ChevronLeft size={24} />
+                        </button>
+                        <div>
+                             <h1 className="text-xl font-bold text-gray-900">Purchase Request</h1>
+                             <div className="flex items-center gap-3 mt-1">
+                                 <span className="px-2 py-0.5 bg-cyan-50 border border-cyan-100 text-cyan-700 text-xs font-semibold rounded">
+                                     PR Number: {trxNumber}
+                                 </span>
+                                 <span className={`px-2 py-0.5 text-xs font-semibold rounded flex items-center gap-1 ${getStatusColor(status)}`}>
+                                     {getStatusIcon(status)}
+                                     Status: {status}
+                                 </span>
+                             </div>
+                        </div>
+                     </div>
+                     <div className="flex items-center gap-3">
+                         <button 
+                            onClick={() => setShowApprovalHistory(true)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                         >
+                            <History size={16} />
+                            View Approval History
+                         </button>
+                         <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#00A651] rounded hover:bg-[#008f45] transition-colors">
+                            <Printer size={16} />
+                            Print
+                         </button>
+                     </div>
+                 </div>
 
+                 <div className="p-8 max-w-[1600px] mx-auto space-y-6">
+                     
+                     {/* Info Cards Grid */}
+                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                         {/* Card 1: Information */}
+                         <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                             <h3 className="text-sm font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Information</h3>
+                             <div className="space-y-4">
+                                 <div>
+                                     <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Requester Name</label>
+                                     <div className="text-sm font-semibold text-gray-900">{initialAssetData?.employee.name}</div>
+                                 </div>
+                                 <div>
+                                     <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Role</label>
+                                     <div className="text-sm font-medium text-gray-700">{initialAssetData?.employee.role}</div>
+                                 </div>
+                                  <div>
+                                     <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Phone</label>
+                                     <div className="text-sm font-medium text-gray-700">{initialAssetData?.employee.phone}</div>
+                                 </div>
+                             </div>
+                         </div>
+
+                         {/* Card 2: Delivery Terms */}
+                         <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                             <h3 className="text-sm font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Delivery Terms</h3>
+                             <div className="space-y-4">
+                                 <div>
+                                     <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Request Date</label>
+                                     <div className="text-sm font-semibold text-gray-900">{initialAssetData?.date}</div>
+                                 </div>
+                                  <div>
+                                     <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Request Type</label>
+                                     <div className="text-sm font-medium text-gray-700">{stationeryRequestForm.type || 'Bulanan'}</div>
+                                 </div>
+                                 <div className="grid grid-cols-2 gap-4">
+                                     <div>
+                                         <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Delivery</label>
+                                         <div className="text-sm font-medium text-gray-700">{stationeryRequestForm.deliveryType}</div>
+                                     </div>
+                                      <div>
+                                         <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Location</label>
+                                         <div className="text-sm font-medium text-gray-700">{stationeryRequestForm.location}</div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+
+                         {/* Card 3: Summary */}
+                         <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                             <h3 className="text-sm font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Amount Summary</h3>
+                             <div className="space-y-4">
+                                 <div>
+                                     <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Total Items</label>
+                                     <div className="text-2xl font-bold text-gray-900">{requestItems.length} <span className="text-sm font-normal text-gray-500">Item(s)</span></div>
+                                 </div>
+                                 <div>
+                                     <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Total Estimated Cost</label>
+                                     <div className="text-xl font-bold text-gray-900">IDR 2.450.000</div>
+                                     <p className="text-xs text-gray-400 mt-1">*Estimated based on master price</p>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+
+                     {/* Order Items Table */}
+                     <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                         <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                             <h3 className="font-bold text-gray-900">Order Items</h3>
+                             <button className="text-xs font-medium text-gray-600 hover:text-black flex items-center gap-1">
+                                 <Settings size={14}/> Maximize
+                             </button>
+                         </div>
+                         <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-green-50 text-xs text-gray-700 uppercase font-semibold">
+                                    <tr>
+                                        <th className="px-6 py-3 border-r border-green-100 w-12 text-center">No</th>
+                                        <th className="px-6 py-3 border-r border-green-100 w-32">Part Code</th>
+                                        <th className="px-6 py-3 border-r border-green-100">Part Name</th>
+                                        <th className="px-6 py-3 border-r border-green-100">Category</th>
+                                        <th className="px-6 py-3 border-r border-green-100 text-center">QTY</th>
+                                        <th className="px-6 py-3 border-r border-green-100 text-center">Unit</th>
+                                        <th className="px-6 py-3 border-r border-green-100">Comment</th>
+                                        <th className="px-6 py-3 text-center">Stock PMT</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 text-sm">
+                                    {requestItems.map((item, index) => {
+                                        const masterItem = masterList.find(m => m.id.toString() === item.itemId);
+                                        return (
+                                            <tr key={index} className="hover:bg-gray-50 transition-colors">
+                                                <td className="px-6 py-4 text-center text-gray-500">{index + 1}</td>
+                                                <td className="px-6 py-4 font-mono text-xs font-medium text-gray-600 bg-gray-50/50">
+                                                    {masterItem?.itemCode || '-'}
+                                                </td>
+                                                <td className="px-6 py-4 font-bold text-gray-800">
+                                                    {masterItem?.itemName || '-'}
+                                                </td>
+                                                 <td className="px-6 py-4 text-gray-600">
+                                                    {masterItem?.category || '-'}
+                                                </td>
+                                                <td className="px-6 py-4 text-center font-bold text-gray-900">
+                                                    {item.qty}
+                                                </td>
+                                                <td className="px-6 py-4 text-center text-gray-500">
+                                                    {masterItem?.uom || 'Pcs'}
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-600 italic">
+                                                    {stationeryRequestForm.remarks || '-'}
+                                                </td>
+                                                <td className="px-6 py-4 text-center font-mono text-gray-500">
+                                                    0
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+            {renderApprovalHistory()}
+            </>
+          );
+      }
+
+      // Default Create/Edit Layout
       return (
-        <div className="fixed inset-0 bg-gray-50 z-50 overflow-y-auto">
-             <div className="max-w-4xl mx-auto py-8 px-4">
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-8">
-                    <Settings className="text-gray-700" size={24} />
-                    <h1 className="text-2xl font-bold text-gray-800">{getTitle()}</h1>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
+             <div className="bg-white w-full max-w-4xl rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+                <div className="px-6 py-4 flex items-center justify-between bg-white border-b border-gray-200 text-gray-900">
+                    <div className="flex items-center gap-3">
+                        <Settings className="text-gray-700" size={20} />
+                        <h2 className="text-lg font-bold tracking-wide">{getTitle()}</h2>
+                    </div>
+                    <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                        <X size={20} onClick={onClose} className="cursor-pointer"/>
+                    </button>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-                     
-                     {/* Transaction Info Header - Visual Update */}
-                     {(mode === 'view' || mode === 'edit') && (
-                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-gray-100 pb-6">
-                            <h3 className="text-xl font-bold text-gray-900">Purchase Request</h3>
-                            
-                            <div className="flex items-center gap-4">
-                                {/* PR Number Badge */}
-                                <div className="px-4 py-2 bg-cyan-50 border border-cyan-100 rounded-lg text-sm text-cyan-700 font-medium">
-                                    <span className="text-cyan-500 mr-2">PR Number</span>
-                                    {trxNumber}
-                                </div>
-
-                                {/* Status Badge */}
-                                <div className={`px-4 py-2 rounded-lg text-sm font-medium border flex items-center gap-2 ${getStatusColor(status)}`}>
-                                    {getStatusIcon(status)}
-                                    <span className={`opacity-70`}>{t('Status')}</span>
-                                    <span className="font-bold">{status}</span>
-                                </div>
-                            </div>
-                         </div>
-                     )}
-
-                     {!mode.includes('view') && !mode.includes('edit') && (
-                         <h3 className="font-bold text-gray-900 mb-6">{t('Form Request')}</h3>
-                     )}
+                <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gray-50">
+                     <h3 className="font-bold text-gray-900 mb-6">{t('Form Request')}</h3>
 
                      {/* Form Fields */}
                      <div className="space-y-6">
                          
                          {/* Pilih Kebutuhan */}
                          <div>
-                             <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih Kebutuhan')} {!isViewMode && <Required/>}</label>
+                             <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih Kebutuhan')} <Required/></label>
                              <select 
-                                className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black ${isViewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+                                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
                                 value={stationeryRequestForm.type}
                                 onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
-                                disabled={isViewMode}
                              >
                                  <option value="">{requestTypeLabel}</option>
                                  <option value="Bulanan">{t('Permintaan Bulanan')}</option>
@@ -491,12 +730,11 @@ export const AddStockModal: React.FC<Props> = ({
                          {requestItems.map((item, index) => (
                              <div key={index} className="flex gap-4 items-end">
                                  <div className="flex-1">
-                                     <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih barang ATK') /* Reusing label or add specific ARK label */ } {!isViewMode && <Required/>}</label>
+                                     <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih barang ATK')} <Required/></label>
                                      <select 
-                                        className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black ${isViewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+                                        className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
                                         value={item.itemId}
                                         onChange={(e) => handleRequestItemChange(index, 'itemId', e.target.value)}
-                                        disabled={isViewMode}
                                      >
                                          <option value="">{itemLabel}</option>
                                          {masterList.map(m => (
@@ -508,14 +746,13 @@ export const AddStockModal: React.FC<Props> = ({
                                      <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Jumlah')}</label>
                                      <input 
                                         type="number" 
-                                        className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black ${isViewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+                                        className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
                                         placeholder={t('Jumlah')}
                                         value={item.qty}
                                         onChange={(e) => handleRequestItemChange(index, 'qty', e.target.value)}
-                                        disabled={isViewMode}
                                      />
                                  </div>
-                                 {!isViewMode && index > 0 && (
+                                 {index > 0 && (
                                      <button onClick={() => removeRequestItemRow(index)} className="mb-2.5 p-2 text-gray-400 hover:text-red-500">
                                          <Trash2 size={20} />
                                      </button>
@@ -524,17 +761,15 @@ export const AddStockModal: React.FC<Props> = ({
                          ))}
 
                          {/* Add More */}
-                         {!isViewMode && (
-                             <div>
-                                 <button 
-                                    onClick={addRequestItemRow}
-                                    className="flex items-center gap-2 text-gray-900 font-semibold text-sm hover:text-gray-700"
-                                 >
-                                     <PlusCircle size={18} />
-                                     {t('Add More')}
-                                 </button>
-                             </div>
-                         )}
+                         <div>
+                             <button 
+                                onClick={addRequestItemRow}
+                                className="flex items-center gap-2 text-gray-900 font-semibold text-sm hover:text-gray-700"
+                             >
+                                 <PlusCircle size={18} />
+                                 {t('Add More')}
+                             </button>
+                         </div>
 
                          {/* Tanggal Request */}
                          <div>
@@ -542,12 +777,10 @@ export const AddStockModal: React.FC<Props> = ({
                              <div className="relative">
                                  <input 
                                     type="date" 
-                                    className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black ${isViewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+                                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
                                     value={stationeryRequestForm.date}
                                     onChange={(e) => handleStationeryRequestChange('date', e.target.value)}
-                                    disabled={isViewMode}
                                  />
-                                 {/* <Calendar className="absolute right-4 top-2.5 text-gray-400 pointer-events-none" size={18} /> */}
                              </div>
                          </div>
 
@@ -555,11 +788,10 @@ export const AddStockModal: React.FC<Props> = ({
                          <div>
                              <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Remarks')}</label>
                              <textarea 
-                                className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black h-32 resize-none ${isViewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+                                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black h-32 resize-none"
                                 placeholder={t('Isi Remarks')}
                                 value={stationeryRequestForm.remarks}
                                 onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)}
-                                disabled={isViewMode}
                              ></textarea>
                          </div>
 
@@ -573,7 +805,6 @@ export const AddStockModal: React.FC<Props> = ({
                                     className="w-4 h-4 text-black border-gray-300 focus:ring-black"
                                     checked={stationeryRequestForm.deliveryType === 'Dikirim'}
                                     onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
-                                    disabled={isViewMode}
                                  />
                                  <span className="text-sm font-medium text-gray-700">{t('Dikirim')}</span>
                              </label>
@@ -585,7 +816,6 @@ export const AddStockModal: React.FC<Props> = ({
                                     className="w-4 h-4 text-black border-gray-300 focus:ring-black"
                                     checked={stationeryRequestForm.deliveryType === 'Ambil di HO'}
                                     onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
-                                    disabled={isViewMode}
                                  />
                                  <span className="text-sm font-medium text-gray-700">{t('Ambil di HO')}</span>
                              </label>
@@ -596,12 +826,11 @@ export const AddStockModal: React.FC<Props> = ({
                      <div className="mt-8">
                          <h3 className="font-bold text-gray-900 mb-4">{t('Alamat Pengiriman')}</h3>
                          <div>
-                             <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih Tempat')} {!isViewMode && <Required/>}</label>
+                             <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih Tempat')} <Required/></label>
                              <select 
-                                className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black ${isViewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+                                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
                                 value={stationeryRequestForm.location}
                                 onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
-                                disabled={isViewMode}
                              >
                                  <option value="">{t('Pilih Tempat')}</option>
                                  <option value="MODENA Head Office">{t('MODENA Head Office')}</option>
@@ -611,60 +840,28 @@ export const AddStockModal: React.FC<Props> = ({
                              </select>
                          </div>
                      </div>
-
-                     {/* Footer Buttons */}
-                     <div className="mt-10 flex gap-4">
-                         {!isViewMode ? (
-                             <>
-                                <button 
-                                    className="bg-[#2C333A] text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-gray-800 transition-colors"
-                                    onClick={handleSave}
-                                >
-                                    {t('REVIEW REQUEST')}
-                                </button>
-                                <button 
-                                    className="bg-white text-[#2C333A] px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide border border-[#2C333A] hover:bg-gray-50 transition-colors"
-                                    onClick={onClose}
-                                >
-                                    {t('CANCEL')}
-                                </button>
-                             </>
-                         ) : (
-                             <>
-                                <button 
-                                    className="bg-[#2C333A] text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-gray-800 transition-colors"
-                                    onClick={onClose}
-                                >
-                                    {t('Closed')}
-                                </button>
-                                <button 
-                                    className="bg-yellow-500 text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-yellow-600 transition-colors"
-                                    onClick={onRevise}
-                                >
-                                    {t('Revise')}
-                                </button>
-                                <button 
-                                    className="bg-red-500 text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-red-600 transition-colors"
-                                    onClick={() => { alert('Request Rejected'); onClose(); }}
-                                >
-                                    {t('Reject')}
-                                </button>
-                                <button 
-                                    className="bg-green-500 text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-green-600 transition-colors"
-                                    onClick={() => { alert('Request Approved'); onClose(); }}
-                                >
-                                    {t('Approve')}
-                                </button>
-                             </>
-                         )}
-                     </div>
-
                 </div>
+
+                 {/* Footer Buttons */}
+                 <div className="px-8 py-4 bg-white border-t border-gray-200 flex gap-4">
+                    <button 
+                        className="bg-[#2C333A] text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-gray-800 transition-colors"
+                        onClick={handleSave}
+                    >
+                        {t('REVIEW REQUEST')}
+                    </button>
+                    <button 
+                        className="bg-white text-[#2C333A] px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide border border-[#2C333A] hover:bg-gray-50 transition-colors"
+                        onClick={onClose}
+                    >
+                        {t('CANCEL')}
+                    </button>
+                 </div>
              </div>
         </div>
       );
   }
-
+  
   // Standard Modal Render (for other modules)
   return (
     <>
@@ -681,8 +878,7 @@ export const AddStockModal: React.FC<Props> = ({
             </button>
           </div>
         </div>
-
-        {/* Modal Body */}
+        {/* ... (rest of standard modal body remains unchanged) */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gray-50">
           
           {isMasterATK || isMasterARK ? (
