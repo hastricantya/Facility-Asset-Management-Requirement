@@ -22,7 +22,12 @@ const translations: Record<string, Record<Language, string>> = {
   'Daftar ATK': { id: 'Permintaan ATK', en: 'Stationery Request' },
   'Stationery Request Approval': { id: 'Persetujuan ATK', en: 'Stationery Request Approval' },
   'Master ATK': { id: 'Master ATK', en: 'Master Stationery' },
+  
   'ARK': { id: 'ARK', en: 'Household' },
+  'Daftar ARK': { id: 'Permintaan ARK', en: 'Household Request' },
+  'Household Request Approval': { id: 'Persetujuan ARK', en: 'Household Request Approval' },
+  'Master ARK': { id: 'Master ARK', en: 'Master Household' },
+
   'Contract': { id: 'Kontrak', en: 'Contract' },
   'Timesheet': { id: 'Absensi', en: 'Timesheet' },
   'Vendor': { id: 'Vendor', en: 'Vendor' },
@@ -48,6 +53,7 @@ const translations: Record<string, Record<Language, string>> = {
   'UOM': { id: 'Satuan (UOM)', en: 'UOM' },
   'Currency': { id: 'Mata Uang', en: 'Currency' },
   'Category': { id: 'Kategori', en: 'Category' },
+  'Delivery Location': { id: 'Lokasi Pengiriman', en: 'Delivery Location' },
 
   // Tabs & Buttons
   'Pengguna': { id: 'Pengguna', en: 'User' },
@@ -95,7 +101,10 @@ const translations: Record<string, Record<Language, string>> = {
   'Daftar Aset ATK': { id: 'Permintaan ATK', en: 'Stationery Request' },
   'Header Stationery Request Approval': { id: 'Persetujuan Permintaan ATK', en: 'Stationery Request Approval' },
   'Master Data ATK': { id: 'Master Data ATK', en: 'Master Stationery Data' },
-  'Request ATK / ARK': { id: 'Request ATK / ARK', en: 'Stationery / Household Request' },
+  'Request ATK': { id: 'Request ATK', en: 'Stationery Request' },
+  'Header Household Request Approval': { id: 'Persetujuan Permintaan ARK', en: 'Household Request Approval' },
+  'Master Data ARK': { id: 'Master Data ARK', en: 'Master Household Data' },
+  'Request ARK': { id: 'Request ARK', en: 'Household Request' },
   
   // Filter Bar specific
   'Employment Status': { id: 'Status Karyawan', en: 'Employment Status' },
@@ -108,12 +117,14 @@ const translations: Record<string, Record<Language, string>> = {
   // Stationery Request Form
   'Form Request': { id: 'Form Request', en: 'Request Form' },
   'Pilih Kebutuhan': { id: 'Pilih Kebutuhan', en: 'Select Need' },
-  'Pilih jenis item ATK / ARK': { id: 'Pilih jenis item ATK / ARK', en: 'Select Stationery / Household Type' },
+  'Pilih jenis item ATK': { id: 'Pilih jenis item ATK', en: 'Select Stationery Type' },
+  'Pilih jenis item ARK': { id: 'Pilih jenis item ARK', en: 'Select Household Type' },
   'Permintaan Bulanan': { id: 'Permintaan Bulanan', en: 'Monthly Request' },
   'Permintaan Khusus': { id: 'Permintaan Khusus', en: 'Special Request' },
   
   'Pilih barang ATK': { id: 'Pilih barang ATK', en: 'Select Item' },
-  'Search ATK or ARK': { id: 'Cari ATK atau ARK', en: 'Search Stationery or Household' },
+  'Search ATK': { id: 'Cari ATK', en: 'Search Stationery' },
+  'Search ARK': { id: 'Cari ARK', en: 'Search Household' },
   'Jumlah': { id: 'Jumlah', en: 'Quantity' },
   'Add More': { id: 'Tambah', en: 'Add More' },
   'Tanggal Request': { id: 'Tanggal Request', en: 'Request Date' },
@@ -123,6 +134,9 @@ const translations: Record<string, Record<Language, string>> = {
   'Alamat Pengiriman': { id: 'Alamat Pengiriman', en: 'Delivery Address' },
   'Pilih Tempat': { id: 'Pilih Tempat', en: 'Select Location' },
   'Head Office': { id: 'Head Office', en: 'Head Office' },
+  'MODENA Head Office': { id: 'MODENA Head Office', en: 'MODENA Head Office' },
+  'MODENA Kemang': { id: 'MODENA Kemang', en: 'MODENA Kemang' },
+  'MODENA Suryo': { id: 'MODENA Suryo', en: 'MODENA Suryo' },
   'Warehouse Cakung': { id: 'Warehouse Cakung', en: 'Warehouse Cakung' },
 
   'REVIEW REQUEST': { id: 'TINJAU PERMINTAAN', en: 'REVIEW REQUEST' },
@@ -148,6 +162,8 @@ const translations: Record<string, Record<Language, string>> = {
   'Buat Vendor': { id: 'Buat Vendor', en: 'Create Vendor' },
   'Tambah Stock': { id: 'Tambah Stock', en: 'Add Stock' },
   'Baru': { id: 'Baru', en: 'New' },
+  'Location Name': { id: 'Nama Lokasi', en: 'Location Name' },
+  'Type': { id: 'Tipe', en: 'Type' },
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);

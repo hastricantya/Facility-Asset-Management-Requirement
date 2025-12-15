@@ -1,12 +1,14 @@
+
 import React from 'react';
 import { AssetRecord } from '../types';
 import { ChevronsUpDown, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Eye } from 'lucide-react';
 
 interface Props {
   data: AssetRecord[];
+  onView?: (item: AssetRecord) => void;
 }
 
-export const AssetTable: React.FC<Props> = ({ data }) => {
+export const AssetTable: React.FC<Props> = ({ data, onView }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
@@ -73,7 +75,10 @@ export const AssetTable: React.FC<Props> = ({ data }) => {
                 <td className="p-4 text-left font-mono text-xs">{item.itemCode}</td>
                 
                 <td className="p-4 text-center">
-                    <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                    <button 
+                        onClick={(e) => { e.stopPropagation(); onView?.(item); }}
+                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
                         <Eye size={18} />
                     </button>
                 </td>

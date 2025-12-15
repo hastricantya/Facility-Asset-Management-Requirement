@@ -1,5 +1,5 @@
 
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord } from './types';
 
 export const MOCK_DATA: AssetRecord[] = [
   {
@@ -642,4 +642,31 @@ export const MOCK_SALES_DATA: SalesRecord[] = [
     status: 'Persetujuan Permintaan',
     statusApproval: 'ONPROGRESS',
   }
+];
+
+export const MOCK_DELIVERY_LOCATIONS: DeliveryLocationRecord[] = [
+    {
+        id: 1,
+        name: 'MODENA Head Office',
+        address: 'Jl. Prof. Dr. Satrio C-4 No. 13, Jakarta 12950, Indonesia',
+        type: 'Head Office'
+    },
+    {
+        id: 2,
+        name: 'MODENA Kemang',
+        address: 'Jl. Kemang Selatan No. 1A, Jakarta Selatan',
+        type: 'Branch'
+    },
+    {
+        id: 3,
+        name: 'MODENA Suryo',
+        address: 'Jl. Suryo No. 4, Kebayoran Baru, Jakarta Selatan',
+        type: 'Branch'
+    },
+    {
+        id: 4,
+        name: 'Warehouse Cakung',
+        address: 'Jl. Raya Cakung Cilincing Km. 1.5, Jakarta Utara',
+        type: 'Warehouse'
+    }
 ];

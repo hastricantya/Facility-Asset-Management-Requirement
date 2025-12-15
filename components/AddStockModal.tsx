@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, RefreshCcw, Plus, Trash2, Image as ImageIcon, List, Calendar, PlusCircle, Settings } from 'lucide-react';
-import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, SalesOffer, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem } from '../types';
+import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, SalesOffer, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
-import { MOCK_MASTER_DATA } from '../constants';
+import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA } from '../constants';
 
 interface Props {
   isOpen: boolean;
@@ -17,6 +17,7 @@ interface Props {
   onSaveMaster?: (master: Partial<GeneralMasterItem>) => void;
   onSaveMasterVendor?: (masterVendor: Partial<MasterVendorRecord>) => void;
   onSaveStationeryRequest?: (request: Partial<StationeryRequestRecord>) => void;
+  onSaveDeliveryLocation?: (location: Partial<DeliveryLocationRecord>) => void;
   
   initialVehicleData?: VehicleRecord;
   initialServiceData?: ServiceRecord;
@@ -25,6 +26,8 @@ interface Props {
   initialContractData?: ContractRecord;
   initialMasterData?: GeneralMasterItem;
   initialMasterVendorData?: MasterVendorRecord;
+  initialDeliveryLocationData?: DeliveryLocationRecord;
+  initialAssetData?: AssetRecord; // New prop for Asset View
   
   mode?: 'create' | 'edit' | 'view';
   vehicleList?: VehicleRecord[];
@@ -43,6 +46,7 @@ export const AddStockModal: React.FC<Props> = ({
     onSaveMaster,
     onSaveMasterVendor,
     onSaveStationeryRequest,
+    onSaveDeliveryLocation,
     initialVehicleData,
     initialServiceData,
     initialMutationData,
@@ -50,6 +54,8 @@ export const AddStockModal: React.FC<Props> = ({
     initialContractData,
     initialMasterData,
     initialMasterVendorData,
+    initialDeliveryLocationData,
+    initialAssetData,
     mode = 'create',
     vehicleList = [],
     masterData = {}
@@ -160,6 +166,13 @@ export const AddStockModal: React.FC<Props> = ({
       location: ''
   };
 
+  // Local state for Delivery Location form
+  const defaultDeliveryLocationForm: Partial<DeliveryLocationRecord> = {
+      name: '',
+      address: '',
+      type: 'Branch'
+  };
+
   const [vehicleForm, setVehicleForm] = useState<Partial<VehicleRecord>>(defaultVehicleForm);
   const [serviceForm, setServiceForm] = useState<Partial<ServiceRecord>>(defaultServiceForm);
   const [mutationForm, setMutationForm] = useState<Partial<MutationRecord>>(defaultMutationForm);
@@ -168,6 +181,7 @@ export const AddStockModal: React.FC<Props> = ({
   const [masterForm, setMasterForm] = useState<Partial<GeneralMasterItem>>(defaultMasterForm);
   const [masterVendorForm, setMasterVendorForm] = useState<Partial<MasterVendorRecord>>(defaultMasterVendorForm);
   const [stationeryRequestForm, setStationeryRequestForm] = useState<Partial<StationeryRequestRecord>>(defaultStationeryRequestForm);
+  const [deliveryLocationForm, setDeliveryLocationForm] = useState<Partial<DeliveryLocationRecord>>(defaultDeliveryLocationForm);
   const [salesOffers, setSalesOffers] = useState<SalesOffer[]>([{ nama: '', pic: '', phone: '', price: '' }]);
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '' }]);
 
@@ -201,6 +215,32 @@ export const AddStockModal: React.FC<Props> = ({
             if (initialMasterVendorData) {
                 setMasterVendorForm(initialMasterVendorData);
             }
+            if (initialDeliveryLocationData) {
+                setDeliveryLocationForm(initialDeliveryLocationData);
+            }
+            // Handle Stationery View Mapping
+            if (initialAssetData) {
+                // Convert DD/MM/YYYY to YYYY-MM-DD for input date
+                const [d, m, y] = initialAssetData.date.split('/');
+                const formattedDate = `${y}-${m}-${d}`;
+                
+                // Find master ID to pre-select dropdown (Mapping logic)
+                // Note: In a real app, IDs would link directly. Here we search by name.
+                const masterList = moduleName === 'Daftar ARK' ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+                const matchedMaster = masterList.find(m => m.itemName === initialAssetData.itemName);
+
+                setStationeryRequestForm({
+                    type: 'Bulanan', // Mock value since table data doesn't have it
+                    date: formattedDate,
+                    remarks: initialAssetData.itemDescription,
+                    deliveryType: 'Dikirim', // Mock default
+                    location: 'MODENA Head Office' // Mock default
+                });
+                setRequestItems([{ 
+                    itemId: matchedMaster ? matchedMaster.id.toString() : '', 
+                    qty: initialAssetData.qty.toString() 
+                }]);
+            }
         } else {
             // Reset to defaults
             setVehicleForm(defaultVehicleForm);
@@ -211,12 +251,13 @@ export const AddStockModal: React.FC<Props> = ({
             setMasterForm(defaultMasterForm);
             setMasterVendorForm(defaultMasterVendorForm);
             setStationeryRequestForm(defaultStationeryRequestForm);
+            setDeliveryLocationForm(defaultDeliveryLocationForm);
             setSalesOffers([{ nama: '', pic: '', phone: '', price: '' }]);
             setRequestItems([{ itemId: '', qty: '' }]);
             setSelectedMutationAsset(null);
         }
     }
-  }, [isOpen, initialVehicleData, initialServiceData, initialMutationData, initialSalesData, initialContractData, initialMasterData, initialMasterVendorData, mode]);
+  }, [isOpen, initialVehicleData, initialServiceData, initialMutationData, initialSalesData, initialContractData, initialMasterData, initialMasterVendorData, initialDeliveryLocationData, initialAssetData, mode]);
 
   const handleVehicleChange = (field: keyof VehicleRecord, value: string) => {
       setVehicleForm(prev => ({ ...prev, [field]: value }));
@@ -252,6 +293,10 @@ export const AddStockModal: React.FC<Props> = ({
 
   const handleStationeryRequestChange = (field: keyof StationeryRequestRecord, value: any) => {
       setStationeryRequestForm(prev => ({ ...prev, [field]: value }));
+  }
+
+  const handleDeliveryLocationChange = (field: keyof DeliveryLocationRecord, value: any) => {
+      setDeliveryLocationForm(prev => ({ ...prev, [field]: value }));
   }
 
   const handleOfferChange = (index: number, field: keyof SalesOffer, value: string) => {
@@ -299,8 +344,10 @@ export const AddStockModal: React.FC<Props> = ({
           onSaveContract(contractForm);
       } else if (moduleName === 'Master Vendor' && onSaveMasterVendor) {
           onSaveMasterVendor(masterVendorForm);
-      } else if (moduleName === 'Daftar ATK' && onSaveStationeryRequest) {
+      } else if ((moduleName === 'Daftar ATK' || moduleName === 'Daftar ARK') && onSaveStationeryRequest) {
           onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
+      } else if (moduleName === 'Master Delivery Location' && onSaveDeliveryLocation) {
+          onSaveDeliveryLocation(deliveryLocationForm);
       } else if (onSaveMaster) {
           onSaveMaster(masterForm);
       }
@@ -317,9 +364,11 @@ export const AddStockModal: React.FC<Props> = ({
   const isSales = moduleName === 'Penjualan';
   const isMasterVendor = moduleName === 'Master Vendor';
   const isMasterATK = moduleName === 'Master ATK';
-  const isStationeryRequest = moduleName === 'Daftar ATK';
+  const isMasterARK = moduleName === 'Master ARK';
+  const isStationeryRequest = moduleName === 'Daftar ATK' || moduleName === 'Daftar ARK';
+  const isDeliveryLocation = moduleName === 'Master Delivery Location';
   
-  const isMaster = !isContract && !isVendor && !isVehicle && !isService && !isMutation && !isSales && !isMasterVendor && !isStationeryRequest && !moduleName?.includes('ATK') && !moduleName?.includes('ARK') && moduleName !== 'Timesheet';
+  const isMaster = !isContract && !isVendor && !isVehicle && !isService && !isMutation && !isSales && !isMasterVendor && !isStationeryRequest && !isDeliveryLocation && !moduleName?.includes('ATK') && !moduleName?.includes('ARK') && moduleName !== 'Timesheet';
 
   const isViewMode = mode === 'view';
   const isEditMode = mode === 'edit';
@@ -332,8 +381,9 @@ export const AddStockModal: React.FC<Props> = ({
     if (isService) return t('Request Servis');
     if (isMutation) return t('Permintaan Mutasi Kendaraan');
     if (isSales) return t('Permintaan Penjualan');
-    if (isMasterATK) return `${t('Master ATK')} > ${t('Tambah Stock')}`;
-    if (isStationeryRequest) return t('Request ATK / ARK');
+    if (isMasterATK || isMasterARK) return `${t(moduleName || '')} > ${t('Tambah Stock')}`;
+    if (isStationeryRequest) return isViewMode ? (moduleName === 'Daftar ATK' ? `Detail ${t('Request ATK')}` : `Detail ${t('Request ARK')}`) : (moduleName === 'Daftar ATK' ? t('Request ATK') : t('Request ARK'));
+    if (isDeliveryLocation) return t('Delivery Location');
     if (isMaster) return `Master ${t(moduleName || '')}`;
     return `Master ${t(moduleName || '')} > ${t('Tambah Stock')}`;
   }
@@ -346,15 +396,22 @@ export const AddStockModal: React.FC<Props> = ({
       <h3 className={`font-bold text-sm mb-4 border-b pb-2 ${orange ? 'text-orange-500 border-orange-200' : 'text-gray-900 border-gray-200'}`}>{title}</h3>
   );
 
-  // Full Screen Mode for Stationery Request
+  // Full Screen Mode for Stationery/Household Request
   if (isStationeryRequest) {
+      const isArk = moduleName === 'Daftar ARK';
+      const itemLabel = isArk ? t('Search ARK') : t('Search ATK');
+      const requestTypeLabel = isArk ? t('Pilih jenis item ARK') : t('Pilih jenis item ATK');
+      const itemSelectLabel = isArk ? t('Pilih barang ARK') : t('Pilih barang ATK'); // Fallback if translation missing, though context handles generic
+      
+      const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+
       return (
         <div className="fixed inset-0 bg-gray-50 z-50 overflow-y-auto">
              <div className="max-w-4xl mx-auto py-8 px-4">
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-8">
                     <Settings className="text-gray-700" size={24} />
-                    <h1 className="text-2xl font-bold text-gray-800">{t('Request ATK / ARK')}</h1>
+                    <h1 className="text-2xl font-bold text-gray-800">{getTitle()}</h1>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
@@ -365,13 +422,14 @@ export const AddStockModal: React.FC<Props> = ({
                          
                          {/* Pilih Kebutuhan */}
                          <div>
-                             <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih Kebutuhan')} <Required/></label>
+                             <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih Kebutuhan')} {!isViewMode && <Required/>}</label>
                              <select 
-                                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                                className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black ${isViewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
                                 value={stationeryRequestForm.type}
                                 onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
+                                disabled={isViewMode}
                              >
-                                 <option value="">{t('Pilih jenis item ATK / ARK')}</option>
+                                 <option value="">{requestTypeLabel}</option>
                                  <option value="Bulanan">{t('Permintaan Bulanan')}</option>
                                  <option value="Khusus">{t('Permintaan Khusus')}</option>
                              </select>
@@ -381,14 +439,15 @@ export const AddStockModal: React.FC<Props> = ({
                          {requestItems.map((item, index) => (
                              <div key={index} className="flex gap-4 items-end">
                                  <div className="flex-1">
-                                     <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih barang ATK')} <Required/></label>
+                                     <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih barang ATK') /* Reusing label or add specific ARK label */ } {!isViewMode && <Required/>}</label>
                                      <select 
-                                        className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                                        className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black ${isViewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
                                         value={item.itemId}
                                         onChange={(e) => handleRequestItemChange(index, 'itemId', e.target.value)}
+                                        disabled={isViewMode}
                                      >
-                                         <option value="">{t('Search ATK or ARK')}</option>
-                                         {MOCK_MASTER_DATA.map(m => (
+                                         <option value="">{itemLabel}</option>
+                                         {masterList.map(m => (
                                              <option key={m.id} value={m.id}>{m.itemName} ({m.uom})</option>
                                          ))}
                                      </select>
@@ -397,13 +456,14 @@ export const AddStockModal: React.FC<Props> = ({
                                      <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Jumlah')}</label>
                                      <input 
                                         type="number" 
-                                        className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black" 
+                                        className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black ${isViewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
                                         placeholder={t('Jumlah')}
                                         value={item.qty}
                                         onChange={(e) => handleRequestItemChange(index, 'qty', e.target.value)}
+                                        disabled={isViewMode}
                                      />
                                  </div>
-                                 {index > 0 && (
+                                 {!isViewMode && index > 0 && (
                                      <button onClick={() => removeRequestItemRow(index)} className="mb-2.5 p-2 text-gray-400 hover:text-red-500">
                                          <Trash2 size={20} />
                                      </button>
@@ -412,15 +472,17 @@ export const AddStockModal: React.FC<Props> = ({
                          ))}
 
                          {/* Add More */}
-                         <div>
-                             <button 
-                                onClick={addRequestItemRow}
-                                className="flex items-center gap-2 text-gray-900 font-semibold text-sm hover:text-gray-700"
-                             >
-                                 <PlusCircle size={18} />
-                                 {t('Add More')}
-                             </button>
-                         </div>
+                         {!isViewMode && (
+                             <div>
+                                 <button 
+                                    onClick={addRequestItemRow}
+                                    className="flex items-center gap-2 text-gray-900 font-semibold text-sm hover:text-gray-700"
+                                 >
+                                     <PlusCircle size={18} />
+                                     {t('Add More')}
+                                 </button>
+                             </div>
+                         )}
 
                          {/* Tanggal Request */}
                          <div>
@@ -428,9 +490,10 @@ export const AddStockModal: React.FC<Props> = ({
                              <div className="relative">
                                  <input 
                                     type="date" 
-                                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                                    className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black ${isViewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
                                     value={stationeryRequestForm.date}
                                     onChange={(e) => handleStationeryRequestChange('date', e.target.value)}
+                                    disabled={isViewMode}
                                  />
                                  {/* <Calendar className="absolute right-4 top-2.5 text-gray-400 pointer-events-none" size={18} /> */}
                              </div>
@@ -440,10 +503,11 @@ export const AddStockModal: React.FC<Props> = ({
                          <div>
                              <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Remarks')}</label>
                              <textarea 
-                                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black h-32 resize-none"
+                                className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black h-32 resize-none ${isViewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
                                 placeholder={t('Isi Remarks')}
                                 value={stationeryRequestForm.remarks}
                                 onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)}
+                                disabled={isViewMode}
                              ></textarea>
                          </div>
 
@@ -457,6 +521,7 @@ export const AddStockModal: React.FC<Props> = ({
                                     className="w-4 h-4 text-black border-gray-300 focus:ring-black"
                                     checked={stationeryRequestForm.deliveryType === 'Dikirim'}
                                     onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
+                                    disabled={isViewMode}
                                  />
                                  <span className="text-sm font-medium text-gray-700">{t('Dikirim')}</span>
                              </label>
@@ -468,6 +533,7 @@ export const AddStockModal: React.FC<Props> = ({
                                     className="w-4 h-4 text-black border-gray-300 focus:ring-black"
                                     checked={stationeryRequestForm.deliveryType === 'Ambil di HO'}
                                     onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
+                                    disabled={isViewMode}
                                  />
                                  <span className="text-sm font-medium text-gray-700">{t('Ambil di HO')}</span>
                              </label>
@@ -478,14 +544,17 @@ export const AddStockModal: React.FC<Props> = ({
                      <div className="mt-8">
                          <h3 className="font-bold text-gray-900 mb-4">{t('Alamat Pengiriman')}</h3>
                          <div>
-                             <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih Tempat')} <Required/></label>
+                             <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih Tempat')} {!isViewMode && <Required/>}</label>
                              <select 
-                                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                                className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black ${isViewMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
                                 value={stationeryRequestForm.location}
                                 onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
+                                disabled={isViewMode}
                              >
                                  <option value="">{t('Pilih Tempat')}</option>
-                                 <option value="Head Office">{t('Head Office')}</option>
+                                 <option value="MODENA Head Office">{t('MODENA Head Office')}</option>
+                                 <option value="MODENA Kemang">{t('MODENA Kemang')}</option>
+                                 <option value="MODENA Suryo">{t('MODENA Suryo')}</option>
                                  <option value="Warehouse Cakung">{t('Warehouse Cakung')}</option>
                              </select>
                          </div>
@@ -493,18 +562,29 @@ export const AddStockModal: React.FC<Props> = ({
 
                      {/* Footer Buttons */}
                      <div className="mt-10 flex gap-4">
-                         <button 
-                            className="bg-[#2C333A] text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-gray-800 transition-colors"
-                            onClick={handleSave}
-                         >
-                             {t('REVIEW REQUEST')}
-                         </button>
-                         <button 
-                            className="bg-white text-[#2C333A] px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide border border-[#2C333A] hover:bg-gray-50 transition-colors"
-                            onClick={onClose}
-                         >
-                             {t('CANCEL')}
-                         </button>
+                         {!isViewMode ? (
+                             <>
+                                <button 
+                                    className="bg-[#2C333A] text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-gray-800 transition-colors"
+                                    onClick={handleSave}
+                                >
+                                    {t('REVIEW REQUEST')}
+                                </button>
+                                <button 
+                                    className="bg-white text-[#2C333A] px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide border border-[#2C333A] hover:bg-gray-50 transition-colors"
+                                    onClick={onClose}
+                                >
+                                    {t('CANCEL')}
+                                </button>
+                             </>
+                         ) : (
+                             <button 
+                                className="bg-[#2C333A] text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-gray-800 transition-colors"
+                                onClick={onClose}
+                             >
+                                 {t('Closed')}
+                             </button>
+                         )}
                      </div>
 
                 </div>
@@ -517,14 +597,14 @@ export const AddStockModal: React.FC<Props> = ({
   return (
     <>
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
-      <div className={`bg-white w-full ${isMaster ? 'max-w-md' : (isVehicle || isService || isMutation || isSales || isContract || isMasterVendor ? 'max-w-7xl' : 'max-w-5xl')} rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]`}>
+      <div className={`bg-white w-full ${isMaster || isDeliveryLocation ? 'max-w-md' : (isVehicle || isService || isMutation || isSales || isContract || isMasterVendor ? 'max-w-7xl' : 'max-w-5xl')} rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]`}>
         {/* Modal Header */}
-        <div className={`px-6 py-4 flex items-center justify-between ${isService || isMutation || isSales || isContract || isMaster || isMasterVendor || isMasterATK ? 'bg-white border-b border-gray-200 text-gray-900' : 'bg-black text-white'}`}>
-          <h2 className={`text-sm font-bold tracking-wide ${isMasterATK || isMasterVendor || isService || isSales || isMutation || isContract || isMaster ? '' : 'text-white'}`}>
+        <div className={`px-6 py-4 flex items-center justify-between ${isService || isMutation || isSales || isContract || isMaster || isMasterVendor || isMasterATK || isMasterARK || isDeliveryLocation ? 'bg-white border-b border-gray-200 text-gray-900' : 'bg-black text-white'}`}>
+          <h2 className={`text-sm font-bold tracking-wide ${isMasterATK || isMasterARK || isMasterVendor || isService || isSales || isMutation || isContract || isMaster || isDeliveryLocation ? '' : 'text-white'}`}>
             {getTitle()}
           </h2>
           <div className="flex items-center gap-4">
-            <button className={`${isService || isMutation || isSales || isContract || isMaster || isMasterVendor || isMasterATK ? 'text-gray-400 hover:text-gray-600' : 'text-gray-400 hover:text-white'} transition-colors`}>
+            <button className={`${isService || isMutation || isSales || isContract || isMaster || isMasterVendor || isMasterATK || isMasterARK || isDeliveryLocation ? 'text-gray-400 hover:text-gray-600' : 'text-gray-400 hover:text-white'} transition-colors`}>
               <X size={20} onClick={onClose} className="cursor-pointer"/>
             </button>
           </div>
@@ -533,12 +613,13 @@ export const AddStockModal: React.FC<Props> = ({
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gray-50">
           
-          {isMasterATK ? (
-            /* --- MASTER ATK FORM --- */
+          {isMasterATK || isMasterARK ? (
+            /* --- MASTER ATK/ARK FORM --- */
             <div className="space-y-6">
+                {/* ... (Existing Master ATK/ARK content) ... */}
                 {/* Section 1: Header Info */}
                 <div className="bg-blue-50/50 p-6 rounded-lg border border-blue-100">
-                    <h3 className="text-blue-500 font-bold text-sm mb-4">Stationery Master</h3>
+                    <h3 className="text-blue-500 font-bold text-sm mb-4">{isMasterARK ? 'Household Master' : 'Stationery Master'}</h3>
                     
                     <div className="grid grid-cols-1 gap-4">
                         <div className="grid grid-cols-12 gap-4 items-center">
@@ -564,13 +645,11 @@ export const AddStockModal: React.FC<Props> = ({
                                 </select>
                             </div>
                         </div>
-                        {/* Removed read-only Remaining Stock from here */}
                     </div>
                 </div>
 
                 {/* Section 2: Transaction Input */}
                 <div className="bg-white pt-2 space-y-4 border-t border-gray-100">
-                    
                     {/* Remaining Stock & Unit (Replaces Quantity) */}
                     <div className="grid grid-cols-12 gap-4 items-center">
                         <div className="col-span-3">
@@ -665,7 +744,7 @@ export const AddStockModal: React.FC<Props> = ({
 
                 {/* Section 3: History Table */}
                 <div className="mt-8">
-                    <h3 className="text-blue-500 font-bold text-sm mb-4">Stationery Purchase History</h3>
+                    <h3 className="text-blue-500 font-bold text-sm mb-4">{isMasterARK ? 'Household Purchase History' : 'Stationery Purchase History'}</h3>
                     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                         <table className="w-full text-left text-sm">
                             <thead className="bg-gray-100 border-b border-gray-200 font-semibold text-gray-700">
@@ -715,6 +794,43 @@ export const AddStockModal: React.FC<Props> = ({
                     </div>
                 </div>
             </div>
+          ) : isDeliveryLocation ? (
+              /* --- DELIVERY LOCATION FORM --- */
+              <div className="space-y-4">
+                  <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">{t('Location Name')} <Required/></label>
+                      <input 
+                          type="text" 
+                          className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" 
+                          value={deliveryLocationForm.name || ''}
+                          onChange={(e) => handleDeliveryLocationChange('name', e.target.value)}
+                          placeholder="e.g. Head Office"
+                      />
+                  </div>
+                  <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">{t('Address')} <Required/></label>
+                      <textarea
+                          rows={3} 
+                          className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black resize-none" 
+                          value={deliveryLocationForm.address || ''}
+                          onChange={(e) => handleDeliveryLocationChange('address', e.target.value)}
+                          placeholder="Full Address"
+                      />
+                  </div>
+                  <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">{t('Type')} <Required/></label>
+                      <select 
+                          className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black"
+                          value={deliveryLocationForm.type || 'Branch'}
+                          onChange={(e) => handleDeliveryLocationChange('type', e.target.value)}
+                      >
+                          <option value="Head Office">Head Office</option>
+                          <option value="Branch">Branch</option>
+                          <option value="Warehouse">Warehouse</option>
+                          <option value="Store">Store</option>
+                      </select>
+                  </div>
+              </div>
           ) : isMaster ? (
               /* --- GENERIC MASTER FORM --- */
               <div className="space-y-4">
@@ -832,7 +948,7 @@ export const AddStockModal: React.FC<Props> = ({
             /* --- SERVICE REQUEST FORM (Updated with Dynamic Masters) --- */
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <SectionHeader title={t('Request Servis')} />
-                
+                {/* ... (existing service form content) */}
                 <div className="space-y-6">
                     {/* Aset */}
                     <div>
@@ -881,97 +997,8 @@ export const AddStockModal: React.FC<Props> = ({
                     {/* ... Bank fields ... */}
                 </div>
             </div>
-          ) : isVehicle ? (
-            /* --- VEHICLE FORM (Updated with Dynamic Masters) --- */
-            <div className="flex flex-col gap-6">
-                {/* Row 1: Detail Informasi & Surat */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Column 1: Detail Informasi */}
-                    <div className="space-y-4">
-                        <SectionHeader title={t('Detail Informasi')} />
-                        <div className="grid grid-cols-3 gap-4">
-                            <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">No. Registrasi <Required/></label>
-                                <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" disabled={isViewMode} value={vehicleForm.noRegistrasi || ''} onChange={(e) => handleVehicleChange('noRegistrasi', e.target.value)} />
-                            </div>
-                            <div className="col-span-2">
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Deskripsi Lengkap <Required/></label>
-                                <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" disabled={isViewMode} value={vehicleForm.nama || ''} onChange={(e) => handleVehicleChange('nama', e.target.value)} />
-                            </div>
-                        </div>
-                        {/* ... rest of vehicle form */}
-                    </div>
-
-                    {/* Column 2: Surat, Pembelian, Asuransi */}
-                    <div className="space-y-6">
-                         {/* Surat */}
-                        <div>
-                             <SectionHeader title={t('Surat')} />
-                             {/* ... Surat fields */}
-                        </div>
-                    </div>
-                </div>
-            </div>
-          ) : isMutation ? (
-              /* --- MUTATION FORM (Updated with Dynamic Masters) --- */
-               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                    <SectionHeader title={t('Permintaan Mutasi Kendaraan')} />
-                    <div className="space-y-6">
-                        <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Tipe Mutasi <Required/></label>
-                             {/* Dynamic Master: Tipe Mutasi */}
-                            <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={mutationForm.tipeMutasi} onChange={(e) => handleMutationChange('tipeMutasi', e.target.value)} disabled={isViewMode}>
-                                {(masterData['Tipe Mutasi'] || []).map(m => (
-                                    <option key={m.id} value={m.name}>{m.name}</option>
-                                ))}
-                                {!masterData['Tipe Mutasi']?.length && <option value="Kirim">Kirim</option>}
-                            </select>
-                        </div>
-                        {/* ... Locations ... */}
-                         <div className="flex flex-col md:flex-row gap-6">
-                            <div className="flex-1">
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Channel Tujuan <Required/></label>
-                                 {/* Dynamic Master: Sync Channels */}
-                                <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={mutationForm.channelTujuan} onChange={(e) => handleMutationChange('channelTujuan', e.target.value)} disabled={isViewMode}>
-                                    <option value="">Pilih Channel Tujuan</option>
-                                    {(masterData['Sync Channels'] || []).map(m => (
-                                        <option key={m.id} value={m.name}>{m.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                         {/* ... Asset and Reason ... */}
-                    </div>
-               </div>
-          ) : isSales ? (
-               /* --- SALES FORM --- */
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                    <SectionHeader title={t('Permintaan Penjualan')} />
-                    {/* ... Sales Fields ... */}
-                    <div className="space-y-6">
-                         <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Aset <Required/></label>
-                            <div className="flex gap-2">
-                                <select className="flex-1 bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={salesForm.asetId || ''} onChange={(e) => handleSalesChange('asetId', e.target.value)} disabled={isViewMode}>
-                                    <option value="">(Pilih Kendaraan)</option>
-                                    {vehicleList.map(v => ( <option key={v.id} value={v.id}>{v.nama} - {v.noPolisi}</option> ))}
-                                </select>
-                                <button className="px-4 py-2 bg-gray-100 text-gray-600 rounded border border-gray-300 text-sm hover:bg-gray-200 transition-colors" disabled={isViewMode}>Detil</button>
-                            </div>
-                        </div>
-                         {/* ... Target Selesai, Alasan, Catatan ... */}
-                    </div>
-                     {/* ... Offers Table ... */}
-                     <div className="mt-8">
-                        <SectionHeader title={t('Penawaran')} />
-                         {/* ... Offers ... */}
-                         <div className="w-full bg-[#0088CC] text-white p-1 flex items-center justify-center cursor-pointer hover:bg-[#0077b3] transition-colors" onClick={!isViewMode ? addOfferRow : undefined}>
-                            <Plus size={16} />
-                         </div>
-                     </div>
-                </div>
           ) : (
-            // Default Asset Form (Placeholder)
+            // Default Fallback
              <div className="p-4 text-center text-gray-500">Form Placeholder for {moduleName}</div>
           )}
         </div>
@@ -981,13 +1008,13 @@ export const AddStockModal: React.FC<Props> = ({
             <div className="px-8 py-4 bg-white border-t border-gray-200 flex justify-end gap-3">
             <button 
                 onClick={onClose}
-                className={`px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ${isMasterATK ? 'rounded-full' : ''}`}
+                className={`px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ${isMasterATK || isMasterARK || isDeliveryLocation ? 'rounded-full' : ''}`}
             >
                 {t('Draft')}
             </button>
             <button 
                 onClick={handleSave}
-                className={`px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors shadow-sm ${isMasterVendor ? 'bg-orange-500 hover:bg-orange-600' : isMasterATK ? 'bg-black hover:bg-gray-800 rounded-full' : 'bg-black hover:bg-gray-800'}`}
+                className={`px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors shadow-sm ${isMasterVendor ? 'bg-orange-500 hover:bg-orange-600' : isMasterATK || isMasterARK || isDeliveryLocation ? 'bg-black hover:bg-gray-800 rounded-full' : 'bg-black hover:bg-gray-800'}`}
             >
                 {isMasterVendor ? t('Submit') : t('Simpan')}
             </button>

@@ -15,9 +15,10 @@ import { MutationTable } from './components/MutationTable';
 import { SalesTable } from './components/SalesTable';
 import { GeneralMasterTable } from './components/GeneralMasterTable';
 import { MasterVendorTable } from './components/MasterVendorTable';
+import { MasterDeliveryLocationTable } from './components/MasterDeliveryLocationTable';
 import { AddStockModal } from './components/AddStockModal';
-import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_CONTRACT_DATA, MOCK_TIMESHEET_DATA, MOCK_VENDOR_DATA, MOCK_VEHICLE_DATA, MOCK_SERVICE_DATA, MOCK_TAX_KIR_DATA, MOCK_MUTATION_DATA, MOCK_SALES_DATA, MOCK_MASTER_VENDOR_DATA } from './constants';
-import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, TaxKirRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord } from './types';
+import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_CONTRACT_DATA, MOCK_TIMESHEET_DATA, MOCK_VENDOR_DATA, MOCK_VEHICLE_DATA, MOCK_SERVICE_DATA, MOCK_TAX_KIR_DATA, MOCK_MUTATION_DATA, MOCK_SALES_DATA, MOCK_MASTER_VENDOR_DATA, MOCK_DELIVERY_LOCATIONS } from './constants';
+import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, TaxKirRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, DeliveryLocationRecord, AssetRecord } from './types';
 import { useLanguage } from './contexts/LanguageContext';
 
 const App: React.FC = () => {
@@ -26,9 +27,9 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
-  // Filter State for Stationery Request
+  // Filter State for Stationery/Household Request
   const [atkFilters, setAtkFilters] = useState<FilterItem[]>([]);
-  // Filter State for Master ATK
+  // Filter State for Master ATK/ARK
   const [masterAtkFilters, setMasterAtkFilters] = useState<FilterItem[]>([]);
 
   // Modal State
@@ -58,6 +59,13 @@ const App: React.FC = () => {
   // State for Master Vendor Data
   const [masterVendorData, setMasterVendorData] = useState<MasterVendorRecord[]>(MOCK_MASTER_VENDOR_DATA);
   const [selectedMasterVendor, setSelectedMasterVendor] = useState<MasterVendorRecord | null>(null);
+
+  // State for Master Delivery Locations
+  const [deliveryLocations, setDeliveryLocations] = useState<DeliveryLocationRecord[]>(MOCK_DELIVERY_LOCATIONS);
+  const [selectedDeliveryLocation, setSelectedDeliveryLocation] = useState<DeliveryLocationRecord | null>(null);
+
+  // State for Asset View (Stationery/Household)
+  const [selectedAsset, setSelectedAsset] = useState<AssetRecord | null>(null);
 
 
   // State for General Masters (Dynamic)
@@ -97,8 +105,6 @@ const App: React.FC = () => {
         setActiveTab('Aktif');
     } else if (module === 'Servis' || module === 'Pajak & KIR' || module === 'Mutasi' || module === 'Penjualan') {
         setActiveTab('Semua');
-    } else if (module === 'ARK') {
-        setActiveTab('Pengguna');
     } else if (module === 'Daftar ATK') {
         setActiveTab('All');
         setAtkFilters([]); // Reset filters when module resets
@@ -107,6 +113,15 @@ const App: React.FC = () => {
         setAtkFilters([]);
     } else if (module === 'Master ATK') {
         setActiveTab('Items'); // Default tab for Master ATK
+        setMasterAtkFilters([]);
+    } else if (module === 'Daftar ARK') {
+        setActiveTab('All');
+        setAtkFilters([]);
+    } else if (module === 'Household Request Approval') {
+        setActiveTab('Pending');
+        setAtkFilters([]);
+    } else if (module === 'Master ARK') {
+        setActiveTab('Items');
         setMasterAtkFilters([]);
     } else {
         // Default
@@ -125,7 +140,7 @@ const App: React.FC = () => {
 
   // Helper to determine the actual master key in the 'masters' state
   const getCurrentMasterKey = () => {
-      if (activeModule === 'Master ATK') {
+      if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
           if (activeTab === 'UOM') return 'Master UOM';
           if (activeTab === 'Currency') return 'Master Currency';
           if (activeTab === 'Category') return 'Master Category';
@@ -142,6 +157,8 @@ const App: React.FC = () => {
     setSelectedContract(null);
     setSelectedMasterItem(null);
     setSelectedMasterVendor(null);
+    setSelectedDeliveryLocation(null);
+    setSelectedAsset(null);
     setIsModalOpen(true);
   };
 
@@ -271,6 +288,42 @@ const App: React.FC = () => {
       }
       setIsModalOpen(false);
   }
+
+  // --- Handlers for Delivery Locations ---
+  const handleEditDeliveryLocation = (item: DeliveryLocationRecord) => {
+      setSelectedDeliveryLocation(item);
+      setModalMode('edit');
+      setIsModalOpen(true);
+  };
+
+  const handleDeleteDeliveryLocation = (id: number) => {
+      if (confirm('Are you sure you want to delete this location?')) {
+          setDeliveryLocations(prev => prev.filter(item => item.id !== id));
+      }
+  };
+
+  const handleSaveDeliveryLocation = (formData: Partial<DeliveryLocationRecord>) => {
+      if (modalMode === 'create') {
+          const newId = Math.max(...deliveryLocations.map(l => l.id), 0) + 1;
+          const newLocation: DeliveryLocationRecord = {
+              id: newId,
+              name: formData.name || '',
+              address: formData.address || '',
+              type: formData.type || 'Branch'
+          };
+          setDeliveryLocations([...deliveryLocations, newLocation]);
+      } else if (modalMode === 'edit' && selectedDeliveryLocation) {
+          setDeliveryLocations(prev => prev.map(item => item.id === selectedDeliveryLocation.id ? { ...item, ...formData } : item));
+      }
+      setIsModalOpen(false);
+  }
+
+  // --- Handler for Asset (ATK/ARK) View ---
+  const handleViewAsset = (item: AssetRecord) => {
+      setSelectedAsset(item);
+      setModalMode('view');
+      setIsModalOpen(true);
+  }
   
   // --- Handlers for Tax KIR ---
   const handleEditTaxKir = (item: TaxKirRecord) => { console.log("Edit Tax Kir", item); };
@@ -385,7 +438,7 @@ const App: React.FC = () => {
   };
 
   const handleSaveStationeryRequest = (request: Partial<StationeryRequestRecord>) => {
-      console.log("Saving stationery request:", request);
+      console.log("Saving stationery/household request:", request);
       // Logic to save the request goes here. 
       // For now, we just log it as the table data for requests isn't fully mocked to receive this.
       alert(`Request Submitted for ${request.items?.length} items!`);
@@ -393,6 +446,7 @@ const App: React.FC = () => {
 
   const getBreadcrumbs = () => {
     if (['Daftar ATK', 'Stationery Request Approval', 'Master ATK'].includes(activeModule)) return ['Home', t('ATK'), t(activeModule)];
+    if (['Daftar ARK', 'Household Request Approval', 'Master ARK'].includes(activeModule)) return ['Home', t('ARK'), t(activeModule)];
     if (['Daftar Aset', 'Servis', 'Pajak & KIR', 'Mutasi', 'Penjualan'].includes(activeModule)) return ['Home', t('Kendaraan'), t(activeModule)];
     if (['Jenis Pajak', 'Jenis Pembayaran', 'Jenis Servis', 'Status Mutasi', 'Status Penjualan', 'Status Request', 'Tipe Mutasi', 'Tipe Vendor', 'Role', 'Master Vendor'].includes(activeModule)) return ['Home', t('Master Data'), t(activeModule)];
     
@@ -400,21 +454,25 @@ const App: React.FC = () => {
   };
 
   const renderContent = () => {
+    // ATK Module Content
     if (activeModule === 'Daftar ATK' || activeModule === 'Stationery Request Approval') {
       let filteredData = MOCK_DATA;
-      
-      // Filter by Tab
+      // ... (Filtering Logic for ATK)
       if (activeTab === 'Approved') filteredData = filteredData.filter(item => item.status === 'Approved');
       else if (activeTab === 'Rejected') filteredData = filteredData.filter(item => item.status === 'Rejected');
       else if (activeTab === 'Closed') filteredData = filteredData.filter(item => item.status === 'Closed');
       else if (activeTab === 'Draft') filteredData = filteredData.filter(item => item.status === 'Draft');
       else if (activeTab === 'Pending') filteredData = filteredData.filter(item => item.status === 'Pending');
       
-      // Filter by Dynamic Filters (AND logic)
       if (atkFilters.length > 0) {
         filteredData = filteredData.filter(item => {
             return atkFilters.every(filter => {
                 const val = filter.value.toLowerCase();
+                if (filter.field === 'Date') {
+                    const [y, m, d] = filter.value.split('-');
+                    const formattedFilterDate = `${d}/${m}/${y}`;
+                    return item.date === formattedFilterDate;
+                }
                 if (filter.field === 'Employee Name') return item.employee.name.toLowerCase().includes(val);
                 if (filter.field === 'Category') return item.category.toLowerCase().includes(val);
                 if (filter.field === 'Item Name') return item.itemName.toLowerCase().includes(val);
@@ -423,12 +481,43 @@ const App: React.FC = () => {
             });
         });
       }
+      return <AssetTable data={filteredData} onView={handleViewAsset} />;
+    }
 
-      return <AssetTable data={filteredData} />;
+    // ARK Module Content
+    if (activeModule === 'Daftar ARK' || activeModule === 'Household Request Approval') {
+        let filteredData = MOCK_ARK_DATA;
+        // Reuse Filtering Logic
+        if (activeTab === 'Approved') filteredData = filteredData.filter(item => item.status === 'Approved');
+        else if (activeTab === 'Rejected') filteredData = filteredData.filter(item => item.status === 'Rejected');
+        else if (activeTab === 'Closed') filteredData = filteredData.filter(item => item.status === 'Closed');
+        else if (activeTab === 'Draft') filteredData = filteredData.filter(item => item.status === 'Draft');
+        else if (activeTab === 'Pending') filteredData = filteredData.filter(item => item.status === 'Pending');
+
+        if (atkFilters.length > 0) {
+            filteredData = filteredData.filter(item => {
+                return atkFilters.every(filter => {
+                    const val = filter.value.toLowerCase();
+                    if (filter.field === 'Date') {
+                        const [y, m, d] = filter.value.split('-');
+                        const formattedFilterDate = `${d}/${m}/${y}`;
+                        return item.date === formattedFilterDate;
+                    }
+                    if (filter.field === 'Employee Name') return item.employee.name.toLowerCase().includes(val);
+                    if (filter.field === 'Category') return item.category.toLowerCase().includes(val);
+                    if (filter.field === 'Item Name') return item.itemName.toLowerCase().includes(val);
+                    if (filter.field === 'Item Code') return item.itemCode.toLowerCase().includes(val);
+                    return true;
+                });
+            });
+        }
+        return <AssetTable data={filteredData} onView={handleViewAsset} />;
     }
     
-    if (activeModule === 'Master ATK') {
-      // Tab handling for Master ATK
+    if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
+      const isArk = activeModule === 'Master ARK';
+      
+      // Tab handling for Master ATK/ARK
       if (activeTab === 'UOM') {
           return (
             <GeneralMasterTable 
@@ -456,9 +545,18 @@ const App: React.FC = () => {
             />
           );
       }
+      if (activeTab === 'Delivery Location') {
+          return (
+              <MasterDeliveryLocationTable 
+                data={deliveryLocations}
+                onEdit={handleEditDeliveryLocation}
+                onDelete={handleDeleteDeliveryLocation}
+              />
+          );
+      }
 
       // Default: Items Tab
-      let filteredData = MOCK_MASTER_DATA;
+      let filteredData = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
       // Filter by Dynamic Filters (AND logic)
       if (masterAtkFilters.length > 0) {
         filteredData = filteredData.filter(item => {
@@ -474,10 +572,7 @@ const App: React.FC = () => {
       }
       return <MasterAtkTable data={filteredData} />;
     }
-    if (activeModule === 'ARK') {
-        if (activeTab === 'Master') return <MasterAtkTable data={MOCK_MASTER_ARK_DATA} />;
-        return <AssetTable data={MOCK_ARK_DATA} />;
-    }
+
     if (activeModule === 'Contract') return <ContractTable data={contractData} />;
     if (activeModule === 'Timesheet') return <TimesheetTable data={MOCK_TIMESHEET_DATA} />;
     if (activeModule === 'Vendor') return <VendorTable data={MOCK_VENDOR_DATA} />;
@@ -515,10 +610,9 @@ const App: React.FC = () => {
   };
 
   const getFilterTabs = () => {
-    if (activeModule === 'Daftar ATK') return ['All', 'Draft', 'Pending', 'Approved', 'Rejected', 'Closed'];
-    if (activeModule === 'Stationery Request Approval') return ['All', 'Draft', 'Pending', 'Approved', 'Rejected', 'Closed'];
-    if (activeModule === 'Master ATK') return ['Items', 'UOM', 'Currency', 'Category']; 
-    if (activeModule === 'ARK') return ['Pengguna', 'Master', 'Approval'];
+    if (activeModule === 'Daftar ATK' || activeModule === 'Daftar ARK') return ['All', 'Draft', 'Pending', 'Approved', 'Rejected', 'Closed'];
+    if (activeModule === 'Stationery Request Approval' || activeModule === 'Household Request Approval') return ['All', 'Draft', 'Pending', 'Approved', 'Rejected', 'Closed'];
+    if (activeModule === 'Master ATK' || activeModule === 'Master ARK') return ['Items', 'UOM', 'Currency', 'Category', 'Delivery Location']; 
     if (activeModule === 'Contract') return ['Own', 'Rent'];
     if (activeModule === 'Timesheet') return ['All', 'Permanent', 'Contract', 'Probation', 'Internship', 'Vendor'];
     if (activeModule === 'Vendor') return ['Active', 'Inactive', 'Blacklist'];
@@ -530,10 +624,11 @@ const App: React.FC = () => {
 
   // Helper to get module name for modal. Maps tabs to specific master keys when needed.
   const getModalModuleName = () => {
-    if (activeModule === 'Master ATK') {
+    if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
         if (activeTab === 'UOM') return 'Master UOM';
         if (activeTab === 'Currency') return 'Master Currency';
         if (activeTab === 'Category') return 'Master Category';
+        if (activeTab === 'Delivery Location') return 'Master Delivery Location';
     }
     return activeModule;
   }
@@ -562,6 +657,9 @@ const App: React.FC = () => {
                  activeModule === 'Daftar ATK' ? t('Daftar Aset ATK') :
                  activeModule === 'Stationery Request Approval' ? t('Header Stationery Request Approval') :
                  activeModule === 'Master ATK' ? t('Master Data ATK') :
+                 activeModule === 'Daftar ARK' ? t('Request ARK') :
+                 activeModule === 'Household Request Approval' ? t('Header Household Request Approval') :
+                 activeModule === 'Master ARK' ? t('Master Data ARK') :
                  activeModule === 'Contract' ? t('List Building') :
                  activeModule === 'Master Vendor' ? t('Master Vendor') :
                  isMasterModule(activeModule) ? `Master ${t(activeModule)}` :
@@ -576,8 +674,8 @@ const App: React.FC = () => {
             onAddClick={handleAddClick}
             moduleName={activeModule}
             // Pass dynamic filter props
-            activeFilters={activeModule === 'Master ATK' ? masterAtkFilters : atkFilters}
-            onFilterChange={activeModule === 'Master ATK' ? setMasterAtkFilters : setAtkFilters}
+            activeFilters={(activeModule === 'Master ATK' || activeModule === 'Master ARK') ? masterAtkFilters : atkFilters}
+            onFilterChange={(activeModule === 'Master ATK' || activeModule === 'Master ARK') ? setMasterAtkFilters : setAtkFilters}
           />
 
           {renderContent()}
@@ -596,6 +694,7 @@ const App: React.FC = () => {
         onSaveMaster={handleSaveMaster} 
         onSaveMasterVendor={handleSaveMasterVendor}
         onSaveStationeryRequest={handleSaveStationeryRequest}
+        onSaveDeliveryLocation={handleSaveDeliveryLocation}
         initialVehicleData={selectedVehicle || undefined}
         initialServiceData={selectedService || undefined}
         initialMutationData={selectedMutation || undefined}
@@ -603,6 +702,8 @@ const App: React.FC = () => {
         initialContractData={selectedContract || undefined}
         initialMasterData={selectedMasterItem || undefined}
         initialMasterVendorData={selectedMasterVendor || undefined}
+        initialDeliveryLocationData={selectedDeliveryLocation || undefined}
+        initialAssetData={selectedAsset || undefined}
         mode={modalMode}
         vehicleList={vehicleData}
         masterData={masters} 

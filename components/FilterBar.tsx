@@ -55,7 +55,7 @@ export const FilterBar: React.FC<Props> = ({
 
   // Update default tempField when module changes to avoid invalid fields
   useEffect(() => {
-    if (moduleName === 'Daftar ATK' || moduleName === 'Stationery Request Approval') {
+    if (moduleName === 'Daftar ATK' || moduleName === 'Stationery Request Approval' || moduleName === 'Daftar ARK' || moduleName === 'Household Request Approval') {
         setTempField('Employee Name');
     } else {
         setTempField('Category');
@@ -79,6 +79,19 @@ export const FilterBar: React.FC<Props> = ({
     if (!onFilterChange) return;
     onFilterChange([]);
     setTempValue('');
+  };
+
+  // Handler for Date Input specific to ATK/ARK
+  const handleDateFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!onFilterChange) return;
+      const val = e.target.value;
+      const others = activeFilters.filter(f => f.field !== 'Date');
+      
+      if (val) {
+          onFilterChange([...others, { field: 'Date', value: val }]);
+      } else {
+          onFilterChange(others);
+      }
   };
   
   // Specific layout for Daftar Aset (Vehicle), Servis, Pajak & KIR, Mutasi, Penjualan AND Contract (List Building)
@@ -269,17 +282,30 @@ export const FilterBar: React.FC<Props> = ({
       {/* Filter Row Container - White Background */}
       <div className="bg-white p-5 rounded-b-lg rounded-tr-lg shadow-sm border border-gray-200 -mt-[1px] relative z-0">
         
-        {/* Dynamic Filter UI for Daftar ATK & Master ATK */}
-        {moduleName === 'Daftar ATK' || moduleName === 'Stationery Request Approval' || moduleName === 'Master ATK' ? (
+        {/* Dynamic Filter UI for Daftar ATK & Master ATK & ARK */}
+        {moduleName === 'Daftar ATK' || moduleName === 'Stationery Request Approval' || moduleName === 'Master ATK' || moduleName === 'Daftar ARK' || moduleName === 'Household Request Approval' || moduleName === 'Master ARK' ? (
            <div className="flex justify-between items-start">
-              {/* Search */}
-              <div className="w-1/3 relative">
-                 <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
-                 <input 
-                    type="text" 
-                    placeholder={actualSearchPlaceholder} 
-                    className="w-full bg-white pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400 outline-none transition-all"
-                 />
+              {/* Left Side: Search & Date */}
+              <div className="flex items-center gap-3 w-1/2">
+                  <div className="flex-1 relative">
+                     <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+                     <input 
+                        type="text" 
+                        placeholder={actualSearchPlaceholder} 
+                        className="w-full bg-white pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400 outline-none transition-all"
+                     />
+                  </div>
+                  {/* Date Input for ATK/ARK Requests */}
+                  {(moduleName === 'Daftar ATK' || moduleName === 'Stationery Request Approval' || moduleName === 'Daftar ARK' || moduleName === 'Household Request Approval') && (
+                      <div className="w-40">
+                          <input 
+                            type="date"
+                            className="w-full bg-white px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-400 outline-none transition-all text-gray-500"
+                            onChange={handleDateFilterChange}
+                            value={activeFilters.find(f => f.field === 'Date')?.value || ''}
+                          />
+                      </div>
+                  )}
               </div>
 
               {/* Action Buttons */}
@@ -324,7 +350,7 @@ export const FilterBar: React.FC<Props> = ({
                                             onChange={(e) => setTempField(e.target.value)}
                                         >
                                             {/* Transaction Filters */}
-                                            {(moduleName === 'Daftar ATK' || moduleName === 'Stationery Request Approval') && (
+                                            {(moduleName === 'Daftar ATK' || moduleName === 'Stationery Request Approval' || moduleName === 'Daftar ARK' || moduleName === 'Household Request Approval') && (
                                                 <option value="Employee Name">Employee</option>
                                             )}
                                             
@@ -334,7 +360,7 @@ export const FilterBar: React.FC<Props> = ({
                                             <option value="Item Code">Kode Barang</option>
 
                                             {/* Master Only Filters */}
-                                            {moduleName === 'Master ATK' && (
+                                            {(moduleName === 'Master ATK' || moduleName === 'Master ARK') && (
                                                 <option value="UOM">UoM</option>
                                             )}
                                         </select>

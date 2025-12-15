@@ -43,7 +43,7 @@ interface MenuItem {
 
 export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, onToggle }) => {
   const { t } = useLanguage();
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Master Data', 'ATK']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Master Data', 'ATK', 'ARK']);
 
   const toggleMenu = (label: string) => {
     if (isCollapsed) {
@@ -81,7 +81,15 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
              { label: 'Master ATK', icon: <Database size={18} /> },
         ]
     },
-    { label: 'ARK', icon: <ShoppingCart size={20} /> },
+    { 
+        label: 'ARK', 
+        icon: <ShoppingCart size={20} />,
+        subItems: [
+             { label: 'Daftar ARK', icon: <List size={18} /> },
+             { label: 'Household Request Approval', icon: <ClipboardCheck size={18} /> },
+             { label: 'Master ARK', icon: <Database size={18} /> },
+        ]
+    },
     { label: 'Contract', icon: <FileText size={20} /> },
     { label: 'Timesheet', icon: <Clock size={20} /> },
     { label: 'Vendor', icon: <Users size={20} /> },

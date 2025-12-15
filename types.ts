@@ -234,3 +234,10 @@ export interface StationeryRequestRecord {
     location: string;
     items: StationeryRequestItem[];
 }
+
+export interface DeliveryLocationRecord {
+    id: number;
+    name: string;
+    address: string;
+    type: 'Head Office' | 'Branch' | 'Warehouse' | 'Store';
+}
