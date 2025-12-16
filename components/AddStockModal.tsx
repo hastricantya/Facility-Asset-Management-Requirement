@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, RefreshCcw, Plus, Trash2, Image as ImageIcon, List, Calendar, PlusCircle, Settings, Clock, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, Download, History, User } from 'lucide-react';
-import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, SalesOffer, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord } from '../types';
+import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, SalesOffer, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA } from '../constants';
 
@@ -18,6 +18,7 @@ interface Props {
   onSaveMasterVendor?: (masterVendor: Partial<MasterVendorRecord>) => void;
   onSaveStationeryRequest?: (request: Partial<StationeryRequestRecord>) => void;
   onSaveDeliveryLocation?: (location: Partial<DeliveryLocationRecord>) => void;
+  onSaveLogBook?: (logbook: Partial<LogBookRecord>) => void;
   onRevise?: () => void; // New prop for handling revision
   
   initialVehicleData?: VehicleRecord;
@@ -48,6 +49,7 @@ export const AddStockModal: React.FC<Props> = ({
     onSaveMasterVendor,
     onSaveStationeryRequest,
     onSaveDeliveryLocation,
+    onSaveLogBook,
     onRevise,
     initialVehicleData,
     initialServiceData,
@@ -175,6 +177,20 @@ export const AddStockModal: React.FC<Props> = ({
       type: 'Branch'
   };
 
+  // Local state for Log Book form
+  const defaultLogBookForm: Partial<LogBookRecord> = {
+      lokasiModena: '',
+      kategoriTamu: 'Customer',
+      namaTamu: '',
+      tanggalKunjungan: '',
+      jamDatang: '',
+      jamPulang: '',
+      wanita: 0,
+      lakiLaki: 0,
+      anakAnak: 0,
+      note: ''
+  };
+
   const [vehicleForm, setVehicleForm] = useState<Partial<VehicleRecord>>(defaultVehicleForm);
   const [serviceForm, setServiceForm] = useState<Partial<ServiceRecord>>(defaultServiceForm);
   const [mutationForm, setMutationForm] = useState<Partial<MutationRecord>>(defaultMutationForm);
@@ -184,6 +200,8 @@ export const AddStockModal: React.FC<Props> = ({
   const [masterVendorForm, setMasterVendorForm] = useState<Partial<MasterVendorRecord>>(defaultMasterVendorForm);
   const [stationeryRequestForm, setStationeryRequestForm] = useState<Partial<StationeryRequestRecord>>(defaultStationeryRequestForm);
   const [deliveryLocationForm, setDeliveryLocationForm] = useState<Partial<DeliveryLocationRecord>>(defaultDeliveryLocationForm);
+  const [logBookForm, setLogBookForm] = useState<Partial<LogBookRecord>>(defaultLogBookForm);
+
   const [salesOffers, setSalesOffers] = useState<SalesOffer[]>([{ nama: '', pic: '', phone: '', price: '' }]);
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '' }]);
   
@@ -257,6 +275,7 @@ export const AddStockModal: React.FC<Props> = ({
             setMasterVendorForm(defaultMasterVendorForm);
             setStationeryRequestForm(defaultStationeryRequestForm);
             setDeliveryLocationForm(defaultDeliveryLocationForm);
+            setLogBookForm(defaultLogBookForm);
             setSalesOffers([{ nama: '', pic: '', phone: '', price: '' }]);
             setRequestItems([{ itemId: '', qty: '' }]);
             setSelectedMutationAsset(null);
@@ -303,6 +322,10 @@ export const AddStockModal: React.FC<Props> = ({
 
   const handleDeliveryLocationChange = (field: keyof DeliveryLocationRecord, value: any) => {
       setDeliveryLocationForm(prev => ({ ...prev, [field]: value }));
+  }
+
+  const handleLogBookChange = (field: keyof LogBookRecord, value: any) => {
+      setLogBookForm(prev => ({ ...prev, [field]: value }));
   }
 
   const handleOfferChange = (index: number, field: keyof SalesOffer, value: string) => {
@@ -354,6 +377,8 @@ export const AddStockModal: React.FC<Props> = ({
           onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
       } else if (moduleName === 'Master Delivery Location' && onSaveDeliveryLocation) {
           onSaveDeliveryLocation(deliveryLocationForm);
+      } else if (moduleName === 'Log Book' && onSaveLogBook) {
+          onSaveLogBook(logBookForm);
       } else if (onSaveMaster) {
           onSaveMaster(masterForm);
       }
@@ -372,10 +397,12 @@ export const AddStockModal: React.FC<Props> = ({
   const isMasterATK = moduleName === 'Master ATK';
   const isMasterARK = moduleName === 'Master ARK';
   const isDeliveryLocation = moduleName === 'Master Delivery Location';
+  const isLogBook = moduleName === 'Log Book';
+
   // Check against all Stationery/Household modules (both Requests and Approvals)
   const isStationeryRequest = moduleName === 'Daftar ATK' || moduleName === 'Daftar ARK' || moduleName === 'Stationery Request Approval' || moduleName === 'Household Request Approval';
   
-  const isMaster = !isContract && !isVendor && !isVehicle && !isService && !isMutation && !isSales && !isMasterVendor && !isStationeryRequest && !isDeliveryLocation && !moduleName?.includes('ATK') && !moduleName?.includes('ARK') && moduleName !== 'Timesheet';
+  const isMaster = !isContract && !isVendor && !isVehicle && !isService && !isMutation && !isSales && !isMasterVendor && !isStationeryRequest && !isDeliveryLocation && !isLogBook && !moduleName?.includes('ATK') && !moduleName?.includes('ARK') && moduleName !== 'Timesheet';
 
   const isViewMode = mode === 'view';
   const isEditMode = mode === 'edit';
@@ -388,6 +415,7 @@ export const AddStockModal: React.FC<Props> = ({
     if (isService) return t('Request Servis');
     if (isMutation) return t('Permintaan Mutasi Kendaraan');
     if (isSales) return t('Permintaan Penjualan');
+    if (isLogBook) return `${t('Tamu')} > ${t('Tambah Tamu')}`;
     if (isMasterATK || isMasterARK) return `${t(moduleName || '')} > ${t('Tambah Stock')}`;
     
     if (isStationeryRequest) {
@@ -502,10 +530,12 @@ export const AddStockModal: React.FC<Props> = ({
 
   // Full Screen Mode for Stationery/Household Request
   if (isStationeryRequest) {
-      const isArk = moduleName === 'Daftar ARK' || moduleName === 'Household Request Approval';
+     // ... (Existing implementation for Stationery Request)
+     const isArk = moduleName === 'Daftar ARK' || moduleName === 'Household Request Approval';
       const itemLabel = isArk ? t('Search ARK') : t('Search ATK');
       const requestTypeLabel = isArk ? t('Pilih jenis item ARK') : t('Pilih jenis item ATK');
       const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+      const titleLabel = isArk ? 'Household Request' : 'Stationery Request';
 
       const trxNumber = initialAssetData?.transactionNumber || '[Auto Generated]';
       const status = initialAssetData?.status || 'Draft';
@@ -529,18 +559,18 @@ export const AddStockModal: React.FC<Props> = ({
       if (isViewMode) {
           return (
             <>
-            <div className="fixed inset-0 bg-gray-50 z-50 overflow-y-auto">
+            <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col">
                  {/* Top Navigation Bar Style Header */}
-                 <div className="bg-white border-b border-gray-200 sticky top-0 z-10 px-8 py-4 flex items-center justify-between">
+                 <div className="bg-white border-b border-gray-200 shrink-0 px-8 py-4 flex items-center justify-between z-10">
                      <div className="flex items-center gap-4">
                         <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600">
                              <ChevronLeft size={24} />
                         </button>
                         <div>
-                             <h1 className="text-xl font-bold text-gray-900">Purchase Request</h1>
+                             <h1 className="text-xl font-bold text-gray-900">{titleLabel}</h1>
                              <div className="flex items-center gap-3 mt-1">
                                  <span className="px-2 py-0.5 bg-cyan-50 border border-cyan-100 text-cyan-700 text-xs font-semibold rounded">
-                                     PR Number: {trxNumber}
+                                     Transaction No: {trxNumber}
                                  </span>
                                  <span className={`px-2 py-0.5 text-xs font-semibold rounded flex items-center gap-1 ${getStatusColor(status)}`}>
                                      {getStatusIcon(status)}
@@ -564,7 +594,8 @@ export const AddStockModal: React.FC<Props> = ({
                      </div>
                  </div>
 
-                 <div className="p-8 max-w-[1600px] mx-auto space-y-6">
+                 <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                     <div className="max-w-[1600px] mx-auto space-y-6">
                      
                      {/* Info Cards Grid */}
                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -685,203 +716,216 @@ export const AddStockModal: React.FC<Props> = ({
                             </table>
                          </div>
                      </div>
+                     </div>
+                 </div>
+
+                 {/* Sticky Action Footer for Approvals */}
+                 <div className="bg-white border-t border-gray-200 shrink-0 px-8 py-4 z-10">
+                     <div className="max-w-[1600px] mx-auto flex justify-end gap-3">
+                         <button 
+                            onClick={onRevise}
+                            className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-white bg-[#FBC02D] hover:bg-[#F9A825] rounded transition-colors shadow-sm"
+                         >
+                            <RefreshCcw size={18} />
+                            {t('Revise')}
+                         </button>
+                         <button 
+                            className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-white bg-[#D32F2F] hover:bg-[#B71C1C] rounded transition-colors shadow-sm"
+                         >
+                            <XCircle size={18} />
+                            {t('Reject')}
+                         </button>
+                         <button 
+                            className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-white bg-[#00C853] hover:bg-[#009624] rounded transition-colors shadow-sm"
+                         >
+                            <CheckCircle size={18} />
+                            {t('Approve')}
+                         </button>
+                     </div>
                  </div>
             </div>
             {renderApprovalHistory()}
             </>
           );
       }
-
-      // Default Create/Edit Layout
-      return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
-             <div className="bg-white w-full max-w-4xl rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
-                <div className="px-6 py-4 flex items-center justify-between bg-white border-b border-gray-200 text-gray-900">
-                    <div className="flex items-center gap-3">
-                        <Settings className="text-gray-700" size={20} />
-                        <h2 className="text-lg font-bold tracking-wide">{getTitle()}</h2>
-                    </div>
-                    <button className="text-gray-400 hover:text-gray-600 transition-colors">
-                        <X size={20} onClick={onClose} className="cursor-pointer"/>
-                    </button>
-                </div>
-
-                <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gray-50">
-                     <h3 className="font-bold text-gray-900 mb-6">{t('Form Request')}</h3>
-
-                     {/* Form Fields */}
-                     <div className="space-y-6">
-                         
-                         {/* Pilih Kebutuhan */}
-                         <div>
-                             <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih Kebutuhan')} <Required/></label>
-                             <select 
-                                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
-                                value={stationeryRequestForm.type}
-                                onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
-                             >
-                                 <option value="">{requestTypeLabel}</option>
-                                 <option value="Bulanan">{t('Permintaan Bulanan')}</option>
-                                 <option value="Khusus">{t('Permintaan Khusus')}</option>
-                             </select>
-                         </div>
-
-                         {/* Item List */}
-                         {requestItems.map((item, index) => (
-                             <div key={index} className="flex gap-4 items-end">
-                                 <div className="flex-1">
-                                     <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih barang ATK')} <Required/></label>
-                                     <select 
-                                        className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
-                                        value={item.itemId}
-                                        onChange={(e) => handleRequestItemChange(index, 'itemId', e.target.value)}
-                                     >
-                                         <option value="">{itemLabel}</option>
-                                         {masterList.map(m => (
-                                             <option key={m.id} value={m.id}>{m.itemName} ({m.uom})</option>
-                                         ))}
-                                     </select>
-                                 </div>
-                                 <div className="w-32">
-                                     <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Jumlah')}</label>
-                                     <input 
-                                        type="number" 
-                                        className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
-                                        placeholder={t('Jumlah')}
-                                        value={item.qty}
-                                        onChange={(e) => handleRequestItemChange(index, 'qty', e.target.value)}
-                                     />
-                                 </div>
-                                 {index > 0 && (
-                                     <button onClick={() => removeRequestItemRow(index)} className="mb-2.5 p-2 text-gray-400 hover:text-red-500">
-                                         <Trash2 size={20} />
-                                     </button>
-                                 )}
-                             </div>
-                         ))}
-
-                         {/* Add More */}
-                         <div>
-                             <button 
-                                onClick={addRequestItemRow}
-                                className="flex items-center gap-2 text-gray-900 font-semibold text-sm hover:text-gray-700"
-                             >
-                                 <PlusCircle size={18} />
-                                 {t('Add More')}
-                             </button>
-                         </div>
-
-                         {/* Tanggal Request */}
-                         <div>
-                             <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Tanggal Request')}</label>
-                             <div className="relative">
-                                 <input 
-                                    type="date" 
-                                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
-                                    value={stationeryRequestForm.date}
-                                    onChange={(e) => handleStationeryRequestChange('date', e.target.value)}
-                                 />
-                             </div>
-                         </div>
-
-                         {/* Remarks */}
-                         <div>
-                             <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Remarks')}</label>
-                             <textarea 
-                                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black h-32 resize-none"
-                                placeholder={t('Isi Remarks')}
-                                value={stationeryRequestForm.remarks}
-                                onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)}
-                             ></textarea>
-                         </div>
-
-                         {/* Delivery Options */}
-                         <div className="flex gap-6">
-                             <label className="flex items-center gap-2 cursor-pointer">
-                                 <input 
-                                    type="radio" 
-                                    name="deliveryType" 
-                                    value="Dikirim" 
-                                    className="w-4 h-4 text-black border-gray-300 focus:ring-black"
-                                    checked={stationeryRequestForm.deliveryType === 'Dikirim'}
-                                    onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
-                                 />
-                                 <span className="text-sm font-medium text-gray-700">{t('Dikirim')}</span>
-                             </label>
-                             <label className="flex items-center gap-2 cursor-pointer">
-                                 <input 
-                                    type="radio" 
-                                    name="deliveryType" 
-                                    value="Ambil di HO" 
-                                    className="w-4 h-4 text-black border-gray-300 focus:ring-black"
-                                    checked={stationeryRequestForm.deliveryType === 'Ambil di HO'}
-                                    onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
-                                 />
-                                 <span className="text-sm font-medium text-gray-700">{t('Ambil di HO')}</span>
-                             </label>
-                         </div>
-                     </div>
-
-                     {/* Alamat Pengiriman */}
-                     <div className="mt-8">
-                         <h3 className="font-bold text-gray-900 mb-4">{t('Alamat Pengiriman')}</h3>
-                         <div>
-                             <label className="block text-sm font-semibold text-gray-800 mb-2">{t('Pilih Tempat')} <Required/></label>
-                             <select 
-                                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
-                                value={stationeryRequestForm.location}
-                                onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
-                             >
-                                 <option value="">{t('Pilih Tempat')}</option>
-                                 <option value="MODENA Head Office">{t('MODENA Head Office')}</option>
-                                 <option value="MODENA Kemang">{t('MODENA Kemang')}</option>
-                                 <option value="MODENA Suryo">{t('MODENA Suryo')}</option>
-                                 <option value="Warehouse Cakung">{t('Warehouse Cakung')}</option>
-                             </select>
-                         </div>
-                     </div>
-                </div>
-
-                 {/* Footer Buttons */}
-                 <div className="px-8 py-4 bg-white border-t border-gray-200 flex gap-4">
-                    <button 
-                        className="bg-[#2C333A] text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide hover:bg-gray-800 transition-colors"
-                        onClick={handleSave}
-                    >
-                        {t('REVIEW REQUEST')}
-                    </button>
-                    <button 
-                        className="bg-white text-[#2C333A] px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wide border border-[#2C333A] hover:bg-gray-50 transition-colors"
-                        onClick={onClose}
-                    >
-                        {t('CANCEL')}
-                    </button>
-                 </div>
-             </div>
-        </div>
-      );
+      
+      // Default return handled below
   }
   
   // Standard Modal Render (for other modules)
   return (
     <>
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
-      <div className={`bg-white w-full ${isMaster || isDeliveryLocation ? 'max-w-md' : (isVehicle || isService || isMutation || isSales || isContract || isMasterVendor ? 'max-w-7xl' : 'max-w-5xl')} rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]`}>
+      <div className={`bg-white w-full ${isMaster || isDeliveryLocation ? 'max-w-md' : (isVehicle || isService || isMutation || isSales || isContract || isMasterVendor || isLogBook ? 'max-w-7xl' : 'max-w-5xl')} rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]`}>
         {/* Modal Header */}
-        <div className={`px-6 py-4 flex items-center justify-between ${isService || isMutation || isSales || isContract || isMaster || isMasterVendor || isMasterATK || isMasterARK || isDeliveryLocation ? 'bg-white border-b border-gray-200 text-gray-900' : 'bg-black text-white'}`}>
-          <h2 className={`text-sm font-bold tracking-wide ${isMasterATK || isMasterARK || isMasterVendor || isService || isSales || isMutation || isContract || isMaster || isDeliveryLocation ? '' : 'text-white'}`}>
+        <div className={`px-6 py-4 flex items-center justify-between ${isService || isMutation || isSales || isContract || isMaster || isMasterVendor || isMasterATK || isMasterARK || isDeliveryLocation || isLogBook ? 'bg-white border-b border-gray-200 text-gray-900' : 'bg-black text-white'}`}>
+          <h2 className={`text-sm font-bold tracking-wide ${isMasterATK || isMasterARK || isMasterVendor || isService || isSales || isMutation || isContract || isMaster || isDeliveryLocation || isLogBook ? '' : 'text-white'}`}>
             {getTitle()}
           </h2>
           <div className="flex items-center gap-4">
-            <button className={`${isService || isMutation || isSales || isContract || isMaster || isMasterVendor || isMasterATK || isMasterARK || isDeliveryLocation ? 'text-gray-400 hover:text-gray-600' : 'text-gray-400 hover:text-white'} transition-colors`}>
+            <button className={`${isService || isMutation || isSales || isContract || isMaster || isMasterVendor || isMasterATK || isMasterARK || isDeliveryLocation || isLogBook ? 'text-gray-400 hover:text-gray-600' : 'text-gray-400 hover:text-white'} transition-colors`}>
               <X size={20} onClick={onClose} className="cursor-pointer"/>
             </button>
           </div>
         </div>
-        {/* ... (rest of standard modal body remains unchanged) */}
+        
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gray-50">
           
-          {isMasterATK || isMasterARK ? (
+          {isLogBook ? (
+            /* --- LOG BOOK FORM --- */
+            <div className="space-y-6">
+                <h3 className="text-blue-500 font-bold text-sm mb-4">{t('Tamu')}</h3>
+                
+                <div className="space-y-4">
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">{t('Lokasi MODENA')} <Required/></label>
+                        </div>
+                        <div className="col-span-9">
+                            <select 
+                                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black"
+                                value={logBookForm.lokasiModena}
+                                onChange={(e) => handleLogBookChange('lokasiModena', e.target.value)}
+                            >
+                                <option value="">{t('Pilih Tempat')}</option>
+                                <option value="MODENA Head Office">{t('MODENA Head Office')}</option>
+                                <option value="MODENA Kemang">{t('MODENA Kemang')}</option>
+                                <option value="MODENA Suryo">{t('MODENA Suryo')}</option>
+                                <option value="Warehouse Cakung">{t('Warehouse Cakung')}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">{t('Kategori Tamu')} <Required/></label>
+                        </div>
+                        <div className="col-span-9">
+                            <select 
+                                className="w-full bg-[#FFF9C4] border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black"
+                                value={logBookForm.kategoriTamu}
+                                onChange={(e) => handleLogBookChange('kategoriTamu', e.target.value)}
+                            >
+                                <option value="Customer">Customer</option>
+                                <option value="Supplier">Supplier</option>
+                                <option value="Partner">Partner</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">{t('Nama Tamu')}</label>
+                        </div>
+                        <div className="col-span-5">
+                             <input 
+                                type="text" 
+                                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black"
+                                value={logBookForm.namaTamu}
+                                onChange={(e) => handleLogBookChange('namaTamu', e.target.value)}
+                             />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">{t('Tanggal Kunjungan')}</label>
+                        </div>
+                        <div className="col-span-3">
+                             <input 
+                                type="date" 
+                                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black"
+                                value={logBookForm.tanggalKunjungan}
+                                onChange={(e) => handleLogBookChange('tanggalKunjungan', e.target.value)}
+                             />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-12 gap-4 items-center border-t border-gray-100 pt-4">
+                        <div className="col-span-3"></div>
+                        <div className="col-span-3">
+                             <label className="block text-xs font-bold text-gray-700 mb-1">{t('Jam Datang')}</label>
+                             <div className="relative">
+                                <input 
+                                    type="time" 
+                                    className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black"
+                                    value={logBookForm.jamDatang}
+                                    onChange={(e) => handleLogBookChange('jamDatang', e.target.value)}
+                                />
+                             </div>
+                        </div>
+                        <div className="col-span-3">
+                             <label className="block text-xs font-bold text-gray-700 mb-1">{t('Jam Pulang')}</label>
+                             <div className="relative">
+                                <input 
+                                    type="time" 
+                                    className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black"
+                                    value={logBookForm.jamPulang}
+                                    onChange={(e) => handleLogBookChange('jamPulang', e.target.value)}
+                                />
+                             </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3 text-right pr-4 pt-2">
+                             <label className="block text-sm font-semibold text-gray-700">{t('Wanita')}</label>
+                        </div>
+                        <div className="col-span-2">
+                            <input 
+                                type="number" 
+                                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black"
+                                value={logBookForm.wanita}
+                                onChange={(e) => handleLogBookChange('wanita', e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3 text-right pr-4 pt-2">
+                             <label className="block text-sm font-semibold text-gray-700">{t('Laki-Laki')}</label>
+                        </div>
+                        <div className="col-span-2">
+                            <input 
+                                type="number" 
+                                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black"
+                                value={logBookForm.lakiLaki}
+                                onChange={(e) => handleLogBookChange('lakiLaki', e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                     <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3 text-right pr-4 pt-2">
+                             <label className="block text-sm font-semibold text-gray-700">{t('Anak-Anak')}</label>
+                        </div>
+                        <div className="col-span-2">
+                            <input 
+                                type="number" 
+                                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black"
+                                value={logBookForm.anakAnak}
+                                onChange={(e) => handleLogBookChange('anakAnak', e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-12 gap-4 items-start">
+                        <div className="col-span-3 text-right pr-4 pt-2">
+                             <label className="block text-sm font-semibold text-gray-700">{t('Note')}</label>
+                        </div>
+                        <div className="col-span-5">
+                            <textarea 
+                                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black resize-none h-24"
+                                value={logBookForm.note}
+                                onChange={(e) => handleLogBookChange('note', e.target.value)}
+                            ></textarea>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+          ) : isMasterATK || isMasterARK ? (
             /* --- MASTER ATK/ARK FORM --- */
             <div className="space-y-6">
                 {/* ... (Existing Master ATK/ARK content) ... */}
@@ -1220,13 +1264,13 @@ export const AddStockModal: React.FC<Props> = ({
             <div className="px-8 py-4 bg-white border-t border-gray-200 flex justify-end gap-3">
             <button 
                 onClick={onClose}
-                className={`px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ${isMasterATK || isMasterARK || isDeliveryLocation ? 'rounded-full' : ''}`}
+                className={`px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ${isMasterATK || isMasterARK || isDeliveryLocation ? 'rounded-full' : ''} ${isLogBook ? 'rounded-full bg-black text-white border-none hover:bg-gray-800' : ''}`}
             >
                 {t('Draft')}
             </button>
             <button 
                 onClick={handleSave}
-                className={`px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors shadow-sm ${isMasterVendor ? 'bg-orange-500 hover:bg-orange-600' : isMasterATK || isMasterARK || isDeliveryLocation ? 'bg-black hover:bg-gray-800 rounded-full' : 'bg-black hover:bg-gray-800'}`}
+                className={`px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors shadow-sm ${isMasterVendor ? 'bg-orange-500 hover:bg-orange-600' : isMasterATK || isMasterARK || isDeliveryLocation || isLogBook ? 'bg-black hover:bg-gray-800 rounded-full' : 'bg-black hover:bg-gray-800'}`}
             >
                 {isMasterVendor ? t('Submit') : t('Simpan')}
             </button>

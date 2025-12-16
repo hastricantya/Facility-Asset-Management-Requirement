@@ -242,3 +242,17 @@ export interface DeliveryLocationRecord {
     address: string;
     type: 'Head Office' | 'Branch' | 'Warehouse' | 'Store';
 }
+
+export interface LogBookRecord {
+  id: number;
+  lokasiModena: string;
+  kategoriTamu: string;
+  namaTamu: string;
+  tanggalKunjungan: string;
+  jamDatang: string;
+  jamPulang: string;
+  wanita: number;
+  lakiLaki: number;
+  anakAnak: number;
+  note: string;
+}

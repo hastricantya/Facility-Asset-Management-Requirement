@@ -90,6 +90,7 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
              { label: 'Master ARK', icon: <Database size={18} /> },
         ]
     },
+    { label: 'Log Book', icon: <BookOpen size={20} /> },
     { label: 'Contract', icon: <FileText size={20} /> },
     { label: 'Timesheet', icon: <Clock size={20} /> },
     { label: 'Vendor', icon: <Users size={20} /> },
@@ -110,7 +111,6 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
         { label: 'Master Vendor', icon: <Users size={18} /> },
       ]
     },
-    { label: 'Log Book', icon: <BookOpen size={20} /> },
     { label: 'Project Mgmt', icon: <BarChart size={20} /> },
   ];
 

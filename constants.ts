@@ -1,5 +1,5 @@
 
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord } from './types';
 
 export const MOCK_DATA: AssetRecord[] = [
   {
@@ -678,5 +678,86 @@ export const MOCK_DELIVERY_LOCATIONS: DeliveryLocationRecord[] = [
         name: 'Warehouse Cakung',
         address: 'Jl. Raya Cakung Cilincing Km. 1.5, Jakarta Utara',
         type: 'Warehouse'
+    }
+];
+
+export const MOCK_LOGBOOK_DATA: LogBookRecord[] = [
+    {
+        id: 1,
+        lokasiModena: 'MODENA Head Office',
+        kategoriTamu: 'Customer',
+        namaTamu: 'Budi Santoso',
+        tanggalKunjungan: '2024-03-16',
+        jamDatang: '09:00',
+        jamPulang: '10:00',
+        wanita: 1,
+        lakiLaki: 1,
+        anakAnak: 0,
+        note: 'Product inquiry and demo'
+    },
+    {
+        id: 2,
+        lokasiModena: 'MODENA Kemang',
+        kategoriTamu: 'Supplier',
+        namaTamu: 'PT. Maju Mundur (Andi)',
+        tanggalKunjungan: '2024-03-16',
+        jamDatang: '10:30',
+        jamPulang: '11:45',
+        wanita: 0,
+        lakiLaki: 2,
+        anakAnak: 0,
+        note: 'Monthly supply meeting'
+    },
+    {
+        id: 3,
+        lokasiModena: 'MODENA Suryo',
+        kategoriTamu: 'Partner',
+        namaTamu: 'Sarah Jenkins',
+        tanggalKunjungan: '2024-03-17',
+        jamDatang: '13:00',
+        jamPulang: '15:00',
+        wanita: 1,
+        lakiLaki: 0,
+        anakAnak: 0,
+        note: 'Partnership agreement review'
+    },
+    {
+        id: 4,
+        lokasiModena: 'Warehouse Cakung',
+        kategoriTamu: 'Other',
+        namaTamu: 'Inspector Dinas Kebersihan',
+        tanggalKunjungan: '2024-03-18',
+        jamDatang: '08:15',
+        jamPulang: '09:30',
+        wanita: 1,
+        lakiLaki: 3,
+        anakAnak: 0,
+        note: 'Routine inspection'
+    },
+    {
+        id: 5,
+        lokasiModena: 'MODENA Head Office',
+        kategoriTamu: 'Customer',
+        namaTamu: 'Kel. Bapak Hartono',
+        tanggalKunjungan: '2024-03-18',
+        jamDatang: '14:00',
+        jamPulang: '15:30',
+        wanita: 2,
+        lakiLaki: 1,
+        anakAnak: 2,
+        note: 'Looking for Kitchen Set'
+    },
+    {
+        id: 6,
+        lokasiModena: 'MODENA Head Office',
+        kategoriTamu: 'Other',
+        namaTamu: 'Interviewee - Desi Ratnasari',
+        tanggalKunjungan: '2024-03-19',
+        jamDatang: '09:00',
+        jamPulang: '10:30',
+        wanita: 1,
+        lakiLaki: 0,
+        anakAnak: 0,
+        note: 'HR Interview'
     }
 ];

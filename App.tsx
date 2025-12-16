@@ -16,9 +16,10 @@ import { SalesTable } from './components/SalesTable';
 import { GeneralMasterTable } from './components/GeneralMasterTable';
 import { MasterVendorTable } from './components/MasterVendorTable';
 import { MasterDeliveryLocationTable } from './components/MasterDeliveryLocationTable';
+import { LogBookTable } from './components/LogBookTable';
 import { AddStockModal } from './components/AddStockModal';
-import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_CONTRACT_DATA, MOCK_TIMESHEET_DATA, MOCK_VENDOR_DATA, MOCK_VEHICLE_DATA, MOCK_SERVICE_DATA, MOCK_TAX_KIR_DATA, MOCK_MUTATION_DATA, MOCK_SALES_DATA, MOCK_MASTER_VENDOR_DATA, MOCK_DELIVERY_LOCATIONS } from './constants';
-import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, TaxKirRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, DeliveryLocationRecord, AssetRecord } from './types';
+import { MOCK_DATA, MOCK_MASTER_DATA, MOCK_ARK_DATA, MOCK_MASTER_ARK_DATA, MOCK_CONTRACT_DATA, MOCK_TIMESHEET_DATA, MOCK_VENDOR_DATA, MOCK_VEHICLE_DATA, MOCK_SERVICE_DATA, MOCK_TAX_KIR_DATA, MOCK_MUTATION_DATA, MOCK_SALES_DATA, MOCK_MASTER_VENDOR_DATA, MOCK_DELIVERY_LOCATIONS, MOCK_LOGBOOK_DATA } from './constants';
+import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, TaxKirRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, DeliveryLocationRecord, AssetRecord, LogBookRecord } from './types';
 import { useLanguage } from './contexts/LanguageContext';
 
 const App: React.FC = () => {
@@ -63,6 +64,10 @@ const App: React.FC = () => {
   // State for Master Delivery Locations
   const [deliveryLocations, setDeliveryLocations] = useState<DeliveryLocationRecord[]>(MOCK_DELIVERY_LOCATIONS);
   const [selectedDeliveryLocation, setSelectedDeliveryLocation] = useState<DeliveryLocationRecord | null>(null);
+
+  // State for Log Book Data
+  const [logBookData, setLogBookData] = useState<LogBookRecord[]>(MOCK_LOGBOOK_DATA);
+  const [selectedLogBook, setSelectedLogBook] = useState<LogBookRecord | null>(null);
 
   // State for Asset View (Stationery/Household)
   const [selectedAsset, setSelectedAsset] = useState<AssetRecord | null>(null);
@@ -123,6 +128,8 @@ const App: React.FC = () => {
     } else if (module === 'Master ARK') {
         setActiveTab('Items');
         setMasterAtkFilters([]);
+    } else if (module === 'Log Book') {
+        setActiveTab('All');
     } else {
         // Default
         setActiveTab('Pengguna');
@@ -158,6 +165,7 @@ const App: React.FC = () => {
     setSelectedMasterItem(null);
     setSelectedMasterVendor(null);
     setSelectedDeliveryLocation(null);
+    setSelectedLogBook(null);
     setSelectedAsset(null);
     setIsModalOpen(true);
   };
@@ -333,6 +341,28 @@ const App: React.FC = () => {
   // --- Handlers for Tax KIR ---
   const handleEditTaxKir = (item: TaxKirRecord) => { console.log("Edit Tax Kir", item); };
   const handleViewTaxKir = (item: TaxKirRecord) => { console.log("View Tax Kir", item); };
+
+  // --- Handlers for Log Book ---
+  const handleSaveLogBook = (formData: Partial<LogBookRecord>) => {
+      if (modalMode === 'create') {
+          const newId = Math.max(...logBookData.map(l => l.id), 0) + 1;
+          const newLogBook: LogBookRecord = {
+              id: newId,
+              lokasiModena: formData.lokasiModena || '',
+              kategoriTamu: formData.kategoriTamu || '',
+              namaTamu: formData.namaTamu || '',
+              tanggalKunjungan: formData.tanggalKunjungan || '',
+              jamDatang: formData.jamDatang || '',
+              jamPulang: formData.jamPulang || '',
+              wanita: formData.wanita || 0,
+              lakiLaki: formData.lakiLaki || 0,
+              anakAnak: formData.anakAnak || 0,
+              note: formData.note || ''
+          };
+          setLogBookData([...logBookData, newLogBook]);
+      }
+      setIsModalOpen(false);
+  }
 
 
   const handleSaveVehicle = (formData: Partial<VehicleRecord>) => {
@@ -588,6 +618,9 @@ const App: React.FC = () => {
     if (activeModule === 'Pajak & KIR') return <TaxKirTable data={MOCK_TAX_KIR_DATA} />;
     if (activeModule === 'Mutasi') return <MutationTable data={mutationData} onEdit={handleEditMutation} onView={handleViewMutation} />;
     if (activeModule === 'Penjualan') return <SalesTable data={salesData} onEdit={handleEditSales} onView={handleViewSales} />;
+    
+    // Log Book
+    if (activeModule === 'Log Book') return <LogBookTable data={logBookData} />;
 
     // Master Vendor
     if (activeModule === 'Master Vendor') {
@@ -624,6 +657,7 @@ const App: React.FC = () => {
     if (activeModule === 'Daftar Aset') return ['Aktif', 'Tidak Aktif'];
     if (activeModule === 'Servis' || activeModule === 'Pajak & KIR' || activeModule === 'Mutasi' || activeModule === 'Penjualan') return ['Semua', 'Persetujuan'];
     if (isMasterModule(activeModule) || activeModule === 'Master Vendor') return []; // No tabs for master sub-modules
+    if (activeModule === 'Log Book') return ['All'];
     return ['All'];
   };
 
@@ -667,6 +701,7 @@ const App: React.FC = () => {
                  activeModule === 'Master ARK' ? t('Master Data ARK') :
                  activeModule === 'Contract' ? t('List Building') :
                  activeModule === 'Master Vendor' ? t('Master Vendor') :
+                 activeModule === 'Log Book' ? t('Log Book Tamu Input') :
                  isMasterModule(activeModule) ? `Master ${t(activeModule)}` :
                  t(activeModule)}
             </h1>
@@ -700,6 +735,7 @@ const App: React.FC = () => {
         onSaveMasterVendor={handleSaveMasterVendor}
         onSaveStationeryRequest={handleSaveStationeryRequest}
         onSaveDeliveryLocation={handleSaveDeliveryLocation}
+        onSaveLogBook={handleSaveLogBook}
         onRevise={handleRevise}
         initialVehicleData={selectedVehicle || undefined}
         initialServiceData={selectedService || undefined}

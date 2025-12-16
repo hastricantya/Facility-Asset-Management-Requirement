@@ -9,6 +9,8 @@ interface LanguageContextType {
   t: (key: string) => string;
 }
 
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
 const translations: Record<string, Record<Language, string>> = {
   // Sidebar & Modules
   'Dashboard': { id: 'Dashboard', en: 'Dashboard' },
@@ -28,12 +30,12 @@ const translations: Record<string, Record<Language, string>> = {
   'Household Request Approval': { id: 'Persetujuan ARK', en: 'Household Request Approval' },
   'Master ARK': { id: 'Master ARK', en: 'Master Household' },
 
+  'Log Book': { id: 'Log Book', en: 'Log Book' },
   'Contract': { id: 'Kontrak', en: 'Contract' },
   'Timesheet': { id: 'Absensi', en: 'Timesheet' },
   'Vendor': { id: 'Vendor', en: 'Vendor' },
   'Credit Card': { id: 'Kartu Kredit', en: 'Credit Card' },
   'Master Data': { id: 'Master Data', en: 'Master Data' },
-  'Log Book': { id: 'Buku Log', en: 'Log Book' },
   'Project Mgmt': { id: 'Manajemen Proyek', en: 'Project Mgmt' },
   
   // Master Sub-items
@@ -110,6 +112,7 @@ const translations: Record<string, Record<Language, string>> = {
   'Header Household Request Approval': { id: 'Persetujuan Permintaan ARK', en: 'Household Request Approval' },
   'Master Data ARK': { id: 'Master Data ARK', en: 'Master Household Data' },
   'Request ARK': { id: 'Request ARK', en: 'Household Request' },
+  'Log Book Tamu Input': { id: 'Log Book Tamu Input', en: 'Guest Log Book Input' },
   
   // Filter Bar specific
   'Employment Status': { id: 'Status Karyawan', en: 'Employment Status' },
@@ -154,34 +157,39 @@ const translations: Record<string, Record<Language, string>> = {
   'Submit': { id: 'Kirim', en: 'Submit' },
   'Cancel': { id: 'Batal', en: 'Cancel' },
   'Detail Informasi': { id: 'Detail Informasi', en: 'Detail Information' },
-  'Surat': { id: 'Surat', en: 'Documents' },
-  'Pembelian': { id: 'Pembelian', en: 'Purchase' },
-  'Asuransi': { id: 'Asuransi', en: 'Insurance' },
-  'Lampiran': { id: 'Lampiran', en: 'Attachments' },
-  'Request Servis': { id: 'Request Servis', en: 'Service Request' },
+  'Surat': { id: 'Surat', en: 'Letter' },
+  'Tamu': { id: 'Tamu', en: 'Guest' },
+  'Tambah Tamu': { id: 'Tambah Tamu', en: 'Add Guest' },
+  'Lokasi MODENA': { id: 'Lokasi MODENA', en: 'MODENA Location' },
+  'Kategori Tamu': { id: 'Kategori Tamu', en: 'Guest Category' },
+  'Nama Tamu': { id: 'Nama Tamu', en: 'Guest Name' },
+  'Tanggal Kunjungan': { id: 'Tanggal Kunjungan', en: 'Visit Date' },
+  'Jam Datang': { id: 'Jam Datang', en: 'Arrival Time' },
+  'Jam Pulang': { id: 'Jam Pulang', en: 'Departure Time' },
+  'Wanita': { id: 'Wanita', en: 'Female' },
+  'Laki-Laki': { id: 'Laki-Laki', en: 'Male' },
+  'Anak-Anak': { id: 'Anak-Anak', en: 'Children' },
+  'Note': { id: 'Catatan', en: 'Note' },
+  'No data available': { id: 'Tidak ada data', en: 'No data available' },
+  'Baru': { id: 'Baru', en: 'New' },
   'Permintaan Mutasi Kendaraan': { id: 'Permintaan Mutasi Kendaraan', en: 'Vehicle Mutation Request' },
   'Permintaan Penjualan': { id: 'Permintaan Penjualan', en: 'Sales Request' },
-  'Penawaran': { id: 'Penawaran', en: 'Offers' },
+  'Tambah Stock': { id: 'Tambah Stok', en: 'Add Stock' },
   'Nama Vendor': { id: 'Nama Vendor', en: 'Vendor Name' },
   'Alamat': { id: 'Alamat', en: 'Address' },
-  'Buat Vendor': { id: 'Buat Vendor', en: 'Create Vendor' },
-  'Tambah Stock': { id: 'Tambah Stock', en: 'Add Stock' },
-  'Baru': { id: 'Baru', en: 'New' },
+  'Request Servis': { id: 'Permintaan Servis', en: 'Service Request' },
   'Location Name': { id: 'Nama Lokasi', en: 'Location Name' },
+  'Address': { id: 'Alamat', en: 'Address' },
   'Type': { id: 'Tipe', en: 'Type' },
+  'Action': { id: 'Aksi', en: 'Action' },
 };
-
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>('id');
 
   const t = (key: string): string => {
-    // Return translation if exists, otherwise return the key itself
-    if (translations[key] && translations[key][language]) {
-      return translations[key][language];
-    }
-    return key;
+    if (!translations[key]) return key;
+    return translations[key][language] || key;
   };
 
   return (
