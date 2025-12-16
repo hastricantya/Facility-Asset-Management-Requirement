@@ -23,7 +23,8 @@ import {
   ChevronUp,
   Settings,
   List,
-  ClipboardCheck
+  ClipboardCheck,
+  Building
 } from 'lucide-react';
 import { SidebarItem } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -43,7 +44,7 @@ interface MenuItem {
 
 export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, onToggle }) => {
   const { t } = useLanguage();
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Master Data', 'ATK', 'ARK']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Master Data', 'ATK', 'ARK', 'Gedung']);
 
   const toggleMenu = (label: string) => {
     if (isCollapsed) {
@@ -91,7 +92,13 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
         ]
     },
     { label: 'Log Book', icon: <BookOpen size={20} /> },
-    { label: 'Contract', icon: <FileText size={20} /> },
+    { 
+        label: 'Gedung', 
+        icon: <Building size={20} />,
+        subItems: [
+             { label: 'Contract', icon: <FileText size={18} /> },
+        ]
+    },
     { label: 'Timesheet', icon: <Clock size={20} /> },
     { label: 'Vendor', icon: <Users size={20} /> },
     { label: 'Credit Card', icon: <CreditCard size={20} /> },

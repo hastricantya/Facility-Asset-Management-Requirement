@@ -1,12 +1,16 @@
+
 import React from 'react';
 import { TaxKirRecord } from '../types';
-import { ChevronsUpDown, Eye, FolderX } from 'lucide-react';
+import { ChevronsUpDown, Eye, FolderX, Pencil, Trash2 } from 'lucide-react';
 
 interface Props {
   data: TaxKirRecord[];
+  onEdit?: (item: TaxKirRecord) => void;
+  onView?: (item: TaxKirRecord) => void;
+  onDelete?: (id: string) => void;
 }
 
-export const TaxKirTable: React.FC<Props> = ({ data }) => {
+export const TaxKirTable: React.FC<Props> = ({ data, onEdit, onView, onDelete }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden min-h-[500px]">
       <div className="overflow-x-auto">
@@ -61,7 +65,7 @@ export const TaxKirTable: React.FC<Props> = ({ data }) => {
                   <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
                 </div>
               </th>
-              <th className="p-4 w-16 text-center">
+              <th className="p-4 w-32 text-center">
                  Action
               </th>
             </tr>
@@ -69,7 +73,11 @@ export const TaxKirTable: React.FC<Props> = ({ data }) => {
           <tbody className="divide-y divide-gray-200 text-sm text-gray-700">
             {data.length > 0 ? (
                 data.map((item) => (
-                    <tr key={item.id} className="bg-white hover:bg-gray-50 transition-colors cursor-pointer group">
+                    <tr 
+                      key={item.id} 
+                      className="bg-white hover:bg-gray-50 transition-colors cursor-pointer group"
+                      onClick={() => onView?.(item)}
+                    >
                         <td className="p-4 font-medium text-gray-900">{item.id}</td>
                         <td className="p-4 font-medium text-gray-900">{item.noPolisi}</td>
                         <td className="p-4 text-gray-600">{item.tglRequest}</td>
@@ -87,11 +95,26 @@ export const TaxKirTable: React.FC<Props> = ({ data }) => {
                             </div>
                         </td>
                         <td className="p-4 text-center">
-                            <button 
-                            className="text-gray-400 hover:text-gray-600 transition-colors"
-                            >
-                                <Eye size={18} />
-                            </button>
+                            <div className="flex items-center justify-center gap-2">
+                                <button 
+                                    onClick={(e) => { e.stopPropagation(); onView?.(item); }}
+                                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                    <Eye size={18} />
+                                </button>
+                                <button 
+                                    onClick={(e) => { e.stopPropagation(); onEdit?.(item); }}
+                                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                    <Pencil size={18} />
+                                </button>
+                                <button 
+                                    onClick={(e) => { e.stopPropagation(); onDelete?.(item.id); }}
+                                    className="text-gray-400 hover:text-red-500 transition-colors"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 ))

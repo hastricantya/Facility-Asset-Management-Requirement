@@ -40,15 +40,16 @@ export interface MasterItem {
 export interface ContractRecord {
   id: number;
   assetNumber: string;
-  assetCategory: string;
-  type: string;
-  ownership: string;
-  location: string;
-  channel: string;
-  department: string;
-  subLocation: string;
-  address: string;
-  status: 'Active' | 'Inactive';
+  status: 'Active' | 'Inactive' | 'Draft';
+  
+  assetCategory?: string;
+  ownership?: string; // 'Owner' | 'Rent'
+  type?: string; 
+  location?: string;
+  channel?: string;
+  subLocation?: string;
+  department?: string;
+  address?: string;
 }
 
 export interface TimesheetRecord {
@@ -158,6 +159,19 @@ export interface TaxKirRecord {
   cabang: string;
   status: string;
   statusApproval: string;
+
+  // Detail Fields based on form
+  aset?: string;
+  tglKir?: string;
+  tahunPembuatan?: string;
+  targetSelesai?: string;
+  vendor?: string;
+  alasan?: string;
+  penyebab?: string;
+  estimasiBiaya?: string;
+  jenisPembayaran?: string;
+  namaBank?: string;
+  nomorRekening?: string;
 }
 
 export interface MutationRecord {
