@@ -57,6 +57,9 @@ const translations: Record<string, Record<Language, string>> = {
   'Currency': { id: 'Mata Uang', en: 'Currency' },
   'Category': { id: 'Kategori', en: 'Category' },
   'Delivery Location': { id: 'Lokasi Pengiriman', en: 'Delivery Location' },
+  'Master Item': { id: 'Master Item', en: 'Master Item' },
+  'Master UOM': { id: 'Master UOM', en: 'Master UOM' },
+  'Master Category': { id: 'Master Kategori', en: 'Master Category' },
 
   // Tabs & Buttons
   'Pengguna': { id: 'Pengguna', en: 'User' },

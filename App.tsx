@@ -63,7 +63,7 @@ const App: React.FC = () => {
   const [masters, setMasters] = useState<Record<string, GeneralMasterItem[]>>({
     'Master UOM': [{id: 1, name: 'Pcs'}, {id: 2, name: 'Box'}, {id: 3, name: 'Rim'}, {id: 4, name: 'Unit'}, {id: 5, name: 'Roll'}, {id: 6, name: 'Can'}, {id: 7, name: 'Pouch'}],
     'Master Currency': [{id: 1, name: 'IDR'}, {id: 2, name: 'USD'}, {id: 3, name: 'EUR'}],
-    'Master Category': [{id: 1, name: 'ATK'}, {id: 2, name: 'Elektronik'}, {id: 3, name: 'Furniture'}, {id: 4, name: 'Kendaraan'}],
+    'Master Category': [{id: 1, name: 'ATK'}, {id: 2, name: 'Elektronik'}, {id: 3, name: 'Furniture'}, {id: 4, name: 'Kendaraan'}, {id: 5, name: 'Pembersih'}, {id: 6, name: 'Tisu'}, {id: 7, name: 'Kebersihan'}],
     'Jenis Pajak': [{id: 1, name: 'Pajak Tahunan'}, {id: 2, name: 'Pajak 5 Tahunan'}],
     'Jenis Pembayaran': [{id: 1, name: 'Kasbon'}, {id: 2, name: 'Reimburse'}, {id: 3, name: 'Langsung'}],
     'Jenis Servis': [{id: 1, name: 'Servis Rutin'}, {id: 2, name: 'Perbaikan'}, {id: 3, name: 'Ganti Sparepart'}],
@@ -98,19 +98,19 @@ const App: React.FC = () => {
         setActiveTab('All');
         setAtkFilters([]); // Reset filters when module resets
     } else if (module === 'Stationery Request Approval') {
-        setActiveTab('Pending');
+        setActiveTab('All');
         setAtkFilters([]);
     } else if (module === 'Master ATK') {
-        setActiveTab('Items'); // Default tab for Master ATK
+        setActiveTab('Master Item'); // Default tab for Master ATK
         setMasterAtkFilters([]);
     } else if (module === 'Daftar ARK') {
         setActiveTab('All');
         setAtkFilters([]);
     } else if (module === 'Household Request Approval') {
-        setActiveTab('Pending');
+        setActiveTab('All');
         setAtkFilters([]);
     } else if (module === 'Master ARK') {
-        setActiveTab('Items');
+        setActiveTab('Master Item');
         setMasterAtkFilters([]);
     } else if (module === 'Log Book') {
         setActiveTab('All');
@@ -130,9 +130,8 @@ const App: React.FC = () => {
 
   const getCurrentMasterKey = () => {
       if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
-          if (activeTab === 'UOM') return 'Master UOM';
-          if (activeTab === 'Currency') return 'Master Currency';
-          if (activeTab === 'Category') return 'Master Category';
+          if (activeTab === 'Master UOM') return 'Master UOM';
+          if (activeTab === 'Master Category') return 'Master Category';
       }
       return activeModule;
   }
@@ -367,18 +366,19 @@ const App: React.FC = () => {
 
   const getFilterTabs = () => {
     if (activeModule === 'Contract') return ['Own', 'Rent'];
-    if (activeModule === 'Daftar ATK' || activeModule === 'Daftar ARK') {
+    if (activeModule === 'Daftar ATK' || activeModule === 'Daftar ARK' || activeModule === 'Stationery Request Approval' || activeModule === 'Household Request Approval') {
         return ['All', 'Draft', 'On Process', 'Rejected', 'Approved', 'Completed'];
+    }
+    if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
+        return ['Master Item', 'Master UOM', 'Master Category'];
     }
     return ['All'];
   };
   
   const getModalModuleName = () => {
     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
-        if (activeTab === 'UOM') return 'Master UOM';
-        if (activeTab === 'Currency') return 'Master Currency';
-        if (activeTab === 'Category') return 'Master Category';
-        if (activeTab === 'Delivery Location') return 'Master Delivery Location';
+        if (activeTab === 'Master UOM') return 'Master UOM';
+        if (activeTab === 'Master Category') return 'Master Category';
     }
     return activeModule;
   }
@@ -399,8 +399,8 @@ const App: React.FC = () => {
              />
          );
      }
-     if (activeModule === 'Daftar ATK' || activeModule === 'Daftar ARK') {
-         const isArk = activeModule === 'Daftar ARK';
+     if (activeModule === 'Daftar ATK' || activeModule === 'Daftar ARK' || activeModule === 'Stationery Request Approval' || activeModule === 'Household Request Approval') {
+         const isArk = activeModule === 'Daftar ARK' || activeModule === 'Household Request Approval';
          let data = isArk ? MOCK_ARK_DATA : MOCK_DATA;
          
          if (activeTab !== 'All') {
@@ -419,9 +419,9 @@ const App: React.FC = () => {
      
      if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
          const isArk = activeModule === 'Master ARK';
-         const key = activeTab === 'Items' ? (isArk ? 'Master ARK' : 'Master ATK') : getCurrentMasterKey();
+         const key = activeTab === 'Master Item' ? (isArk ? 'Master ARK' : 'Master ATK') : getCurrentMasterKey();
          
-         if (activeTab === 'Items') {
+         if (activeTab === 'Master Item') {
              return <MasterAtkTable data={isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA} />;
          }
          if (activeTab === 'Delivery Location') {
@@ -429,11 +429,6 @@ const App: React.FC = () => {
          }
          // Generic Masters (UOM, Currency, Category)
          return <GeneralMasterTable data={masters[key] || []} onEdit={(item) => { setSelectedMasterItem(item); setModalMode('edit'); setIsModalOpen(true); }} onDelete={(id) => setMasters(prev => ({...prev, [key]: prev[key].filter(i => i.id !== id)}))} />;
-     }
-
-     if (activeModule === 'Stationery Request Approval' || activeModule === 'Household Request Approval') {
-         // Logic for Approval modules
-         return <AssetTable data={activeModule === 'Household Request Approval' ? MOCK_ARK_DATA : MOCK_DATA} onView={handleViewAsset} />;
      }
 
      if (activeModule === 'Daftar Aset') return <VehicleTable data={vehicleData} onEdit={handleEditVehicle} onView={handleViewVehicle} />;
