@@ -201,8 +201,6 @@ export const FilterBar: React.FC<Props> = ({
     );
   }
 
-  // ... (Rest of the component for Timesheet and Default layout remains similar but simplified for brevity in this response, keep existing logic for them)
-  
   // Specific layout for Timesheet module
   if (moduleName === 'Timesheet') {
     return (
@@ -327,7 +325,6 @@ export const FilterBar: React.FC<Props> = ({
                     <option>Tinta Printer</option>
                     <option>Kertas</option>
                     <option>Amplop</option>
-                    <option>Mobil</option>
                 </select>
             </div>
 
