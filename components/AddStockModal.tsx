@@ -311,19 +311,12 @@ export const AddStockModal: React.FC<Props> = ({
                 <div className="p-8 overflow-y-auto bg-gray-50/50">
                     <div className="relative">
                         <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gray-200"></div>
-                        <div className="relative flex gap-6 mb-8">
+                        <div className="relative flex gap-6">
                              <div className="relative z-10 w-12 h-12 rounded-full bg-[#00C853] flex items-center justify-center shadow-sm border-4 border-white"><CheckCircle className="text-white" size={20} /></div>
                              <div className="flex-1 bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
                                 <div className="flex justify-between items-start mb-2"><h4 className="font-bold text-gray-900 text-sm">Approved by Ibnu Faisal Abbas</h4><span className="px-3 py-1 bg-green-50 text-green-600 text-xs font-medium rounded-full">Completed</span></div>
                                 <div className="flex items-center gap-4 text-xs text-gray-500 mb-3"><div className="flex items-center gap-1"><User size={12} /> Ibnu Faisal Abbas</div><div className="flex items-center gap-1"><Calendar size={12} /> 2025-12-15 15:22:43</div></div>
                                 <div className="text-sm text-gray-800 mb-1"><span className="font-bold">Remarks:</span> Add door assemble</div>
-                             </div>
-                        </div>
-                        <div className="relative flex gap-6">
-                             <div className="relative z-10 w-12 h-12 rounded-full bg-[#FFD600] flex items-center justify-center shadow-sm border-4 border-white"><Clock className="text-white" size={20} /></div>
-                             <div className="flex-1 bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
-                                <div className="flex justify-between items-start mb-2"><h4 className="font-bold text-gray-900 text-sm">Pending Approval</h4><span className="px-3 py-1 bg-[#FFF9C4] text-[#FBC02D] text-xs font-medium rounded-full">Pending</span></div>
-                                <div className="flex items-center gap-4 text-xs text-gray-500 mb-3"><div className="flex items-center gap-1"><User size={12} /> Daniel Walter Aritonang</div></div>
                              </div>
                         </div>
                     </div>
@@ -332,6 +325,9 @@ export const AddStockModal: React.FC<Props> = ({
         </div>
     )
   }
+
+  // **CRITICAL FIX**: Check isOpen at the top level to prevent full-page render from sticking
+  if (!isOpen) return null;
 
   // --- FULL PAGE RENDER FOR STATIONERY VIEW ---
   if (isStationeryRequest && isViewMode) {
@@ -359,7 +355,7 @@ export const AddStockModal: React.FC<Props> = ({
         <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col">
              <div className="bg-white border-b border-gray-200 shrink-0 px-8 py-4 flex items-center justify-between z-10">
                  <div className="flex items-center gap-4">
-                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"><ChevronLeft size={24} /></button>
+                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600" title="Kembali"><ChevronLeft size={24} /></button>
                     <div>
                          <h1 className="text-xl font-bold text-gray-900">{titleLabel}</h1>
                          <div className="flex items-center gap-3 mt-1">
@@ -438,13 +434,6 @@ export const AddStockModal: React.FC<Props> = ({
                  </div>
                  </div>
              </div>
-             <div className="bg-white border-t border-gray-200 shrink-0 px-8 py-4 z-10">
-                 <div className="max-w-[1600px] mx-auto flex justify-end gap-3">
-                     <button onClick={onRevise} className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-white bg-[#FBC02D] hover:bg-[#F9A825] rounded transition-colors shadow-sm"><RefreshCcw size={18} />{t('Revise')}</button>
-                     <button className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-white bg-[#D32F2F] hover:bg-[#B71C1C] rounded transition-colors shadow-sm"><XCircle size={18} />{t('Reject')}</button>
-                     <button className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-white bg-[#00C853] hover:bg-[#009624] rounded transition-colors shadow-sm"><CheckCircle size={18} />{t('Approve')}</button>
-                 </div>
-             </div>
         </div>
         {renderApprovalHistory()}
         </>
@@ -452,7 +441,7 @@ export const AddStockModal: React.FC<Props> = ({
   }
 
   // --- STANDARD MODAL ---
-  if (!isOpen) return null;
+  // Note: We don't need `if (!isOpen)` here again because it's handled at top.
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-[2px] p-4 transition-opacity duration-300">
