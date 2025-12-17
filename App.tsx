@@ -366,8 +366,10 @@ const App: React.FC = () => {
   };
 
   const getFilterTabs = () => {
-    // ... (Keep existing filter tabs logic)
     if (activeModule === 'Contract') return ['Own', 'Rent'];
+    if (activeModule === 'Daftar ATK' || activeModule === 'Daftar ARK') {
+        return ['All', 'Draft', 'On Process', 'Rejected', 'Approved', 'Completed'];
+    }
     return ['All'];
   };
   
@@ -397,7 +399,43 @@ const App: React.FC = () => {
              />
          );
      }
-     // ... (Rest of renderContent logic)
+     if (activeModule === 'Daftar ATK' || activeModule === 'Daftar ARK') {
+         const isArk = activeModule === 'Daftar ARK';
+         let data = isArk ? MOCK_ARK_DATA : MOCK_DATA;
+         
+         if (activeTab !== 'All') {
+             // Map UI tab name to Data status
+             let statusFilter = activeTab;
+             if (activeTab === 'On Process') statusFilter = 'Pending';
+             if (activeTab === 'Completed') statusFilter = 'Closed';
+             // 'Draft', 'Rejected', 'Approved' match directly
+             
+             // Using simple filter for mock data
+             data = data.filter(item => item.status === statusFilter);
+         }
+         
+         return <AssetTable data={data} onView={handleViewAsset} />;
+     }
+     
+     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
+         const isArk = activeModule === 'Master ARK';
+         const key = activeTab === 'Items' ? (isArk ? 'Master ARK' : 'Master ATK') : getCurrentMasterKey();
+         
+         if (activeTab === 'Items') {
+             return <MasterAtkTable data={isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA} />;
+         }
+         if (activeTab === 'Delivery Location') {
+             return <MasterDeliveryLocationTable data={deliveryLocations} onEdit={handleEditDeliveryLocation} onDelete={handleDeleteDeliveryLocation} />;
+         }
+         // Generic Masters (UOM, Currency, Category)
+         return <GeneralMasterTable data={masters[key] || []} onEdit={(item) => { setSelectedMasterItem(item); setModalMode('edit'); setIsModalOpen(true); }} onDelete={(id) => setMasters(prev => ({...prev, [key]: prev[key].filter(i => i.id !== id)}))} />;
+     }
+
+     if (activeModule === 'Stationery Request Approval' || activeModule === 'Household Request Approval') {
+         // Logic for Approval modules
+         return <AssetTable data={activeModule === 'Household Request Approval' ? MOCK_ARK_DATA : MOCK_DATA} onView={handleViewAsset} />;
+     }
+
      if (activeModule === 'Daftar Aset') return <VehicleTable data={vehicleData} onEdit={handleEditVehicle} onView={handleViewVehicle} />;
      if (activeModule === 'Servis') return <ServiceTable data={serviceData} onEdit={handleEditService} onView={handleViewService} />;
      if (activeModule === 'Pajak & KIR') return <TaxKirTable data={taxKirData} onEdit={handleEditTaxKir} onView={handleViewTaxKir} onDelete={handleDeleteTaxKir} />;
@@ -405,6 +443,13 @@ const App: React.FC = () => {
      if (activeModule === 'Penjualan') return <SalesTable data={salesData} onEdit={handleEditSales} onView={handleViewSales} />;
      if (activeModule === 'Master Vendor') return <MasterVendorTable data={masterVendorData} onEdit={handleEditMasterVendor} onView={handleViewMasterVendor} />;
      if (activeModule === 'Log Book') return <LogBookTable data={logBookData} onView={handleViewLogBook} />;
+     
+     if (activeModule === 'Timesheet') return <TimesheetTable data={MOCK_TIMESHEET_DATA} />;
+     if (activeModule === 'Vendor') return <VendorTable data={MOCK_VENDOR_DATA} />;
+
+     if (isMasterModule(activeModule)) {
+         return <GeneralMasterTable data={masters[activeModule] || []} onEdit={(item) => { setSelectedMasterItem(item); setModalMode('edit'); setIsModalOpen(true); }} onDelete={(id) => setMasters(prev => ({...prev, [activeModule]: prev[activeModule].filter(i => i.id !== id)}))} />;
+     }
      
      // Placeholder for others
      return <div className="p-8 text-center text-gray-500">Module {activeModule} content</div>;

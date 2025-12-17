@@ -79,6 +79,8 @@ const translations: Record<string, Record<Language, string>> = {
   'Tidak Aktif': { id: 'Tidak Aktif', en: 'Inactive' },
   'Semua': { id: 'Semua', en: 'All' },
   'Persetujuan': { id: 'Persetujuan', en: 'Approval' },
+  'On Process': { id: 'Diproses', en: 'On Process' },
+  'Completed': { id: 'Selesai', en: 'Completed' },
   
   // Action Buttons
   'Revise': { id: 'Revisi', en: 'Revise' },

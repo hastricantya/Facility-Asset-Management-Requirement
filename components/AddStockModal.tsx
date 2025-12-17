@@ -140,8 +140,37 @@ export const AddStockModal: React.FC<Props> = ({
            if (initialMasterVendorData) setMasterVendorForm(initialMasterVendorData);
            if (initialDeliveryLocationData) setDeliveryLocationForm(initialDeliveryLocationData);
            if (initialLogBookData) setLogBookForm(initialLogBookData);
+           
+           // Handle mapping for ATK/ARK View
            if (initialAssetData) {
-               // Mapping logic for Asset View (Stationery) handled in full page render or here if needed
+               // Determine Master List based on module name
+               const isArk = moduleName?.includes('ARK') || false;
+               const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+               
+               // Try to find the item in master data to get the ID
+               const matchedMaster = masterList.find(m => m.itemName === initialAssetData.itemName);
+               
+               // Parse date if needed (assuming DD/MM/YYYY from table)
+               let formattedDate = new Date().toISOString().split('T')[0];
+               if (initialAssetData.date) {
+                   const parts = initialAssetData.date.split('/');
+                   if (parts.length === 3) {
+                       formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                   }
+               }
+
+               setStationeryRequestForm({
+                   type: 'Permintaan Bulanan', // Default assumption
+                   date: formattedDate,
+                   remarks: initialAssetData.itemDescription || '',
+                   deliveryType: 'Dikirim', // Mock default
+                   location: 'MODENA Head Office' // Mock default
+               });
+
+               setRequestItems([{ 
+                   itemId: matchedMaster ? matchedMaster.id.toString() : '', 
+                   qty: initialAssetData.qty ? initialAssetData.qty.toString() : '0'
+               }]);
            }
         } else {
             // Reset to defaults for Create mode
@@ -182,7 +211,7 @@ export const AddStockModal: React.FC<Props> = ({
             });
         }
     }
-  }, [isOpen, initialContractData, initialVehicleData, initialServiceData, initialTaxKirData, initialMutationData, initialSalesData, initialMasterData, initialMasterVendorData, initialDeliveryLocationData, initialLogBookData, mode]);
+  }, [isOpen, initialContractData, initialVehicleData, initialServiceData, initialTaxKirData, initialMutationData, initialSalesData, initialMasterData, initialMasterVendorData, initialDeliveryLocationData, initialLogBookData, initialAssetData, mode, moduleName]);
 
   // Contract Specific Handlers
   const handleContractChange = (field: keyof ContractRecord, value: any) => {
