@@ -274,6 +274,8 @@ export const FilterBar: React.FC<Props> = ({
     );
   }
 
+  const isSimpleView = activeTab === 'Master Category' || activeTab === 'Master UOM';
+
   // Standard layout for others
   return (
     <div className="mb-6 relative">
@@ -298,7 +300,7 @@ export const FilterBar: React.FC<Props> = ({
 
       <div className="bg-white p-5 rounded-b-lg rounded-tr-lg shadow-sm border border-gray-200 -mt-[1px] relative z-0">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-            <div className="md:col-span-3">
+            <div className={`${isSimpleView ? 'md:col-span-10' : 'md:col-span-3'}`}>
                 <label className="block text-xs font-medium text-gray-500 mb-1">{t('Search')}</label>
                 <div className="relative">
                     <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
@@ -310,29 +312,35 @@ export const FilterBar: React.FC<Props> = ({
                 </div>
             </div>
 
-            <div className="md:col-span-3">
-                <label className="block text-xs font-medium text-gray-500 mb-1">{t('Date Range')}</label>
-                <input 
-                    type="date" 
-                    className="w-full bg-white px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 text-gray-600 outline-none"
-                />
-            </div>
+            {!isSimpleView && (
+                <div className="md:col-span-3">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">{t('Date Range')}</label>
+                    <input 
+                        type="date" 
+                        className="w-full bg-white px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 text-gray-600 outline-none"
+                    />
+                </div>
+            )}
 
-            <div className="md:col-span-3">
-                <label className="block text-xs font-medium text-gray-500 mb-1">{t('Category')}</label>
-                <select className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 text-gray-600 outline-none bg-white">
-                    <option>{t('Select Category...')}</option>
-                    <option>Tinta Printer</option>
-                    <option>Kertas</option>
-                    <option>Amplop</option>
-                </select>
-            </div>
+            {!isSimpleView && (
+                <div className="md:col-span-3">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">{t('Category')}</label>
+                    <select className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 text-gray-600 outline-none bg-white">
+                        <option>{t('Select Category...')}</option>
+                        <option>Tinta Printer</option>
+                        <option>Kertas</option>
+                        <option>Amplop</option>
+                    </select>
+                </div>
+            )}
 
-            <div className="md:col-span-3 flex items-center justify-end gap-2">
-                <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                    <Filter size={16} />
-                    {t('Filter')}
-                </button>
+            <div className={`${isSimpleView ? 'md:col-span-2' : 'md:col-span-3'} flex items-center justify-end gap-2`}>
+                {!isSimpleView && (
+                    <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <Filter size={16} />
+                        {t('Filter')}
+                    </button>
+                )}
                 <button 
                   onClick={onAddClick}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
