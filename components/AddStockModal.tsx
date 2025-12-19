@@ -141,7 +141,6 @@ export const AddStockModal: React.FC<Props> = ({
            if (initialDeliveryLocationData) setDeliveryLocationForm(initialDeliveryLocationData);
            if (initialLogBookData) setLogBookForm(initialLogBookData);
            
-           // Handle mapping for ATK/ARK View
            if (initialAssetData) {
                const isArk = moduleName?.includes('ARK') || false;
                const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
@@ -257,6 +256,8 @@ export const AddStockModal: React.FC<Props> = ({
   const isViewMode = mode === 'view';
   const isMasterVendor = moduleName === 'Master Vendor';
   const isService = moduleName === 'Servis';
+  
+  // Logic for generic master data (UOM, Category, Currency, etc.)
   const isMaster = !isContract && !isStationeryRequest && !isLogBook && !isMasterATK && !isMasterARK && !isDeliveryLocation && !isService && !isMasterVendor && moduleName !== 'Daftar Aset' && moduleName !== 'Pajak & KIR' && moduleName !== 'Mutasi' && moduleName !== 'Penjualan';
 
   const renderApprovalHistory = () => {
@@ -395,7 +396,6 @@ export const AddStockModal: React.FC<Props> = ({
                      </div>
                  </div>
                  
-                 {/* Bottom Action Section for Approval - Redesigned to match image */}
                  {isApprovalModule && (
                     <div className="flex items-center justify-end gap-3 mt-8">
                         <button 
@@ -651,6 +651,20 @@ export const AddStockModal: React.FC<Props> = ({
                     <h3 className="text-blue-500 font-bold text-sm mb-4">{isMasterARK ? 'Household Master' : 'Stationery Master'}</h3>
                 </div>
             </div>
+          ) : isMaster ? (
+              /* --- GENERIC MASTER FORM (UOM, Category, etc.) --- */
+              <div className="space-y-4">
+                  <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1.5">Name <Required/></label>
+                      <input 
+                          type="text" 
+                          className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-black" 
+                          value={masterForm.name || ''}
+                          onChange={(e) => handleMasterChange(e.target.value)}
+                          placeholder={`Enter ${moduleName} Name`}
+                      />
+                  </div>
+              </div>
           ) : (
              <div className="p-4 text-center text-gray-500">Form content for {moduleName}</div>
           )}
