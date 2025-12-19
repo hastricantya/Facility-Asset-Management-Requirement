@@ -251,6 +251,11 @@ export const AddStockModal: React.FC<Props> = ({
   
   const isMaster = !isContract && !isStationeryRequest && !isLogBook && !isMasterATK && !isMasterARK && !isDeliveryLocation && !isService && !isMasterVendor && moduleName !== 'Daftar Aset' && moduleName !== 'Pajak & KIR' && moduleName !== 'Mutasi' && moduleName !== 'Penjualan';
 
+  // Extract unique categories for ATK and ARK Master forms
+  const arkCategories = Array.from(new Set(MOCK_MASTER_ARK_DATA.map(item => item.category)));
+  const atkCategories = Array.from(new Set(MOCK_MASTER_DATA.map(item => item.category)));
+  const currentCategories = isMasterARK ? arkCategories : atkCategories;
+
   const renderApprovalHistory = () => {
     if (!showApprovalHistory) return null;
     return (
@@ -651,9 +656,9 @@ export const AddStockModal: React.FC<Props> = ({
                             </div>
                             <div className="col-span-9">
                                 <select className="w-full bg-[#FFF9C4] border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
-                                    <option value="Pulpen">Pulpen</option>
-                                    <option value="Kertas">Kertas</option>
-                                    <option value="Tinta">Tinta</option>
+                                    {currentCategories.map(cat => (
+                                        <option key={cat} value={cat}>{cat}</option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
