@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, RefreshCcw, Plus, Trash2, Image as ImageIcon, List, Calendar, PlusCircle, Settings, Clock, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, Download, History, User, Wrench, DollarSign } from 'lucide-react';
+import { X, RefreshCcw, Plus, Trash2, Image as ImageIcon, List, Calendar, PlusCircle, Settings, Clock, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, Download, History, User, Wrench, DollarSign, Edit3, Check, Ban } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, SalesOffer, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA } from '../constants';
@@ -284,6 +284,7 @@ export const AddStockModal: React.FC<Props> = ({
   );
 
   const isStationeryRequest = moduleName === 'Daftar ATK' || moduleName === 'Daftar ARK' || moduleName === 'Stationery Request Approval' || moduleName === 'Household Request Approval';
+  const isApprovalModule = moduleName?.includes('Approval');
   const isMasterATK = moduleName === 'Master ATK';
   const isMasterARK = moduleName === 'Master ARK';
   const isDeliveryLocation = moduleName === 'Master Delivery Location';
@@ -364,6 +365,31 @@ export const AddStockModal: React.FC<Props> = ({
                     </div>
                  </div>
                  <div className="flex items-center gap-3">
+                     {/* Action Buttons for Approver */}
+                     {isApprovalModule && (
+                         <>
+                            <button 
+                                onClick={() => { if(confirm(t('Reject') + '?')) onClose(); }}
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-red-600 bg-white border border-red-200 rounded hover:bg-red-50 transition-colors"
+                            >
+                                <Ban size={16} /> {t('Reject')}
+                            </button>
+                            <button 
+                                onClick={() => { onRevise?.(); }}
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-orange-600 bg-white border border-orange-200 rounded hover:bg-orange-50 transition-colors"
+                            >
+                                <Edit3 size={16} /> {t('Revise')}
+                            </button>
+                            <button 
+                                onClick={() => { if(confirm(t('Approve') + '?')) onClose(); }}
+                                className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-white bg-black rounded hover:bg-gray-800 transition-colors shadow-sm"
+                            >
+                                <Check size={16} /> {t('Approve')}
+                            </button>
+                            <div className="h-8 w-px bg-gray-200 mx-2"></div>
+                         </>
+                     )}
+                     
                      <button onClick={() => setShowApprovalHistory(true)} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"><History size={16} /> View Approval History</button>
                      <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#00A651] rounded hover:bg-[#008f45] transition-colors"><Printer size={16} /> Print</button>
                  </div>
