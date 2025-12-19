@@ -814,7 +814,7 @@ export const AddStockModal: React.FC<Props> = ({
 
         {mode !== 'view' && (
             <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end gap-3 z-10">
-                {!(isMasterATK || isMasterARK) && (
+                {!(isMasterATK || isMasterARK || isLogBook) && (
                     <button onClick={onClose} className="px-6 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">{t('Draf')}</button>
                 )}
                 <button onClick={handleSave} className="px-6 py-2.5 text-sm font-bold text-white bg-black rounded-lg hover:bg-gray-800 shadow-lg shadow-gray-200 transition-all transform hover:-translate-y-0.5">{t('Simpan')}</button>
