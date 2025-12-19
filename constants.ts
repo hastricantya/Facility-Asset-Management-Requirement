@@ -128,4 +128,58 @@ export const MOCK_TAX_KIR_DATA: TaxKirRecord[] = [
 export const MOCK_MUTATION_DATA: MutationRecord[] = [];
 export const MOCK_SALES_DATA: SalesRecord[] = [];
 export const MOCK_DELIVERY_LOCATIONS: DeliveryLocationRecord[] = [];
-export const MOCK_LOGBOOK_DATA: LogBookRecord[] = [];
+
+export const MOCK_LOGBOOK_DATA: LogBookRecord[] = [
+  {
+    id: 1,
+    lokasiModena: 'MODENA Head Office',
+    kategoriTamu: 'Customer',
+    namaTamu: 'Budi Santoso',
+    tanggalKunjungan: '2024-03-20',
+    jamDatang: '09:00',
+    jamPulang: '11:30',
+    wanita: 0,
+    lakiLaki: 1,
+    anakAnak: 0,
+    note: 'Meeting regarding kitchen set installation.'
+  },
+  {
+    id: 2,
+    lokasiModena: 'MODENA Kemang',
+    kategoriTamu: 'Supplier',
+    namaTamu: 'Siti Aminah',
+    tanggalKunjungan: '2024-03-20',
+    jamDatang: '10:15',
+    jamPulang: '12:00',
+    wanita: 1,
+    lakiLaki: 0,
+    anakAnak: 0,
+    note: 'Delivery of spare parts for induction hobs.'
+  },
+  {
+    id: 3,
+    lokasiModena: 'MODENA Suryo',
+    kategoriTamu: 'Partner',
+    namaTamu: 'Robert Fox & Family',
+    tanggalKunjungan: '2024-03-21',
+    jamDatang: '14:00',
+    jamPulang: '15:45',
+    wanita: 1,
+    lakiLaki: 1,
+    anakAnak: 2,
+    note: 'Experience center tour and product demonstration.'
+  },
+  {
+    id: 4,
+    lokasiModena: 'Warehouse Cakung',
+    kategoriTamu: 'Other',
+    namaTamu: 'Team AC Maintenance',
+    tanggalKunjungan: '2024-03-21',
+    jamDatang: '08:30',
+    jamPulang: '17:00',
+    wanita: 0,
+    lakiLaki: 3,
+    anakAnak: 0,
+    note: 'Quarterly maintenance for warehouse cooling systems.'
+  }
+];
