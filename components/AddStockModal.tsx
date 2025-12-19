@@ -143,14 +143,10 @@ export const AddStockModal: React.FC<Props> = ({
            
            // Handle mapping for ATK/ARK View
            if (initialAssetData) {
-               // Determine Master List based on module name
                const isArk = moduleName?.includes('ARK') || false;
                const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
-               
-               // Try to find the item in master data to get the ID
                const matchedMaster = masterList.find(m => m.itemName === initialAssetData.itemName);
                
-               // Parse date if needed (assuming DD/MM/YYYY from table)
                let formattedDate = new Date().toISOString().split('T')[0];
                if (initialAssetData.date) {
                    const parts = initialAssetData.date.split('/');
@@ -160,11 +156,11 @@ export const AddStockModal: React.FC<Props> = ({
                }
 
                setStationeryRequestForm({
-                   type: 'Permintaan Bulanan', // Default assumption
+                   type: 'Permintaan Bulanan',
                    date: formattedDate,
                    remarks: initialAssetData.itemDescription || '',
-                   deliveryType: 'Dikirim', // Mock default
-                   location: 'MODENA Head Office' // Mock default
+                   deliveryType: 'Dikirim',
+                   location: 'MODENA Head Office'
                });
 
                setRequestItems([{ 
@@ -173,52 +169,22 @@ export const AddStockModal: React.FC<Props> = ({
                }]);
            }
         } else {
-            // Reset to defaults for Create mode
             setContractForm(defaultContractForm);
             setVehicleForm({});
-            setServiceForm({
-                jenisServis: 'Servis Rutin',
-                jenisPembayaran: 'Kasbon'
-            });
-            setTaxKirForm({
-                jenis: 'KIR',
-                jenisPembayaran: 'Kasbon',
-                tglRequest: new Date().toISOString().split('T')[0]
-            });
+            setServiceForm({ jenisServis: 'Servis Rutin', jenisPembayaran: 'Kasbon' });
+            setTaxKirForm({ jenis: 'KIR', jenisPembayaran: 'Kasbon', tglRequest: new Date().toISOString().split('T')[0] });
             setMutationForm({});
             setSalesForm({});
             setMasterForm({});
             setMasterVendorForm({});
-            setStationeryRequestForm({
-                type: 'Permintaan Bulanan',
-                deliveryType: 'Dikirim',
-                location: 'MODENA Head Office',
-                date: new Date().toISOString().split('T')[0]
-            });
+            setStationeryRequestForm({ type: 'Permintaan Bulanan', deliveryType: 'Dikirim', location: 'MODENA Head Office', date: new Date().toISOString().split('T')[0] });
             setRequestItems([{ itemId: '', qty: '' }]);
             setDeliveryLocationForm({});
-            setLogBookForm({
-                lokasiModena: '',
-                kategoriTamu: 'Customer',
-                namaTamu: '',
-                tanggalKunjungan: new Date().toISOString().split('T')[0],
-                jamDatang: '',
-                jamPulang: '',
-                wanita: 0,
-                lakiLaki: 0,
-                anakAnak: 0,
-                note: ''
-            });
+            setLogBookForm({ lokasiModena: '', kategoriTamu: 'Customer', namaTamu: '', tanggalKunjungan: new Date().toISOString().split('T')[0], jamDatang: '', jamPulang: '', wanita: 0, lakiLaki: 0, anakAnak: 0, note: '' });
         }
     }
   }, [isOpen, initialContractData, initialVehicleData, initialServiceData, initialTaxKirData, initialMutationData, initialSalesData, initialMasterData, initialMasterVendorData, initialDeliveryLocationData, initialLogBookData, initialAssetData, mode, moduleName]);
 
-  // Contract Specific Handlers
-  const handleContractChange = (field: keyof ContractRecord, value: any) => {
-      setContractForm(prev => ({ ...prev, [field]: value }));
-  };
-
-  // Helper for red asterisk
   const Required = () => <span className="text-red-600 font-bold ml-0.5">*</span>;
 
   const handleSave = () => {
@@ -236,7 +202,6 @@ export const AddStockModal: React.FC<Props> = ({
       onClose();
   }
 
-  // --- Handlers ---
   const handleVehicleChange = (field: keyof VehicleRecord, value: string) => setVehicleForm(prev => ({ ...prev, [field]: value }));
   const handleServiceChange = (field: keyof ServiceRecord, value: string) => setServiceForm(prev => ({ ...prev, [field]: value }));
   
@@ -275,7 +240,6 @@ export const AddStockModal: React.FC<Props> = ({
       if (requestItems.length > 1) setRequestItems(requestItems.filter((_, i) => i !== index));
   }
 
-  // Helper component for Section Header
   const SectionHeader = ({ icon: Icon, title }: { icon: any, title: string }) => (
     <div className="flex items-center gap-2 mb-5 pb-3 border-b border-gray-100">
         <Icon size={20} className="text-gray-800" strokeWidth={2} />
@@ -293,10 +257,8 @@ export const AddStockModal: React.FC<Props> = ({
   const isViewMode = mode === 'view';
   const isMasterVendor = moduleName === 'Master Vendor';
   const isService = moduleName === 'Servis';
-  // Logic to determine if it is a general master (Category, UOM, Currency, etc.)
   const isMaster = !isContract && !isStationeryRequest && !isLogBook && !isMasterATK && !isMasterARK && !isDeliveryLocation && !isService && !isMasterVendor && moduleName !== 'Daftar Aset' && moduleName !== 'Pajak & KIR' && moduleName !== 'Mutasi' && moduleName !== 'Penjualan';
 
-  // --- Approval History Modal ---
   const renderApprovalHistory = () => {
     if (!showApprovalHistory) return null;
     return (
@@ -329,7 +291,6 @@ export const AddStockModal: React.FC<Props> = ({
 
   if (!isOpen) return null;
 
-  // --- FULL PAGE RENDER FOR STATIONERY VIEW ---
   if (isStationeryRequest && isViewMode) {
       const isArk = moduleName === 'Daftar ARK' || moduleName === 'Household Request Approval';
       const titleLabel = isArk ? 'Household Request' : 'Stationery Request';
@@ -365,37 +326,13 @@ export const AddStockModal: React.FC<Props> = ({
                     </div>
                  </div>
                  <div className="flex items-center gap-3">
-                     {/* Action Buttons for Approver */}
-                     {isApprovalModule && (
-                         <>
-                            <button 
-                                onClick={() => { if(confirm(t('Reject') + '?')) onClose(); }}
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-red-600 bg-white border border-red-200 rounded hover:bg-red-50 transition-colors"
-                            >
-                                <Ban size={16} /> {t('Reject')}
-                            </button>
-                            <button 
-                                onClick={() => { onRevise?.(); }}
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-orange-600 bg-white border border-orange-200 rounded hover:bg-orange-50 transition-colors"
-                            >
-                                <Edit3 size={16} /> {t('Revise')}
-                            </button>
-                            <button 
-                                onClick={() => { if(confirm(t('Approve') + '?')) onClose(); }}
-                                className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-white bg-black rounded hover:bg-gray-800 transition-colors shadow-sm"
-                            >
-                                <Check size={16} /> {t('Approve')}
-                            </button>
-                            <div className="h-8 w-px bg-gray-200 mx-2"></div>
-                         </>
-                     )}
-                     
                      <button onClick={() => setShowApprovalHistory(true)} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"><History size={16} /> View Approval History</button>
                      <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#00A651] rounded hover:bg-[#008f45] transition-colors"><Printer size={16} /> Print</button>
                  </div>
              </div>
+             
              <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                 <div className="max-w-[1600px] mx-auto space-y-6">
+                 <div className="max-w-[1600px] mx-auto space-y-6 pb-24">
                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                      <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
                          <h3 className="text-sm font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Information</h3>
@@ -457,6 +394,33 @@ export const AddStockModal: React.FC<Props> = ({
                         </table>
                      </div>
                  </div>
+                 
+                 {/* Bottom Action Section for Approval - Redesigned to match image */}
+                 {isApprovalModule && (
+                    <div className="flex items-center justify-end gap-3 mt-8">
+                        <button 
+                            onClick={() => { if(confirm(t('Reject') + '?')) onClose(); }}
+                            className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-[#E32227] rounded-lg hover:bg-red-700 transition-all shadow-sm"
+                        >
+                            <XCircle size={18} />
+                            {t('Reject')}
+                        </button>
+                        <button 
+                            onClick={() => { onRevise?.(); }}
+                            className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-[#F57C00] rounded-lg hover:bg-orange-600 transition-all shadow-sm"
+                        >
+                            <Edit3 size={18} />
+                            {t('Revise')}
+                        </button>
+                        <button 
+                            onClick={() => { if(confirm(t('Approve') + '?')) onClose(); }}
+                            className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-[#10B981] rounded-lg hover:bg-emerald-600 transition-all shadow-sm"
+                        >
+                            <CheckCircle size={18} />
+                            {t('Approve')}
+                        </button>
+                    </div>
+                 )}
                  </div>
              </div>
         </div>
@@ -464,14 +428,10 @@ export const AddStockModal: React.FC<Props> = ({
         </>
       );
   }
-
-  // --- STANDARD MODAL ---
-  // Note: We don't need `if (!isOpen)` here again because it's handled at top.
-
+  
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-[2px] p-4 transition-opacity duration-300">
       <div className={`bg-white w-full ${isMaster || isDeliveryLocation ? 'max-w-md' : (moduleName === 'Daftar Aset' || isService || moduleName === 'Mutasi' || moduleName === 'Penjualan' || isContract || isMasterVendor || isLogBook || isStationeryRequest ? 'max-w-7xl' : 'max-w-5xl')} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transform transition-all scale-100`}>
-        {/* Header */}
         <div className="px-8 py-5 bg-white border-b border-gray-100 flex items-center justify-between">
           <div>
               <h2 className="text-lg font-bold tracking-tight text-gray-900">
@@ -484,25 +444,19 @@ export const AddStockModal: React.FC<Props> = ({
                  moduleName}
               </h2>
           </div>
-          <button className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-100">
-            <X size={20} onClick={onClose} className="cursor-pointer"/>
+          <button className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-100" onClick={onClose}>
+            <X size={20} className="cursor-pointer"/>
           </button>
         </div>
         
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-[#F8F9FA]">
           {isLogBook ? (
-            /* --- LOG BOOK FORM (FULL) --- */
             <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60 space-y-6">
                 <SectionHeader icon={List} title={t('Log Book Tamu Input')} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Lokasi MODENA')} <Required/></label>
-                        <select 
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white"
-                            value={logBookForm.lokasiModena}
-                            onChange={(e) => handleLogBookChange('lokasiModena', e.target.value)}
-                            disabled={isViewMode}
-                        >
+                        <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white" value={logBookForm.lokasiModena} onChange={(e) => handleLogBookChange('lokasiModena', e.target.value)} disabled={isViewMode}>
                             <option value="">{t('Pilih Tempat')}</option>
                             <option value="MODENA Head Office">{t('MODENA Head Office')}</option>
                             <option value="MODENA Kemang">{t('MODENA Kemang')}</option>
@@ -512,12 +466,7 @@ export const AddStockModal: React.FC<Props> = ({
                     </div>
                      <div>
                         <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Kategori Tamu')} <Required/></label>
-                        <select 
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-[#FFF9C4]"
-                            value={logBookForm.kategoriTamu}
-                            onChange={(e) => handleLogBookChange('kategoriTamu', e.target.value)}
-                            disabled={isViewMode}
-                        >
+                        <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-[#FFF9C4]" value={logBookForm.kategoriTamu} onChange={(e) => handleLogBookChange('kategoriTamu', e.target.value)} disabled={isViewMode}>
                             <option value="Customer">Customer</option>
                             <option value="Supplier">Supplier</option>
                             <option value="Partner">Partner</option>
@@ -526,47 +475,22 @@ export const AddStockModal: React.FC<Props> = ({
                     </div>
                     <div className="md:col-span-2">
                          <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Nama Tamu')}</label>
-                         <input 
-                            type="text" 
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black"
-                            value={logBookForm.namaTamu}
-                            onChange={(e) => handleLogBookChange('namaTamu', e.target.value)}
-                            disabled={isViewMode}
-                         />
+                         <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.namaTamu} onChange={(e) => handleLogBookChange('namaTamu', e.target.value)} disabled={isViewMode} />
                     </div>
                     <div>
                          <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Tanggal Kunjungan')}</label>
-                         <input 
-                            type="date" 
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white"
-                            value={logBookForm.tanggalKunjungan}
-                            onChange={(e) => handleLogBookChange('tanggalKunjungan', e.target.value)}
-                            disabled={isViewMode}
-                         />
+                         <input type="date" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white" value={logBookForm.tanggalKunjungan} onChange={(e) => handleLogBookChange('tanggalKunjungan', e.target.value)} disabled={isViewMode} />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Jam Datang')}</label>
-                            <input 
-                                type="time" 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black"
-                                value={logBookForm.jamDatang}
-                                onChange={(e) => handleLogBookChange('jamDatang', e.target.value)}
-                                disabled={isViewMode}
-                            />
+                            <input type="time" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.jamDatang} onChange={(e) => handleLogBookChange('jamDatang', e.target.value)} disabled={isViewMode} />
                         </div>
                         <div>
                             <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Jam Pulang')}</label>
-                            <input 
-                                type="time" 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black"
-                                value={logBookForm.jamPulang}
-                                onChange={(e) => handleLogBookChange('jamPulang', e.target.value)}
-                                disabled={isViewMode}
-                            />
+                            <input type="time" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.jamPulang} onChange={(e) => handleLogBookChange('jamPulang', e.target.value)} disabled={isViewMode} />
                         </div>
                     </div>
-                    
                     <div className="md:col-span-2 grid grid-cols-3 gap-6">
                         <div>
                              <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Wanita')}</label>
@@ -581,22 +505,13 @@ export const AddStockModal: React.FC<Props> = ({
                              <input type="number" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.anakAnak} onChange={(e) => handleLogBookChange('anakAnak', e.target.value)} disabled={isViewMode} />
                         </div>
                     </div>
-                    
                     <div className="md:col-span-2">
                          <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Note')}</label>
-                         <textarea 
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black resize-none"
-                            rows={3}
-                            value={logBookForm.note}
-                            onChange={(e) => handleLogBookChange('note', e.target.value)}
-                            disabled={isViewMode}
-                         ></textarea>
+                         <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black resize-none" rows={3} value={logBookForm.note} onChange={(e) => handleLogBookChange('note', e.target.value)} disabled={isViewMode}></textarea>
                     </div>
                 </div>
             </div>
-
           ) : isStationeryRequest && !isViewMode ? (
-             /* --- STATIONERY REQUEST FORM (Create/Edit) --- */
              <div className="space-y-6">
                  <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
                      <SectionHeader icon={FileText} title={t('Form Request')} />
@@ -610,13 +525,10 @@ export const AddStockModal: React.FC<Props> = ({
                          </div>
                          <div>
                              <label className="block text-xs font-bold text-gray-800 mb-1.5">{t('Tanggal Request')}</label>
-                             <div className="relative">
-                                <input type="date" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black text-gray-900" value={stationeryRequestForm.date} onChange={(e) => handleStationeryRequestChange('date', e.target.value)} />
-                             </div>
+                             <input type="date" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black text-gray-900" value={stationeryRequestForm.date} onChange={(e) => handleStationeryRequestChange('date', e.target.value)} />
                          </div>
                      </div>
                  </div>
-
                  <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
                      <div className="flex justify-between items-center mb-5 pb-3 border-b border-gray-100">
                          <div className="flex items-center gap-2">
@@ -664,7 +576,6 @@ export const AddStockModal: React.FC<Props> = ({
                          <textarea rows={2} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black resize-none" value={stationeryRequestForm.remarks} onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)} placeholder={t('Isi Remarks')}></textarea>
                      </div>
                  </div>
-
                  <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
                      <SectionHeader icon={Archive} title={t('Alamat Pengiriman')} />
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -687,34 +598,23 @@ export const AddStockModal: React.FC<Props> = ({
                      </div>
                  </div>
              </div>
-
           ) : isContract ? (
-            /* --- CONTRACT (BUILDING ASSET) FORM --- */
             <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className="block text-xs font-bold text-gray-700 mb-1.5">Asset Number</label>
                          <input type="text" className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-400 italic focus:outline-none" value={contractForm.assetNumber || '[Auto Generate]'} readOnly />
                     </div>
-                    {/* ... other contract fields ... */}
                 </div>
             </div>
           ) : moduleName === 'Pajak & KIR' ? (
-              /* --- TAX & KIR FORM --- */
               <div className="space-y-6">
                 <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
                     <h3 className="text-orange-400 text-xs font-bold uppercase mb-4 tracking-wide">Request KIR / Pajak</h3>
-                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                         {/* Row 1 */}
                          <div>
                              <label className="block text-xs font-bold text-gray-700 mb-1.5">Jenis <Required/></label>
-                             <select 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white"
-                                value={taxKirForm.jenis || 'KIR'}
-                                onChange={(e) => handleTaxKirChange('jenis', e.target.value)}
-                                disabled={isViewMode}
-                             >
+                             <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white" value={taxKirForm.jenis || 'KIR'} onChange={(e) => handleTaxKirChange('jenis', e.target.value)} disabled={isViewMode}>
                                  <option value="KIR">KIR</option>
                                  <option value="Pajak Tahunan">Pajak Tahunan</option>
                                  <option value="Pajak 5 Tahunan">Pajak 5 Tahunan</option>
@@ -722,570 +622,40 @@ export const AddStockModal: React.FC<Props> = ({
                          </div>
                          <div>
                              <label className="block text-xs font-bold text-gray-700 mb-1.5">Aset <Required/></label>
-                             <select 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white"
-                                value={taxKirForm.aset || ''}
-                                onChange={(e) => handleTaxKirChange('aset', e.target.value)}
-                                disabled={isViewMode}
-                             >
+                             <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white" value={taxKirForm.aset || ''} onChange={(e) => handleTaxKirChange('aset', e.target.value)} disabled={isViewMode}>
                                  <option value="">(Pilih Aset)</option>
-                                 {vehicleList.map(v => (
-                                     <option key={v.id} value={v.nama}>{v.noPolisi} - {v.nama}</option>
-                                 ))}
+                                 {vehicleList.map(v => ( <option key={v.id} value={v.nama}>{v.noPolisi} - {v.nama}</option> ))}
                              </select>
-                         </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-                         {/* Row 2 */}
-                         <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">Tanggal KIR</label>
-                             <input 
-                                type="date" 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-gray-50"
-                                value={taxKirForm.tglKir || ''}
-                                onChange={(e) => handleTaxKirChange('tglKir', e.target.value)}
-                                disabled={isViewMode}
-                             />
-                         </div>
-                         <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">Tahun Pembuatan</label>
-                             <input 
-                                type="text" 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-gray-50"
-                                value={taxKirForm.tahunPembuatan || ''}
-                                readOnly
-                             />
-                         </div>
-                         <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">Target Selesai <Required/></label>
-                             <input 
-                                type="date" 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black"
-                                value={taxKirForm.targetSelesai || ''}
-                                onChange={(e) => handleTaxKirChange('targetSelesai', e.target.value)}
-                                disabled={isViewMode}
-                             />
-                         </div>
-                    </div>
-
-                    <div className="mb-4">
-                         {/* Row 3 */}
-                         <label className="block text-xs font-bold text-gray-700 mb-1.5">Vendor <Required/></label>
-                         <select 
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white"
-                            value={taxKirForm.vendor || ''}
-                            onChange={(e) => handleTaxKirChange('vendor', e.target.value)}
-                            disabled={isViewMode}
-                         >
-                             <option value="">(Pilih Vendor)</option>
-                             <option value="Vendor A">Vendor A</option>
-                             <option value="Vendor B">Vendor B</option>
-                         </select>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                         {/* Row 4 */}
-                         <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">Alasan (maks. 1000 karakter)</label>
-                             <textarea 
-                                rows={2}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black resize-none"
-                                value={taxKirForm.alasan || ''}
-                                onChange={(e) => handleTaxKirChange('alasan', e.target.value)}
-                                disabled={isViewMode}
-                             ></textarea>
-                         </div>
-                         <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">Penyebab (maks. 1000 karakter)</label>
-                             <textarea 
-                                rows={2}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black resize-none"
-                                value={taxKirForm.penyebab || ''}
-                                onChange={(e) => handleTaxKirChange('penyebab', e.target.value)}
-                                disabled={isViewMode}
-                             ></textarea>
-                         </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                         {/* Row 5 */}
-                         <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">Estimasi Biaya <Required/></label>
-                             <input 
-                                type="text" 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black"
-                                value={taxKirForm.estimasiBiaya || ''}
-                                onChange={(e) => handleTaxKirChange('estimasiBiaya', e.target.value)}
-                                disabled={isViewMode}
-                             />
-                         </div>
-                         <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">Jenis Pembayaran <Required/></label>
-                             <select 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white"
-                                value={taxKirForm.jenisPembayaran || 'Kasbon'}
-                                onChange={(e) => handleTaxKirChange('jenisPembayaran', e.target.value)}
-                                disabled={isViewMode}
-                             >
-                                 <option value="Kasbon">Kasbon</option>
-                                 <option value="Reimburse">Reimburse</option>
-                                 <option value="Langsung">Langsung</option>
-                             </select>
-                         </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                         {/* Row 6 */}
-                         <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">Nama Bank <Required/></label>
-                             <input 
-                                type="text" 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black"
-                                value={taxKirForm.namaBank || ''}
-                                onChange={(e) => handleTaxKirChange('namaBank', e.target.value)}
-                                disabled={isViewMode}
-                             />
-                         </div>
-                         <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">Nomor Rekening <Required/></label>
-                             <input 
-                                type="text" 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black"
-                                value={taxKirForm.nomorRekening || ''}
-                                onChange={(e) => handleTaxKirChange('nomorRekening', e.target.value)}
-                                disabled={isViewMode}
-                             />
                          </div>
                     </div>
                 </div>
               </div>
-
           ) : moduleName === 'Servis' ? (
-             /* --- SERVICE REQUEST FORM (REFINED COLORS) --- */
              <div className="space-y-6">
-                 
-                 {/* Section 1: Detail Informasi */}
                  <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
                      <SectionHeader icon={List} title="DETAIL INFORMASI" />
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                          <div className="col-span-1 md:col-span-2">
                              <label className="block text-xs font-bold text-gray-800 mb-1.5">Aset / Kendaraan <Required/></label>
-                             <select 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black bg-white text-gray-900"
-                                value={serviceForm.aset || ''}
-                                onChange={(e) => handleServiceChange('aset', e.target.value)}
-                                disabled={isViewMode}
-                             >
-                                 <option value="" className="text-gray-400">(Pilih Kendaraan)</option>
-                                 {vehicleList.map(v => (
-                                     <option key={v.id} value={v.nama}>{v.noPolisi} - {v.nama}</option>
-                                 ))}
-                             </select>
-                         </div>
-                         <div>
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">KM Kendaraan (Odo) <Required/></label>
-                             <input 
-                                type="text" 
-                                placeholder="ex: 12000"
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black text-gray-900 placeholder:text-gray-400"
-                                value={serviceForm.kmKendaraan || ''}
-                                onChange={(e) => handleServiceChange('kmKendaraan', e.target.value)}
-                                disabled={isViewMode}
-                             />
-                         </div>
-                         <div>
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">Tanggal STNK</label>
-                             <input 
-                                type="text" 
-                                placeholder="-"
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-gray-100/50 text-gray-500 focus:outline-none cursor-not-allowed"
-                                value={serviceForm.tglStnk || ''}
-                                readOnly
-                             />
-                         </div>
-                     </div>
-                 </div>
-
-                 {/* Section 2: Servis */}
-                 <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
-                     <SectionHeader icon={Wrench} title="SERVIS" />
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                         <div>
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">Jenis Servis <Required/></label>
-                             <select 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black bg-white text-gray-900"
-                                value={serviceForm.jenisServis || 'Servis Rutin'}
-                                onChange={(e) => handleServiceChange('jenisServis', e.target.value)}
-                                disabled={isViewMode}
-                             >
-                                 <option value="Servis Rutin">Servis Rutin</option>
-                                 <option value="Perbaikan">Perbaikan</option>
-                                 <option value="Ganti Sparepart">Ganti Sparepart</option>
-                             </select>
-                         </div>
-                         <div>
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">Target Selesai <Required/></label>
-                             <input 
-                                type="date" 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black text-gray-900"
-                                value={serviceForm.targetSelesai || ''}
-                                onChange={(e) => handleServiceChange('targetSelesai', e.target.value)}
-                                disabled={isViewMode}
-                             />
-                         </div>
-                         <div className="col-span-1 md:col-span-2">
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">Keluhan / Masalah <Required/></label>
-                             <textarea 
-                                rows={3}
-                                placeholder="Jelaskan keluhan atau masalah pada kendaraan..."
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black resize-none text-gray-900 placeholder:text-gray-400"
-                                value={serviceForm.masalah || ''}
-                                onChange={(e) => handleServiceChange('masalah', e.target.value)}
-                                disabled={isViewMode}
-                             ></textarea>
-                         </div>
-                         <div className="col-span-1 md:col-span-2">
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">Analisa / Penyebab</label>
-                             <textarea 
-                                rows={3}
-                                placeholder="Analisa penyebab kerusakan (jika ada)..."
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black resize-none text-gray-900 placeholder:text-gray-400"
-                                value={serviceForm.penyebab || ''}
-                                onChange={(e) => handleServiceChange('penyebab', e.target.value)}
-                                disabled={isViewMode}
-                             ></textarea>
-                         </div>
-                     </div>
-                 </div>
-
-                 {/* Section 3: Biaya & Pembayaran */}
-                 <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
-                     <SectionHeader icon={DollarSign} title="BIAYA & PEMBAYARAN" />
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                         <div>
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">Nama Vendor <Required/></label>
-                             <input 
-                                type="text" 
-                                placeholder="Pilih atau ketik nama vendor"
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black text-gray-900 placeholder:text-gray-400"
-                                value={serviceForm.vendor || ''}
-                                onChange={(e) => handleServiceChange('vendor', e.target.value)}
-                                disabled={isViewMode}
-                             />
-                         </div>
-                         <div>
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">Estimasi Biaya <Required/></label>
-                             <div className="relative">
-                                <span className="absolute left-3 top-2.5 text-sm text-gray-500 font-medium">Rp</span>
-                                <input 
-                                    type="text" 
-                                    className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black text-gray-900"
-                                    value={serviceForm.estimasiBiaya || ''}
-                                    onChange={(e) => handleServiceChange('estimasiBiaya', e.target.value)}
-                                    disabled={isViewMode}
-                                />
-                             </div>
-                         </div>
-                         <div className="col-span-1 md:col-span-2">
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">Jenis Pembayaran <Required/></label>
-                             <select 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black bg-white text-gray-900"
-                                value={serviceForm.jenisPembayaran || 'Kasbon'}
-                                onChange={(e) => handleServiceChange('jenisPembayaran', e.target.value)}
-                                disabled={isViewMode}
-                             >
-                                 <option value="Kasbon">Kasbon</option>
-                                 <option value="Reimburse">Reimburse</option>
-                                 <option value="Langsung">Langsung</option>
+                             <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white text-gray-900" value={serviceForm.aset || ''} onChange={(e) => handleServiceChange('aset', e.target.value)} disabled={isViewMode}>
+                                 <option value="">(Pilih Kendaraan)</option>
+                                 {vehicleList.map(v => ( <option key={v.id} value={v.nama}>{v.noPolisi} - {v.nama}</option> ))}
                              </select>
                          </div>
                      </div>
                  </div>
-
              </div>
           ) : isMasterATK || isMasterARK ? (
-            /* --- MASTER ATK/ARK FORM --- */
             <div className="space-y-6">
-                {/* Section 1: Header Info */}
                 <div className="bg-blue-50/50 p-6 rounded-lg border border-blue-100">
                     <h3 className="text-blue-500 font-bold text-sm mb-4">{isMasterARK ? 'Household Master' : 'Stationery Master'}</h3>
-                    <div className="grid grid-cols-1 gap-4">
-                        <div className="grid grid-cols-12 gap-4 items-center">
-                            <div className="col-span-3">
-                                <label className="block text-sm font-semibold text-gray-700">Category <Required/></label>
-                            </div>
-                            <div className="col-span-9">
-                                <select className="w-full bg-[#FFF9C4] border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
-                                    <option value="Pulpen">Pulpen</option>
-                                    <option value="Kertas">Kertas</option>
-                                    <option value="Tinta">Tinta</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-12 gap-4 items-center">
-                            <div className="col-span-3">
-                                <label className="block text-sm font-semibold text-gray-700">Item Name <Required/></label>
-                            </div>
-                            <div className="col-span-9">
-                                <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
-                                    <option value="KENKO">KENKO Joyko K-1 0.5 mm Hitam</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Section 2: Transaction Input */}
-                <div className="bg-white pt-2 space-y-4 border-t border-gray-100">
-                    {/* Remaining Stock & Unit (Replaces Quantity) */}
-                    <div className="grid grid-cols-12 gap-4 items-center">
-                        <div className="col-span-3">
-                            <label className="block text-sm font-semibold text-gray-700">Remaining Stock <Required/></label>
-                        </div>
-                        <div className="col-span-4">
-                             <input type="number" defaultValue="48" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
-                        </div>
-                        <div className="col-span-1 text-right">
-                             <label className="block text-sm font-semibold text-gray-700">Unit</label>
-                        </div>
-                         <div className="col-span-4">
-                             <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
-                                <option>PCS</option>
-                                <option>RIM</option>
-                                <option>BOX</option>
-                             </select>
-                        </div>
-                    </div>
-
-                    {/* Minimum & Maximum Stock */}
-                    <div className="grid grid-cols-12 gap-4 items-center">
-                        <div className="col-span-3">
-                            <label className="block text-sm font-semibold text-gray-700">Minimum Stock</label>
-                        </div>
-                        <div className="col-span-3">
-                             <input type="number" defaultValue="10" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
-                        </div>
-                         <div className="col-span-3 text-right">
-                            <label className="block text-sm font-semibold text-gray-700">Maximum Stock</label>
-                        </div>
-                        <div className="col-span-3">
-                             <input type="number" defaultValue="100" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
-                        </div>
-                    </div>
-
-                    {/* Requested Stock */}
-                    <div className="grid grid-cols-12 gap-4 items-center">
-                        <div className="col-span-3">
-                            <label className="block text-sm font-semibold text-gray-700">Requested Stock</label>
-                        </div>
-                        <div className="col-span-9">
-                             <input type="number" defaultValue="0" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
-                        </div>
-                    </div>
-
-                    {/* Purchase Date */}
-                     <div className="grid grid-cols-12 gap-4 items-center">
-                        <div className="col-span-3">
-                            <label className="block text-sm font-semibold text-gray-700">Purchase Date <Required/></label>
-                        </div>
-                        <div className="col-span-4 relative">
-                             <input type="date" defaultValue="2024-03-16" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
-                        </div>
-                    </div>
-
-                    {/* Prices */}
-                     <div className="grid grid-cols-12 gap-4 items-center">
-                        <div className="col-span-3">
-                            <label className="block text-sm font-semibold text-gray-700">Item Price <Required/></label>
-                        </div>
-                        <div className="col-span-2">
-                             <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
-                                <option>IDR</option>
-                                <option>USD</option>
-                             </select>
-                        </div>
-                         <div className="col-span-7">
-                             <input type="text" defaultValue="100.000" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-12 gap-4 items-center">
-                        <div className="col-span-3">
-                            <label className="block text-sm font-semibold text-gray-700">Average Price</label>
-                        </div>
-                         <div className="col-span-6">
-                             <input type="text" defaultValue="1.000" readOnly className="w-full bg-gray-50 border border-gray-200 rounded px-3 py-2 text-sm text-gray-500 focus:outline-none" />
-                        </div>
-                    </div>
-
-                    {/* Description */}
-                    <div className="grid grid-cols-12 gap-4 items-start">
-                        <div className="col-span-3 pt-2">
-                            <label className="block text-sm font-semibold text-gray-700">Description <Required/></label>
-                        </div>
-                         <div className="col-span-6">
-                             <textarea rows={3} defaultValue="Pembelian Q2" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black resize-none" />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Section 3: History Table */}
-                <div className="mt-8">
-                    <h3 className="text-blue-500 font-bold text-sm mb-4">{isMasterARK ? 'Household Purchase History' : 'Stationery Purchase History'}</h3>
-                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                        <table className="w-full text-left text-sm">
-                            <thead className="bg-gray-100 border-b border-gray-200 font-semibold text-gray-700">
-                                <tr>
-                                    <th className="px-4 py-3 w-12">No</th>
-                                    <th className="px-4 py-3">Purchase Date</th>
-                                    <th className="px-4 py-3 text-center">Quantity</th>
-                                    <th className="px-4 py-3">Unit</th>
-                                    <th className="px-4 py-3 text-right">Item Price</th>
-                                    <th className="px-4 py-3 text-right">Average Price</th>
-                                    <th className="px-4 py-3">Description</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200 text-gray-700">
-                                <tr className="hover:bg-gray-50">
-                                    <td className="px-4 py-3 text-gray-500">1.</td>
-                                    <td className="px-4 py-3 text-blue-600 underline cursor-pointer">10 Jan 2024</td>
-                                    <td className="px-4 py-3 text-center font-medium">1</td>
-                                    <td className="px-4 py-3 font-semibold">PCS</td>
-                                    <td className="px-4 py-3 text-right">
-                                        <div className="flex justify-between gap-2">
-                                            <span>IDR</span>
-                                            <span>1,231</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3 text-right">
-                                        <div className="flex justify-between gap-2">
-                                            <span>IDR</span>
-                                            <span>1,231</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3 font-medium">Pembelian Q1</td>
-                                </tr>
-                            </tbody>
-                            <tfoot className="bg-white font-bold text-gray-800">
-                                <tr>
-                                    <td colSpan={4} className="px-4 py-3 text-right">Total IDR</td>
-                                    <td className="px-4 py-3 text-right">1,231</td>
-                                    <td className="px-4 py-3 text-right flex justify-between">
-                                        <span>IDR</span>
-                                        <span>1,231</span>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
                 </div>
             </div>
-          ) : isDeliveryLocation ? (
-              /* --- DELIVERY LOCATION FORM --- */
-              <div className="space-y-4">
-                  <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">{t('Location Name')} <Required/></label>
-                      <input 
-                          type="text" 
-                          className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" 
-                          value={deliveryLocationForm.name || ''}
-                          onChange={(e) => handleDeliveryLocationChange('name', e.target.value)}
-                          placeholder="e.g. Head Office"
-                      />
-                  </div>
-                  <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">{t('Address')} <Required/></label>
-                      <textarea
-                          rows={3} 
-                          className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black resize-none" 
-                          value={deliveryLocationForm.address || ''}
-                          onChange={(e) => handleDeliveryLocationChange('address', e.target.value)}
-                          placeholder="Full Address"
-                      />
-                  </div>
-                  <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">{t('Type')} <Required/></label>
-                      <select 
-                          className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black"
-                          value={deliveryLocationForm.type || 'Branch'}
-                          onChange={(e) => handleDeliveryLocationChange('type', e.target.value)}
-                      >
-                          <option value="Head Office">Head Office</option>
-                          <option value="Branch">Branch</option>
-                          <option value="Warehouse">Warehouse</option>
-                          <option value="Store">Store</option>
-                      </select>
-                  </div>
-              </div>
-          ) : isMaster ? (
-              /* --- GENERIC MASTER FORM --- */
-              <div className="space-y-4">
-                  <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Name <Required/></label>
-                      <input 
-                          type="text" 
-                          className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" 
-                          value={masterForm.name || ''}
-                          onChange={(e) => handleMasterChange(e.target.value)}
-                          placeholder={`Enter ${moduleName} Name`}
-                      />
-                  </div>
-              </div>
-
-          ) : isMasterVendor ? (
-            /* --- MASTER VENDOR FORM --- */
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">{t('Nama Vendor')} <Required/></label>
-                        <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={masterVendorForm.nama} onChange={(e) => handleMasterVendorChange('nama', e.target.value)} disabled={isViewMode} />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Merek</label>
-                        <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={masterVendorForm.merek} onChange={(e) => handleMasterVendorChange('merek', e.target.value)} disabled={isViewMode} />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">PIC <Required/></label>
-                        <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={masterVendorForm.pic} onChange={(e) => handleMasterVendorChange('pic', e.target.value)} disabled={isViewMode} />
-                    </div>
-                     <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">No Telp <Required/></label>
-                        <input type="text" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={masterVendorForm.noTelp} onChange={(e) => handleMasterVendorChange('noTelp', e.target.value)} disabled={isViewMode} />
-                    </div>
-                    <div className="md:col-span-2">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">{t('Alamat')} <Required/></label>
-                        <textarea className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" rows={3} value={masterVendorForm.alamat} onChange={(e) => handleMasterVendorChange('alamat', e.target.value)} disabled={isViewMode}></textarea>
-                    </div>
-                     <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">{t('Tipe Vendor')} <Required/></label>
-                        <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={masterVendorForm.tipe} onChange={(e) => handleMasterVendorChange('tipe', e.target.value)} disabled={isViewMode}>
-                            <option value="Vendor Servis">Vendor Servis</option>
-                            <option value="Vendor Mutasi">Vendor Mutasi</option>
-                            <option value="Vendor Pajak & KIR">Vendor Pajak & KIR</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Cabang Code <Required/></label>
-                        <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black disabled:bg-gray-100" value={masterVendorForm.cabang} onChange={(e) => handleMasterVendorChange('cabang', e.target.value)} disabled={isViewMode}>
-                            <option value="Aceh">Aceh</option>
-                            <option value="Pusat">Pusat</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
           ) : (
-             <div className="p-4 text-center text-gray-500">
-                 {/* Placeholder for other modules */}
-                 Form content for {moduleName}
-             </div>
+             <div className="p-4 text-center text-gray-500">Form content for {moduleName}</div>
           )}
         </div>
 
-        {/* Footer */}
         {mode !== 'view' && (
             <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end gap-3 z-10">
                 <button onClick={onClose} className="px-6 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">{t('Draf')}</button>
