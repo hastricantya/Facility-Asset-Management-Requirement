@@ -71,7 +71,6 @@ export const AddStockModal: React.FC<Props> = ({
     masterData = {}
 }) => {
   const { t } = useLanguage();
-  const [selectedDetail, setSelectedDetail] = useState<boolean>(false);
   
   // -- Local States --
   const defaultContractForm: Partial<ContractRecord> = {
@@ -121,7 +120,6 @@ export const AddStockModal: React.FC<Props> = ({
       anakAnak: 0,
       note: ''
   });
-  const [salesOffers, setSalesOffers] = useState<SalesOffer[]>([]);
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '' }]);
   
   // State for Approval History Modal
@@ -201,9 +199,7 @@ export const AddStockModal: React.FC<Props> = ({
       onClose();
   }
 
-  const handleVehicleChange = (field: keyof VehicleRecord, value: string) => setVehicleForm(prev => ({ ...prev, [field]: value }));
   const handleServiceChange = (field: keyof ServiceRecord, value: string) => setServiceForm(prev => ({ ...prev, [field]: value }));
-  
   const handleTaxKirChange = (field: keyof TaxKirRecord, value: string) => {
       setTaxKirForm(prev => {
           const newState = { ...prev, [field]: value };
@@ -220,11 +216,7 @@ export const AddStockModal: React.FC<Props> = ({
       });
   };
 
-  const handleMutationChange = (field: keyof MutationRecord, value: string) => setMutationForm(prev => ({ ...prev, [field]: value }));
-  const handleSalesChange = (field: keyof SalesRecord, value: string) => setSalesForm(prev => ({ ...prev, [field]: value }));
   const handleMasterChange = (value: string) => setMasterForm(prev => ({ ...prev, name: value }));
-  const handleMasterVendorChange = (field: keyof MasterVendorRecord, value: any) => setMasterVendorForm(prev => ({ ...prev, [field]: value }));
-  const handleDeliveryLocationChange = (field: keyof DeliveryLocationRecord, value: any) => setDeliveryLocationForm(prev => ({ ...prev, [field]: value }));
   const handleLogBookChange = (field: keyof LogBookRecord, value: any) => setLogBookForm(prev => ({ ...prev, [field]: value }));
   const handleStationeryRequestChange = (field: keyof StationeryRequestRecord, value: any) => setStationeryRequestForm(prev => ({ ...prev, [field]: value }));
 
@@ -257,7 +249,6 @@ export const AddStockModal: React.FC<Props> = ({
   const isMasterVendor = moduleName === 'Master Vendor';
   const isService = moduleName === 'Servis';
   
-  // Logic for generic master data (UOM, Category, Currency, etc.)
   const isMaster = !isContract && !isStationeryRequest && !isLogBook && !isMasterATK && !isMasterARK && !isDeliveryLocation && !isService && !isMasterVendor && moduleName !== 'Daftar Aset' && moduleName !== 'Pajak & KIR' && moduleName !== 'Mutasi' && moduleName !== 'Penjualan';
 
   const renderApprovalHistory = () => {
@@ -431,7 +422,7 @@ export const AddStockModal: React.FC<Props> = ({
   
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-[2px] p-4 transition-opacity duration-300">
-      <div className={`bg-white w-full ${isMaster || isDeliveryLocation ? 'max-w-md' : (moduleName === 'Daftar Aset' || isService || moduleName === 'Mutasi' || moduleName === 'Penjualan' || isContract || isMasterVendor || isLogBook || isStationeryRequest ? 'max-w-7xl' : 'max-w-5xl')} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transform transition-all scale-100`}>
+      <div className={`bg-white w-full ${isMaster || isDeliveryLocation ? 'max-w-md' : (moduleName === 'Daftar Aset' || isService || moduleName === 'Mutasi' || moduleName === 'Penjualan' || isContract || isMasterVendor || isLogBook || isStationeryRequest || isMasterATK || isMasterARK ? 'max-w-7xl' : 'max-w-5xl')} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transform transition-all scale-100`}>
         <div className="px-8 py-5 bg-white border-b border-gray-100 flex items-center justify-between">
           <div>
               <h2 className="text-lg font-bold tracking-tight text-gray-900">
@@ -441,6 +432,8 @@ export const AddStockModal: React.FC<Props> = ({
                  isStationeryRequest ? (mode === 'create' ? (moduleName === 'Daftar ATK' ? 'Create Stationery Request' : 'Create Household Request') : `Edit Request`) :
                  isLogBook ? (mode === 'view' ? 'Detail Tamu' : t('Tambah Tamu')) :
                  moduleName === 'Daftar Aset' ? t('Daftar Aset Kendaraan') : 
+                 isMasterATK ? 'Master Stationery' :
+                 isMasterARK ? 'Master Household' :
                  moduleName}
               </h2>
           </div>
@@ -451,66 +444,66 @@ export const AddStockModal: React.FC<Props> = ({
         
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-[#F8F9FA]">
           {isLogBook ? (
-            <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60 space-y-6">
-                <SectionHeader icon={List} title={t('Log Book Tamu Input')} />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Lokasi MODENA')} <Required/></label>
-                        <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white" value={logBookForm.lokasiModena} onChange={(e) => handleLogBookChange('lokasiModena', e.target.value)} disabled={isViewMode}>
-                            <option value="">{t('Pilih Tempat')}</option>
-                            <option value="MODENA Head Office">{t('MODENA Head Office')}</option>
-                            <option value="MODENA Kemang">{t('MODENA Kemang')}</option>
-                            <option value="MODENA Suryo">{t('MODENA Suryo')}</option>
-                            <option value="Warehouse Cakung">{t('Warehouse Cakung')}</option>
-                        </select>
-                    </div>
+             <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60 space-y-6">
+                 <SectionHeader icon={List} title={t('Log Book Tamu Input')} />
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div>
-                        <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Kategori Tamu')} <Required/></label>
-                        <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-[#FFF9C4]" value={logBookForm.kategoriTamu} onChange={(e) => handleLogBookChange('kategoriTamu', e.target.value)} disabled={isViewMode}>
-                            <option value="Customer">Customer</option>
-                            <option value="Supplier">Supplier</option>
-                            <option value="Partner">Partner</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div className="md:col-span-2">
-                         <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Nama Tamu')}</label>
-                         <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.namaTamu} onChange={(e) => handleLogBookChange('namaTamu', e.target.value)} disabled={isViewMode} />
-                    </div>
-                    <div>
-                         <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Tanggal Kunjungan')}</label>
-                         <input type="date" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white" value={logBookForm.tanggalKunjungan} onChange={(e) => handleLogBookChange('tanggalKunjungan', e.target.value)} disabled={isViewMode} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Jam Datang')}</label>
-                            <input type="time" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.jamDatang} onChange={(e) => handleLogBookChange('jamDatang', e.target.value)} disabled={isViewMode} />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Jam Pulang')}</label>
-                            <input type="time" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.jamPulang} onChange={(e) => handleLogBookChange('jamPulang', e.target.value)} disabled={isViewMode} />
-                        </div>
-                    </div>
-                    <div className="md:col-span-2 grid grid-cols-3 gap-6">
-                        <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Wanita')}</label>
-                             <input type="number" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.wanita} onChange={(e) => handleLogBookChange('wanita', e.target.value)} disabled={isViewMode} />
-                        </div>
-                        <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Laki-Laki')}</label>
-                             <input type="number" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.lakiLaki} onChange={(e) => handleLogBookChange('lakiLaki', e.target.value)} disabled={isViewMode} />
-                        </div>
-                        <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Anak-Anak')}</label>
-                             <input type="number" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.anakAnak} onChange={(e) => handleLogBookChange('anakAnak', e.target.value)} disabled={isViewMode} />
-                        </div>
-                    </div>
-                    <div className="md:col-span-2">
-                         <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Note')}</label>
-                         <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black resize-none" rows={3} value={logBookForm.note} onChange={(e) => handleLogBookChange('note', e.target.value)} disabled={isViewMode}></textarea>
-                    </div>
-                </div>
-            </div>
+                         <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Lokasi MODENA')} <Required/></label>
+                         <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white" value={logBookForm.lokasiModena} onChange={(e) => handleLogBookChange('lokasiModena', e.target.value)} disabled={isViewMode}>
+                             <option value="">{t('Pilih Tempat')}</option>
+                             <option value="MODENA Head Office">{t('MODENA Head Office')}</option>
+                             <option value="MODENA Kemang">{t('MODENA Kemang')}</option>
+                             <option value="MODENA Suryo">{t('MODENA Suryo')}</option>
+                             <option value="Warehouse Cakung">{t('Warehouse Cakung')}</option>
+                         </select>
+                     </div>
+                      <div>
+                         <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Kategori Tamu')} <Required/></label>
+                         <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-[#FFF9C4]" value={logBookForm.kategoriTamu} onChange={(e) => handleLogBookChange('kategoriTamu', e.target.value)} disabled={isViewMode}>
+                             <option value="Customer">Customer</option>
+                             <option value="Supplier">Supplier</option>
+                             <option value="Partner">Partner</option>
+                             <option value="Other">Other</option>
+                         </select>
+                     </div>
+                     <div className="md:col-span-2">
+                          <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Nama Tamu')}</label>
+                          <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.namaTamu} onChange={(e) => handleLogBookChange('namaTamu', e.target.value)} disabled={isViewMode} />
+                     </div>
+                     <div>
+                          <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Tanggal Kunjungan')}</label>
+                          <input type="date" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white" value={logBookForm.tanggalKunjungan} onChange={(e) => handleLogBookChange('tanggalKunjungan', e.target.value)} disabled={isViewMode} />
+                     </div>
+                     <div className="grid grid-cols-2 gap-4">
+                         <div>
+                             <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Jam Datang')}</label>
+                             <input type="time" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.jamDatang} onChange={(e) => handleLogBookChange('jamDatang', e.target.value)} disabled={isViewMode} />
+                         </div>
+                         <div>
+                             <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Jam Pulang')}</label>
+                             <input type="time" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.jamPulang} onChange={(e) => handleLogBookChange('jamPulang', e.target.value)} disabled={isViewMode} />
+                         </div>
+                     </div>
+                     <div className="md:col-span-2 grid grid-cols-3 gap-6">
+                         <div>
+                              <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Wanita')}</label>
+                              <input type="number" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.wanita} onChange={(e) => handleLogBookChange('wanita', e.target.value)} disabled={isViewMode} />
+                         </div>
+                         <div>
+                              <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Laki-Laki')}</label>
+                              <input type="number" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.lakiLaki} onChange={(e) => handleLogBookChange('lakiLaki', e.target.value)} disabled={isViewMode} />
+                         </div>
+                         <div>
+                              <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Anak-Anak')}</label>
+                              <input type="number" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.anakAnak} onChange={(e) => handleLogBookChange('anakAnak', e.target.value)} disabled={isViewMode} />
+                         </div>
+                     </div>
+                     <div className="md:col-span-2">
+                          <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Note')}</label>
+                          <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black resize-none" rows={3} value={logBookForm.note} onChange={(e) => handleLogBookChange('note', e.target.value)} disabled={isViewMode}></textarea>
+                     </div>
+                 </div>
+             </div>
           ) : isStationeryRequest && !isViewMode ? (
              <div className="space-y-6">
                  <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
@@ -646,13 +639,162 @@ export const AddStockModal: React.FC<Props> = ({
                  </div>
              </div>
           ) : isMasterATK || isMasterARK ? (
+            /* --- MASTER ATK/ARK FORM (RESTORED) --- */
             <div className="space-y-6">
+                {/* Section 1: Header Info */}
                 <div className="bg-blue-50/50 p-6 rounded-lg border border-blue-100">
                     <h3 className="text-blue-500 font-bold text-sm mb-4">{isMasterARK ? 'Household Master' : 'Stationery Master'}</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                        <div className="grid grid-cols-12 gap-4 items-center">
+                            <div className="col-span-3">
+                                <label className="block text-sm font-semibold text-gray-700">Category <Required/></label>
+                            </div>
+                            <div className="col-span-9">
+                                <select className="w-full bg-[#FFF9C4] border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
+                                    <option value="Pulpen">Pulpen</option>
+                                    <option value="Kertas">Kertas</option>
+                                    <option value="Tinta">Tinta</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-12 gap-4 items-center">
+                            <div className="col-span-3">
+                                <label className="block text-sm font-semibold text-gray-700">Item Name <Required/></label>
+                            </div>
+                            <div className="col-span-9">
+                                <input type="text" placeholder="e.g. KENKO Joyko K-1 0.5 mm Hitam" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Section 2: Transaction Input */}
+                <div className="bg-white pt-2 space-y-4 border-t border-gray-100">
+                    {/* Remaining Stock & Unit */}
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">Remaining Stock <Required/></label>
+                        </div>
+                        <div className="col-span-4">
+                             <input type="number" defaultValue="48" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                        </div>
+                        <div className="col-span-1 text-right">
+                             <label className="block text-sm font-semibold text-gray-700">Unit</label>
+                        </div>
+                         <div className="col-span-4">
+                             <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
+                                <option>PCS</option>
+                                <option>RIM</option>
+                                <option>BOX</option>
+                             </select>
+                        </div>
+                    </div>
+
+                    {/* Minimum & Maximum Stock */}
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">Minimum Stock</label>
+                        </div>
+                        <div className="col-span-3">
+                             <input type="number" defaultValue="10" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                        </div>
+                         <div className="col-span-3 text-right">
+                            <label className="block text-sm font-semibold text-gray-700">Maximum Stock</label>
+                        </div>
+                        <div className="col-span-3">
+                             <input type="number" defaultValue="100" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                        </div>
+                    </div>
+
+                    {/* Requested Stock */}
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">Requested Stock</label>
+                        </div>
+                        <div className="col-span-9">
+                             <input type="number" defaultValue="0" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                        </div>
+                    </div>
+
+                    {/* Purchase Date */}
+                     <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">Purchase Date <Required/></label>
+                        </div>
+                        <div className="col-span-4 relative">
+                             <input type="date" defaultValue="2024-03-16" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                        </div>
+                    </div>
+
+                    {/* Prices */}
+                     <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">Item Price <Required/></label>
+                        </div>
+                        <div className="col-span-2">
+                             <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
+                                <option>IDR</option>
+                                <option>USD</option>
+                             </select>
+                        </div>
+                         <div className="col-span-7">
+                             <input type="text" defaultValue="100.000" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="col-span-3">
+                            <label className="block text-sm font-semibold text-gray-700">Average Price</label>
+                        </div>
+                         <div className="col-span-9">
+                             <input type="text" defaultValue="1.000" readOnly className="w-full bg-gray-50 border border-gray-200 rounded px-3 py-2 text-sm text-gray-500 focus:outline-none" />
+                        </div>
+                    </div>
+
+                    {/* Description */}
+                    <div className="grid grid-cols-12 gap-4 items-start">
+                        <div className="col-span-3 pt-2">
+                            <label className="block text-sm font-semibold text-gray-700">Description <Required/></label>
+                        </div>
+                         <div className="col-span-9">
+                             <textarea rows={3} defaultValue="Pembelian Q2" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black resize-none" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* History Table (Visible even in Create mode as requested) */}
+                <div className="mt-8">
+                    <h3 className="text-blue-500 font-bold text-sm mb-4">{isMasterARK ? 'Household Purchase History' : 'Stationery Purchase History'}</h3>
+                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-gray-100 border-b border-gray-200 font-semibold text-gray-700">
+                                <tr>
+                                    <th className="px-4 py-3 w-12">No</th>
+                                    <th className="px-4 py-3">Purchase Date</th>
+                                    <th className="px-4 py-3 text-center">Quantity</th>
+                                    <th className="px-4 py-3">Unit</th>
+                                    <th className="px-4 py-3 text-right">Item Price</th>
+                                    <th className="px-4 py-3 text-right">Average Price</th>
+                                    <th className="px-4 py-3">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200 text-gray-700">
+                                <tr className="hover:bg-gray-50">
+                                    <td className="px-4 py-3 text-gray-500">1.</td>
+                                    <td className="px-4 py-3 text-blue-600 underline cursor-pointer">10 Jan 2024</td>
+                                    <td className="px-4 py-3 text-center font-medium">1</td>
+                                    <td className="px-4 py-3 font-semibold">PCS</td>
+                                    <td className="px-4 py-3 text-right">IDR 1,231</td>
+                                    <td className="px-4 py-3 text-right">IDR 1,231</td>
+                                    <td className="px-4 py-3 font-medium">Pembelian Q1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
           ) : isMaster ? (
-              /* --- GENERIC MASTER FORM (UOM, Category, etc.) --- */
               <div className="space-y-4">
                   <div>
                       <label className="block text-xs font-bold text-gray-700 mb-1.5">Name <Required/></label>
@@ -672,7 +814,9 @@ export const AddStockModal: React.FC<Props> = ({
 
         {mode !== 'view' && (
             <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end gap-3 z-10">
-                <button onClick={onClose} className="px-6 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">{t('Draf')}</button>
+                {!(isMasterATK || isMasterARK) && (
+                    <button onClick={onClose} className="px-6 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">{t('Draf')}</button>
+                )}
                 <button onClick={handleSave} className="px-6 py-2.5 text-sm font-bold text-white bg-black rounded-lg hover:bg-gray-800 shadow-lg shadow-gray-200 transition-all transform hover:-translate-y-0.5">{t('Simpan')}</button>
             </div>
         )}
