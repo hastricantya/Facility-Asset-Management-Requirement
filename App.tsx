@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
@@ -19,6 +18,7 @@ import { VehicleModal } from './components/VehicleModal';
 import { BuildingModal } from './components/BuildingModal';
 import { GeneralMasterModal } from './components/GeneralMasterModal';
 import { AddStockModal } from './components/AddStockModal';
+import { MasterItemModal } from './components/MasterItemModal';
 import { Users, User, Baby, Activity } from 'lucide-react';
 import { 
   MOCK_VEHICLE_DATA, 
@@ -82,8 +82,8 @@ const App: React.FC = () => {
   const [masterVendors] = useState(MOCK_MASTER_VENDOR_DATA);
   const [atkData, setAtkData] = useState<AssetRecord[]>(MOCK_ATK_DATA);
   const [arkData, setArkData] = useState<AssetRecord[]>(MOCK_ARK_DATA);
-  const [atkMaster] = useState<MasterItem[]>(MOCK_ATK_MASTER);
-  const [arkMaster] = useState<MasterItem[]>(MOCK_MASTER_ARK_DATA);
+  const [atkMaster, setAtkMaster] = useState<MasterItem[]>(MOCK_ATK_MASTER);
+  const [arkMaster, setArkMaster] = useState<MasterItem[]>(MOCK_MASTER_ARK_DATA);
   const [logBookData, setLogBookData] = useState<LogBookRecord[]>(MOCK_LOGBOOK_DATA);
   
   // Master Lists (UOM, Category, Loc)
@@ -110,6 +110,7 @@ const App: React.FC = () => {
   const [isBuildingModalOpen, setIsBuildingModalOpen] = useState(false);
   const [isMasterModalOpen, setIsMasterModalOpen] = useState(false);
   const [isStockModalOpen, setIsStockModalOpen] = useState(false);
+  const [isMasterItemModalOpen, setIsMasterItemModalOpen] = useState(false);
   
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleRecord | null>(null);
@@ -117,6 +118,7 @@ const App: React.FC = () => {
   const [selectedMasterItem, setSelectedMasterItem] = useState<GeneralMasterItem | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<AssetRecord | null>(null);
   const [selectedLogBook, setSelectedLogBook] = useState<LogBookRecord | null>(null);
+  const [selectedMasterProduct, setSelectedMasterProduct] = useState<MasterItem | null>(null);
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -141,18 +143,48 @@ const App: React.FC = () => {
     setModalMode('create');
     setSelectedLogBook(null);
     setSelectedAsset(null);
+    setSelectedMasterProduct(null);
+
     if (activeModule === 'Daftar Aset') {
         setSelectedVehicle(null);
         setIsVehicleModalOpen(true);
     } else if (activeModule === 'Kontrak Gedung') {
         setSelectedBuilding(null);
         setIsBuildingModalOpen(true);
+    } else if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
+        setIsMasterItemModalOpen(true);
     } else if (activeModule.includes('ATK') || activeModule.includes('ARK') || activeModule === 'Log Book' || activeModule === 'Servis') {
         setIsStockModalOpen(true);
     } else if (masterLists[activeModule]) {
         setSelectedMasterItem(null);
         setIsMasterModalOpen(true);
     }
+  };
+
+  const handleSaveMasterItem = (data: Partial<MasterItem>) => {
+    const isArk = activeModule === 'Master ARK';
+    if (modalMode === 'create') {
+        const newItem: MasterItem = {
+            id: Date.now(),
+            itemName: data.itemName || 'New Item',
+            category: data.category || 'General',
+            itemCode: data.itemCode || 'CODE-001',
+            uom: data.uom || 'PCS',
+            remainingStock: 0,
+            minimumStock: data.minimumStock || 0,
+            maximumStock: data.maximumStock || 0,
+            requestedStock: 0,
+            purchaseDate: data.purchaseDate || '',
+            lastPurchasePrice: data.lastPurchasePrice || 'Rp 0',
+            averagePrice: data.lastPurchasePrice || 'Rp 0'
+        };
+        if (isArk) setArkMaster([newItem, ...arkMaster]);
+        else setAtkMaster([newItem, ...atkMaster]);
+    } else {
+        if (isArk) setArkMaster(arkMaster.map(i => i.id === data.id ? { ...i, ...data } : i));
+        else setAtkMaster(atkMaster.map(i => i.id === data.id ? { ...i, ...data } : i));
+    }
+    setIsMasterItemModalOpen(false);
   };
 
   const handleSaveLogBook = (data: Partial<LogBookRecord>) => {
@@ -245,11 +277,11 @@ const App: React.FC = () => {
      if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
         const isArk = activeModule === 'Master ARK';
         switch(activeTab) {
-            case 'Items': return <MasterAtkTable data={isArk ? arkMaster : atkMaster} />;
+            case 'Items': return <MasterAtkTable data={isArk ? arkMaster : atkMaster} onEdit={(item) => { setSelectedMasterProduct(item); setModalMode('edit'); setIsMasterItemModalOpen(true); }} />;
             case 'UOM': return <GeneralMasterTable data={uomList} onEdit={()=>{}} onDelete={()=>{}} />;
             case 'Category': return <GeneralMasterTable data={isArk ? arkCategories : atkCategories} onEdit={()=>{}} onDelete={()=>{}} />;
             case 'Delivery Location': return <MasterDeliveryLocationTable data={delivLocations} onEdit={()=>{}} onDelete={()=>{}} />;
-            default: return <MasterAtkTable data={isArk ? arkMaster : atkMaster} />;
+            default: return <MasterAtkTable data={isArk ? arkMaster : atkMaster} onEdit={(item) => { setSelectedMasterProduct(item); setModalMode('edit'); setIsMasterItemModalOpen(true); }} />;
         }
      }
 
@@ -407,6 +439,15 @@ const App: React.FC = () => {
         onApprove={handleApproveAsset}
         onReject={handleRejectAsset}
         vehicleList={vehicleData}
+      />
+
+      <MasterItemModal 
+        isOpen={isMasterItemModalOpen}
+        onClose={() => setIsMasterItemModalOpen(false)}
+        onSave={handleSaveMasterItem}
+        initialData={selectedMasterProduct}
+        moduleName={activeModule}
+        mode={modalMode}
       />
     </div>
   );

@@ -4,9 +4,10 @@ import { ChevronsUpDown, ChevronLeft, ChevronRight, Edit3, Trash2 } from 'lucide
 
 interface Props {
   data: MasterItem[];
+  onEdit?: (item: MasterItem) => void;
 }
 
-export const MasterAtkTable: React.FC<Props> = ({ data }) => {
+export const MasterAtkTable: React.FC<Props> = ({ data, onEdit }) => {
   return (
     <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
       <div className="overflow-x-auto custom-scrollbar">
@@ -44,7 +45,11 @@ export const MasterAtkTable: React.FC<Props> = ({ data }) => {
           </thead>
           <tbody className="divide-y divide-gray-50">
             {data.map((item, index) => (
-              <tr key={item.id} className="bg-white hover:bg-[#FDFDFD] transition-all cursor-pointer group">
+              <tr 
+                key={item.id} 
+                className="bg-white hover:bg-[#FDFDFD] transition-all cursor-pointer group"
+                onClick={() => onEdit?.(item)}
+              >
                 <td className="p-5 text-center font-bold text-gray-300 text-[11px] pl-8">{index + 1}</td>
                 <td className="p-5">
                     <span className="text-[11px] font-black text-gray-500 uppercase tracking-tighter border border-gray-100 px-2 py-1 rounded">

@@ -14,6 +14,16 @@ export interface SparePart {
   price: string;
 }
 
+export interface PurchaseRecord {
+  id: string;
+  date: string;
+  vendorName: string;
+  qty: number;
+  unitPrice: string;
+  totalPrice: string;
+  status: 'Completed' | 'Pending' | 'Cancelled';
+}
+
 export interface AssetRecord {
   id: number;
   transactionNumber?: string;
@@ -202,6 +212,7 @@ export interface MasterItem {
   purchaseDate: string;
   lastPurchasePrice: string;
   averagePrice: string;
+  purchaseHistory?: PurchaseRecord[];
 }
 
 export interface StationeryRequestItem {
@@ -220,10 +231,6 @@ export interface StationeryRequestRecord {
   items: StationeryRequestItem[];
 }
 
-/**
- * ContractRecord interface representing common contract fields.
- * Includes optional ownership and department fields used in AddStockModal.
- */
 export interface ContractRecord {
   id: number;
   assetCategory: string;
