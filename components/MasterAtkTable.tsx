@@ -36,7 +36,6 @@ export const MasterAtkTable: React.FC<Props> = ({ data, onEdit }) => {
                <th className="p-5 w-24 text-[10px] font-black text-black uppercase tracking-[0.15em]">UoM</th>
               <th className="p-5 w-32 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Stock</th>
               <th className="p-5 w-28 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Min</th>
-              <th className="p-5 w-28 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Max</th>
               <th className="p-5 w-32 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Requested</th>
               <th className="p-5 w-40 text-[10px] font-black text-black uppercase tracking-[0.15em]">Last Buy</th>
               <th className="p-5 w-44 text-right text-[10px] font-black text-black uppercase tracking-[0.15em]">Unit Price</th>
@@ -71,7 +70,6 @@ export const MasterAtkTable: React.FC<Props> = ({ data, onEdit }) => {
                     </div>
                 </td>
                 <td className="p-5 text-center text-gray-400 font-mono text-[11px] font-bold">{item.minimumStock}</td>
-                <td className="p-5 text-center text-gray-400 font-mono text-[11px] font-bold">{item.maximumStock}</td>
                 <td className="p-5 text-center">
                     <div className={`font-mono text-[12px] font-black ${item.requestedStock > 0 ? 'text-orange-500' : 'text-gray-300'}`}>
                         {item.requestedStock}
