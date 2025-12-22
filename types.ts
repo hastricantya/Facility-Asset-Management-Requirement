@@ -139,6 +139,8 @@ export interface TaxKirRecord {
   vendor?: string;
   estimasiBiaya?: string;
   jenisPembayaran?: string;
+  // targetSelesai is required for tracking the expected completion date in TaxKirModal
+  targetSelesai?: string;
 }
 
 export interface MutationRecord {
@@ -218,10 +220,6 @@ export interface StationeryRequestRecord {
   items: StationeryRequestItem[];
 }
 
-/**
- * ContractRecord interface representing common contract fields.
- * Includes optional ownership and department fields used in AddStockModal.
- */
 export interface ContractRecord {
   id: number;
   assetCategory: string;

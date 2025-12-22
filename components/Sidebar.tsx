@@ -15,13 +15,10 @@ import {
   Send,
   DollarSign,
   ChevronDown,
-  ChevronUp,
   X,
   Building,
   Briefcase,
   Bell,
-  ShieldCheck,
-  CreditCard,
   Settings,
   UserCheck,
   Box,
@@ -83,6 +80,14 @@ export const Sidebar: React.FC<Props> = ({
         ]
     },
     { 
+        label: 'Gedung', 
+        icon: <Building size={20} />,
+        subItems: [
+             { label: 'Kontrak Gedung', icon: <FileText size={18} /> },
+             { label: 'List Reminder Dokumen', icon: <Bell size={18} /> },
+        ]
+    },
+    { 
         label: 'ATK', 
         icon: <Box size={20} />,
         subItems: [
@@ -101,14 +106,6 @@ export const Sidebar: React.FC<Props> = ({
         ]
     },
     { label: 'Log Book', icon: <BookOpen size={20} /> },
-    { 
-        label: 'Gedung', 
-        icon: <Building size={20} />,
-        subItems: [
-             { label: 'Kontrak Gedung', icon: <FileText size={18} /> },
-             { label: 'List Reminder Dokumen', icon: <Bell size={18} /> },
-        ]
-    },
     { label: 'Timesheet', icon: <Clock size={20} /> },
     { label: 'Vendor', icon: <Users size={20} /> },
     { 
@@ -187,7 +184,7 @@ export const Sidebar: React.FC<Props> = ({
                                             ? 'bg-[#1a1a1a] text-white border-l-4 border-white' 
                                             : 'hover:bg-[#1a1a1a] hover:text-white border-l-4 border-transparent text-gray-500'}`}
                                     >
-                                        {sub.label}
+                                        {t(sub.label)}
                                     </button>
                                   )
                               })}

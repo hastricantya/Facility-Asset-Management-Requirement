@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { VehicleContractRecord } from '../types';
-import { ChevronsUpDown, Eye, Pencil, Trash2 } from 'lucide-react';
+import { ChevronsUpDown, Eye, Pencil, Trash2, Briefcase, Calendar, FolderOpen } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props {
   data: VehicleContractRecord[];
@@ -11,97 +11,100 @@ interface Props {
 }
 
 export const VehicleContractTable: React.FC<Props> = ({ data, onEdit, onView, onDelete }) => {
+  const { t } = useLanguage();
+
+  const TableHeader = ({ label, className = "" }: { label: string, className?: string }) => (
+    <th className={`p-4 group cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-100 ${className}`}>
+      <div className={`flex items-center gap-2 ${className.includes('center') ? 'justify-center' : 'justify-between'}`}>
+        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{label}</span>
+        <ChevronsUpDown size={12} className="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+      </div>
+    </th>
+  );
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto">
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px] flex flex-col">
+      <div className="overflow-x-auto flex-1">
         <table className="w-full min-w-[1200px] text-left border-collapse">
           <thead>
-            <tr className="bg-gray-100 border-b border-gray-200 text-xs font-semibold text-gray-700 uppercase tracking-wider">
-              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
-                <div className="flex items-center justify-between">
-                  No Kontrak
-                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
-                <div className="flex items-center justify-between">
-                  No Polisi / Unit
-                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
-                <div className="flex items-center justify-between">
-                  Vendor / Lessor
-                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
-                <div className="flex items-center justify-between">
-                  Masa Berlaku
-                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 group cursor-pointer hover:bg-gray-200 transition-colors">
-                <div className="flex items-center justify-between">
-                  Biaya
-                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
-                <div className="flex items-center justify-between">
-                  Status
-                  <ChevronsUpDown size={14} className="text-gray-500 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 w-24 text-center">Aksi</th>
+            <tr className="bg-white">
+              <TableHeader label="No Kontrak" />
+              <TableHeader label="Unit & No Polisi" />
+              <TableHeader label="Vendor / Lessor" />
+              <TableHeader label="Masa Berlaku" />
+              <TableHeader label="Biaya Sewa" className="text-right" />
+              <TableHeader label="Status" className="text-center" />
+              <th className="p-4 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 text-sm text-gray-700">
+          <tbody className="divide-y divide-gray-50 text-[11px] text-gray-700">
             {data.length > 0 ? (
                 data.map((item) => (
-                    <tr key={item.id} className="bg-white hover:bg-gray-50 transition-colors cursor-pointer group">
-                        <td className="p-4 font-bold text-gray-900">{item.noKontrak}</td>
+                    <tr key={item.id} className="bg-white hover:bg-gray-50/50 transition-colors group">
+                        <td className="p-4 font-black text-gray-900 uppercase">{item.noKontrak}</td>
                         <td className="p-4">
-                            <div className="font-bold text-gray-900">{item.noPolisi}</div>
-                            <div className="text-xs text-gray-500 font-medium">{item.aset}</div>
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-gray-50 rounded-lg text-black border border-gray-100">
+                                    <Briefcase size={16} />
+                                </div>
+                                <div>
+                                    <div className="font-black text-gray-900 uppercase">{item.noPolisi}</div>
+                                    <div className="text-[10px] text-gray-400 font-bold uppercase">{item.aset}</div>
+                                </div>
+                            </div>
                         </td>
-                        <td className="p-4 text-gray-600 font-medium">{item.vendor}</td>
+                        <td className="p-4 font-bold text-gray-600">{item.vendor}</td>
                         <td className="p-4">
-                            <div className="text-xs font-bold text-gray-800">{item.tglMulai} s/d</div>
-                            <div className="text-xs font-bold text-blue-600">{item.tglBerakhir}</div>
+                            <div className="flex items-center gap-2 text-gray-500 font-medium">
+                                <Calendar size={12} className="text-gray-300" />
+                                <span>{item.tglMulai} — {item.tglBerakhir}</span>
+                            </div>
                         </td>
-                        <td className="p-4 font-black text-gray-900">
+                        <td className="p-4 text-right font-black text-black">
                             Rp {parseInt(item.biayaSewa || '0').toLocaleString('id-ID')}
                         </td>
-                        <td className="p-4">
-                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase ${
-                                item.status === 'Aktif' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-500 border border-gray-200'
+                        <td className="p-4 text-center">
+                            <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase border ${
+                                item.status === 'Aktif' 
+                                ? 'bg-black text-white border-black shadow-sm' 
+                                : 'bg-gray-100 text-gray-500 border-gray-200'
                             }`}>
                                 {item.status}
                             </span>
                         </td>
                         <td className="p-4">
-                            <div className="flex items-center justify-center gap-2">
-                                <button onClick={(e) => { e.stopPropagation(); onView?.(item); }} className="text-gray-400 hover:text-black transition-colors">
+                            <div className="flex items-center justify-center gap-1">
+                                <button onClick={() => onView?.(item)} className="p-2 text-gray-300 hover:text-black transition-all rounded-lg hover:bg-gray-100">
                                     <Eye size={18} />
                                 </button>
-                                <button onClick={(e) => { e.stopPropagation(); onEdit?.(item); }} className="text-gray-400 hover:text-blue-600 transition-colors">
+                                <button onClick={() => onEdit?.(item)} className="p-2 text-gray-300 hover:text-black transition-all rounded-lg hover:bg-gray-100">
                                     <Pencil size={18} />
                                 </button>
-                                <button onClick={(e) => { e.stopPropagation(); onDelete?.(item.id); }} className="text-gray-400 hover:text-red-500 transition-colors">
+                                <button onClick={() => onDelete?.(item.id)} className="p-2 text-gray-300 hover:text-red-500 transition-all rounded-lg hover:bg-gray-100">
                                     <Trash2 size={18} />
                                 </button>
                             </div>
                         </td>
                     </tr>
                 ))
-            ) : (
-                <tr>
-                    <td colSpan={7} className="p-12 text-center text-gray-400 italic">Belum ada kontrak terdaftar</td>
-                </tr>
-            )}
+            ) : null}
           </tbody>
         </table>
+
+        {data.length === 0 && (
+          <div className="flex-1 flex flex-col items-center justify-center py-32 bg-white">
+            <div className="w-24 h-24 bg-gray-50 rounded-2xl flex items-center justify-center mb-6 border border-gray-100 relative">
+               <div className="absolute inset-0 bg-gray-100/50 rounded-2xl scale-110 -z-10 blur-sm"></div>
+               <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                  <FolderOpen size={40} className="text-gray-300" />
+               </div>
+            </div>
+            <h3 className="text-sm font-black text-gray-900 mb-2 uppercase tracking-tight">{t('Belum ada data')}</h3>
+            <p className="text-gray-400 text-[11px] font-medium text-center px-4">
+              Belum ada kontrak kendaraan yang terdaftar dalam sistem.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
