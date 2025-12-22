@@ -119,12 +119,16 @@ export const AddStockModal: React.FC<Props> = ({
                    location: 'MODENA Head Office'
                });
 
-               setRequestItems([{ 
+               // For demo purposes, we populate with initial item + one extra to look more complete
+               setRequestItems([
+                 { 
                    itemId: matchedMaster ? matchedMaster.id.toString() : '', 
                    qty: initialAssetData.qty ? initialAssetData.qty.toString() : '0',
                    categoryId: matchedMaster ? matchedMaster.category : '',
                    uom: matchedMaster ? matchedMaster.uom : ''
-               }]);
+                 },
+                 { itemId: '2', qty: '5', categoryId: 'Kertas', uom: 'RIM' }
+               ]);
            }
         } else {
             setStationeryRequestForm({ type: 'DAILY REQUEST', deliveryType: 'Dikirim', location: 'MODENA Head Office', date: new Date().toISOString().split('T')[0] });
@@ -145,11 +149,9 @@ export const AddStockModal: React.FC<Props> = ({
   const handleRequestItemChange = (index: number, field: keyof StationeryRequestItem, value: string) => {
       const newItems = [...requestItems];
       if (field === 'categoryId') {
-          // If category changes, reset itemId and uom for that row to ensure validation
           newItems[index] = { ...newItems[index], [field]: value, itemId: '', uom: '' };
       } else if (field === 'itemId') {
-          // If product changes, auto-set default UOM from master
-          const isArk = moduleName === 'Daftar ARK';
+          const isArk = moduleName.includes('ARK');
           const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
           const selectedProduct = masterList.find(m => m.id.toString() === value);
           newItems[index] = { ...newItems[index], [field]: value, uom: selectedProduct?.uom || '' };
@@ -173,14 +175,12 @@ export const AddStockModal: React.FC<Props> = ({
   const isApprovalModule = moduleName.includes('Approval');
   const isViewMode = mode === 'view';
   const isLogBook = moduleName === 'Log Book';
-  const Required = () => <span className="text-red-600 font-bold ml-0.5">*</span>;
 
   const renderApprovalHistory = () => {
     if (!showApprovalHistory) return null;
     return (
         <div className="fixed inset-0 bg-black/40 z-[70] flex items-center justify-center backdrop-blur-sm p-4 animate-in fade-in duration-200">
             <div className="bg-white w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
-                {/* Header */}
                 <div className="px-8 py-6 border-b border-gray-100 flex items-start justify-between">
                     <div>
                         <h2 className="text-[18px] font-bold text-[#111827]">Approval History</h2>
@@ -190,25 +190,19 @@ export const AddStockModal: React.FC<Props> = ({
                         <X size={24} />
                     </button>
                 </div>
-                
-                {/* Body */}
                 <div className="p-10 bg-white">
                     <div className="relative flex gap-8">
-                        {/* Timeline Indicator */}
                         <div className="flex flex-col items-center">
                             <div className="w-12 h-12 rounded-full bg-[#22C55E] flex items-center justify-center shadow-sm border-[4px] border-white">
                                 <CheckCircle className="text-white" size={24} />
                             </div>
                             <div className="w-[2px] flex-1 bg-gray-100 mt-2"></div>
                         </div>
-                        
-                        {/* Content Card */}
                         <div className="flex-1 bg-white rounded-xl border border-[#E5E7EB] p-6 shadow-sm">
                             <div className="flex justify-between items-start mb-4">
                                 <h4 className="font-bold text-[#111827] text-[16px]">Approved by Ibnu Faisal Abbas</h4>
                                 <span className="px-4 py-1.5 bg-[#E8FDF5] text-[#059669] text-[12px] font-medium rounded-lg">Completed</span>
                             </div>
-                            
                             <div className="space-y-4">
                                 <div className="flex items-center gap-6 text-[14px] text-[#4B5563]">
                                     <div className="flex items-center gap-2">
@@ -220,27 +214,14 @@ export const AddStockModal: React.FC<Props> = ({
                                         <span>2025-12-18 10:37:09</span>
                                     </div>
                                 </div>
-                                
-                                <div>
-                                    <p className="text-[14px] font-bold text-[#111827]">Remarks: <span className="font-normal text-[#374151]">tes</span></p>
-                                </div>
-                                
-                                <div className="text-[13px] text-[#9CA3AF]">
-                                    Email: <span className="text-[#6B7280]">ibnu.faisal@modena.com</span>
-                                </div>
+                                <div><p className="text-[14px] font-bold text-[#111827]">Remarks: <span className="font-normal text-[#374151]">tes</span></p></div>
+                                <div className="text-[13px] text-[#9CA3AF]">Email: <span className="text-[#6B7280]">ibnu.faisal@modena.com</span></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                {/* Footer */}
                 <div className="px-8 py-5 border-t border-gray-50 flex justify-end">
-                    <button 
-                        onClick={() => setShowApprovalHistory(false)} 
-                        className="px-6 py-2 bg-gray-50 hover:bg-gray-100 text-[12px] font-bold text-[#374151] rounded-lg transition-all border border-gray-200"
-                    >
-                        Tutup
-                    </button>
+                    <button onClick={() => setShowApprovalHistory(false)} className="px-6 py-2 bg-gray-50 hover:bg-gray-100 text-[12px] font-bold text-[#374151] rounded-lg transition-all border border-gray-200">Tutup</button>
                 </div>
             </div>
         </div>
@@ -275,9 +256,10 @@ export const AddStockModal: React.FC<Props> = ({
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-[#F8F9FA]">
           {isStationeryRequest && isViewMode ? (
-            /* --- POPUP CONTENT FOR VIEW MODE STATIONERY --- */
+            /* --- POPUP CONTENT FOR VIEW MODE STATIONERY (APPROVAL) --- */
             <div className="space-y-8">
                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                   {/* Requester Info - Read Only */}
                    <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden">
                       <SectionHeader icon={User} title="Requester Info" />
                       <div className="space-y-4">
@@ -291,73 +273,144 @@ export const AddStockModal: React.FC<Props> = ({
                           <div><label className="text-[9px] font-black text-gray-400 uppercase block">Phone</label><div className="text-[12px] font-mono text-gray-600">{initialAssetData?.employee.phone}</div></div>
                       </div>
                    </div>
+
+                   {/* Request Type - Editable */}
                    <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                      <SectionHeader icon={Package} title="Request Type" />
+                      <SectionHeader icon={Package} title="Request Setup" />
                       <div className="space-y-4">
-                          <div><label className="text-[9px] font-black text-gray-400 uppercase block">Category</label><div className="text-[14px] font-black text-black uppercase">{stationeryRequestForm.type}</div></div>
-                          <div><label className="text-[9px] font-black text-gray-400 uppercase block">Submit Date</label><div className="text-[12px] font-bold text-gray-600">{initialAssetData?.date}</div></div>
+                          <div>
+                            <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Category</label>
+                            <select 
+                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-black bg-white uppercase" 
+                              value={stationeryRequestForm.type} 
+                              onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
+                            >
+                                <option value="DAILY REQUEST">DAILY REQUEST</option>
+                                <option value="EVENT REQUEST">EVENT REQUEST</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Submit Date</label>
+                            <input 
+                              type="date" 
+                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-bold bg-white" 
+                              value={stationeryRequestForm.date} 
+                              onChange={(e) => handleStationeryRequestChange('date', e.target.value)} 
+                            />
+                          </div>
                       </div>
                    </div>
+
+                   {/* Delivery & Status - Editable Delivery, Read Only Status */}
                    <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                      <SectionHeader icon={MapPin} title="Delivery Address" />
+                      <SectionHeader icon={MapPin} title="Delivery & Status" />
                       <div className="space-y-4">
-                          <div><label className="text-[9px] font-black text-gray-400 uppercase block">Location</label><div className="text-[14px] font-black text-black uppercase">{stationeryRequestForm.location}</div></div>
-                          <div><label className="text-[9px] font-black text-gray-400 uppercase block">Status</label>
-                            <span className={`inline-block mt-1 px-2 py-0.5 text-white text-[9px] font-black rounded uppercase ${initialAssetData?.status === 'Approved' ? 'bg-green-500' : 'bg-orange-500'}`}>{initialAssetData?.status}</span>
+                          <div>
+                            <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Location</label>
+                            <select 
+                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-black bg-white uppercase" 
+                              value={stationeryRequestForm.location} 
+                              onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
+                            >
+                                <option value="MODENA Head Office">MODENA Head Office</option>
+                                <option value="MODENA Kemang">MODENA Kemang</option>
+                                <option value="Warehouse Cakung">Warehouse Cakung</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Status</label>
+                            <span className={`inline-block mt-1 px-3 py-1 text-white text-[10px] font-black rounded uppercase ${initialAssetData?.status === 'Approved' ? 'bg-green-500' : 'bg-orange-500'}`}>{initialAssetData?.status}</span>
                           </div>
                       </div>
                    </div>
                </div>
 
-               {/* VIEW MODE INVENTORY ITEMS TABLE */}
+               {/* ITEMS TABLE - Editable */}
                <div className="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
+                  <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Inventory List</h4>
+                    {isApprovalModule && <button onClick={addRequestItemRow} className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-all">+ Add Row</button>}
+                  </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50 border-b border-gray-200 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                <th className="px-8 py-5 w-16 text-center">#</th>
-                                <th className="px-8 py-5">Item Name / Description</th>
-                                <th className="px-8 py-5 w-40">Category</th>
-                                <th className="px-8 py-5 w-40">Part Code</th>
-                                <th className="px-8 py-5 w-28 text-center">Qty</th>
-                                <th className="px-8 py-5 w-28 text-center">In Stock</th>
-                                <th className="px-8 py-5 w-24 text-center">Unit</th>
+                            <tr className="bg-white border-b border-gray-200 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                <th className="px-8 py-4 w-12 text-center">#</th>
+                                <th className="px-8 py-4 w-48">Category</th>
+                                <th className="px-8 py-4">Item Name / Description</th>
+                                <th className="px-8 py-4 w-28 text-center">Qty</th>
+                                <th className="px-8 py-4 w-28 text-center">In Stock</th>
+                                <th className="px-8 py-4 w-24 text-center">Unit</th>
+                                <th className="px-8 py-4 w-16 text-center"></th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {[...requestItems, { itemId: '2', qty: '5' }].map((item, index) => {
-                                const isArk = moduleName?.includes('ARK');
+                            {requestItems.map((item, index) => {
+                                const isArk = moduleName.includes('ARK');
+                                const categoryList = isArk ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY;
                                 const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
-                                const masterItem = masterList.find(m => m.id.toString() === item.itemId);
-                                const qtyNum = parseInt(item.qty) || 0;
+                                const filteredItems = item.categoryId ? masterList.filter(m => m.category === item.categoryId) : [];
+                                const currentProduct = masterList.find(m => m.id.toString() === item.itemId);
+                                
                                 return (
                                     <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="px-8 py-6 text-center text-gray-300 font-bold text-[11px]">{index + 1}</td>
-                                        <td className="px-8 py-6">
-                                            <div className="font-black text-black text-[13px] uppercase tracking-tight">{masterItem?.itemName || 'Unknown Item'}</div>
+                                        <td className="px-8 py-4 text-center text-gray-300 font-bold text-[11px]">{index + 1}</td>
+                                        <td className="px-8 py-4">
+                                            <select 
+                                                className="w-full border border-gray-100 rounded-lg px-2 py-1.5 text-[11px] font-bold bg-white" 
+                                                value={item.categoryId} 
+                                                onChange={(e) => handleRequestItemChange(index, 'categoryId', e.target.value)}
+                                            >
+                                                <option value="">Category...</option>
+                                                {categoryList.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                                            </select>
                                         </td>
-                                        <td className="px-8 py-6">
-                                            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">{masterItem?.category || 'General'}</span>
+                                        <td className="px-8 py-4">
+                                            <select 
+                                                disabled={!item.categoryId}
+                                                className={`w-full border border-gray-100 rounded-lg px-2 py-1.5 text-[11px] font-bold ${!item.categoryId ? 'bg-gray-50 text-gray-400' : 'text-black bg-white'}`} 
+                                                value={item.itemId} 
+                                                onChange={(e) => handleRequestItemChange(index, 'itemId', e.target.value)}
+                                            >
+                                                <option value="">{item.categoryId ? 'Search Product...' : 'Select category'}</option>
+                                                {filteredItems.map(m => <option key={m.id} value={m.id}>{m.itemName}</option>)}
+                                            </select>
                                         </td>
-                                        <td className="px-8 py-6">
-                                            <span className="font-mono text-[11px] font-black text-gray-400 bg-gray-100 px-2 py-1 rounded">{masterItem?.itemCode || 'N/A'}</span>
+                                        <td className="px-8 py-4 text-center">
+                                            <input type="number" className="w-20 border border-gray-100 rounded-lg px-2 py-1.5 text-[14px] font-black text-center bg-white" value={item.qty} onChange={(e) => handleRequestItemChange(index, 'qty', e.target.value)} />
                                         </td>
-                                        <td className="px-8 py-6 text-center">
-                                            <div className="text-[16px] font-black text-black">{qtyNum}</div>
-                                        </td>
-                                        <td className="px-8 py-6 text-center">
-                                            <div className={`text-[16px] font-black ${masterItem && masterItem.remainingStock < 10 ? 'text-red-500' : 'text-gray-400'}`}>
-                                                {masterItem?.remainingStock || 0}
+                                        <td className="px-8 py-4 text-center">
+                                            <div className={`text-[13px] font-black ${currentProduct && currentProduct.remainingStock < 10 ? 'text-red-500' : 'text-gray-400'}`}>
+                                                {currentProduct?.remainingStock || 0}
                                             </div>
                                         </td>
-                                        <td className="px-8 py-6 text-center">
-                                            <div className="text-[11px] font-black text-gray-400 uppercase tracking-widest">{masterItem?.uom || 'PCS'}</div>
+                                        <td className="px-8 py-4 text-center">
+                                            <select 
+                                                className="w-full border border-gray-100 rounded-lg px-1 py-1.5 text-[10px] font-black text-center uppercase bg-white" 
+                                                value={item.uom} 
+                                                onChange={(e) => handleRequestItemChange(index, 'uom', e.target.value)}
+                                            >
+                                                <option value="">UOM</option>
+                                                {MOCK_UOM_DATA.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
+                                            </select>
+                                        </td>
+                                        <td className="px-8 py-4 text-center">
+                                          {isApprovalModule && <button onClick={() => removeRequestItemRow(index)} className="text-gray-300 hover:text-red-500 transition-all"><X size={16}/></button>}
                                         </td>
                                     </tr>
                                 );
                             })}
                         </tbody>
                     </table>
+                  </div>
+                  <div className="p-6 bg-gray-50/50">
+                    <textarea 
+                      rows={2} 
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2 text-xs italic bg-white focus:border-black outline-none transition-all" 
+                      placeholder="Add remarks..." 
+                      value={stationeryRequestForm.remarks} 
+                      onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)} 
+                    />
                   </div>
                </div>
             </div>
@@ -409,10 +462,9 @@ export const AddStockModal: React.FC<Props> = ({
                              </thead>
                              <tbody className="divide-y divide-gray-50">
                                  {requestItems.map((item, idx) => {
-                                     const isArk = moduleName === 'Daftar ARK';
+                                     const isArk = moduleName.includes('ARK');
                                      const categoryList = isArk ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY;
                                      const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
-                                     // Filter items based on selected category in this row
                                      const filteredItems = item.categoryId ? masterList.filter(m => m.category === item.categoryId) : [];
                                      const currentProduct = masterList.find(m => m.id.toString() === item.itemId);
                                      
@@ -420,45 +472,22 @@ export const AddStockModal: React.FC<Props> = ({
                                      <tr key={idx} className="hover:bg-gray-50/30 transition-colors">
                                          <td className="p-3 text-center text-gray-300 font-bold">{idx + 1}</td>
                                          <td className="p-3">
-                                             <select 
-                                                className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold" 
-                                                value={item.categoryId} 
-                                                onChange={(e) => handleRequestItemChange(idx, 'categoryId', e.target.value)}
-                                             >
+                                             <select className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold" value={item.categoryId} onChange={(e) => handleRequestItemChange(idx, 'categoryId', e.target.value)}>
                                                  <option value="">Category...</option>
                                                  {categoryList.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                                              </select>
                                          </td>
                                          <td className="p-3">
-                                             <select 
-                                                disabled={!item.categoryId}
-                                                className={`w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold ${!item.categoryId ? 'bg-gray-50 text-gray-400' : 'text-black'}`} 
-                                                value={item.itemId} 
-                                                onChange={(e) => handleRequestItemChange(idx, 'itemId', e.target.value)}
-                                             >
+                                             <select disabled={!item.categoryId} className={`w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold ${!item.categoryId ? 'bg-gray-50 text-gray-400' : 'text-black'}`} value={item.itemId} onChange={(e) => handleRequestItemChange(idx, 'itemId', e.target.value)}>
                                                  <option value="">{item.categoryId ? 'Search Product...' : 'Select category'}</option>
-                                                 {filteredItems.map(m => (
-                                                     <option key={m.id} value={m.id}>
-                                                         {m.itemName}
-                                                     </option>
-                                                 ))}
+                                                 {filteredItems.map(m => <option key={m.id} value={m.id}>{m.itemName}</option>)}
                                              </select>
                                          </td>
                                          <td className="p-3 text-center">
-                                             {currentProduct ? (
-                                                 <span className={`text-[12px] font-black ${currentProduct.remainingStock < 5 ? 'text-red-500' : 'text-gray-400'}`}>
-                                                     {currentProduct.remainingStock}
-                                                 </span>
-                                             ) : (
-                                                 <span className="text-gray-200 font-bold">-</span>
-                                             )}
+                                             {currentProduct ? <span className={`text-[12px] font-black ${currentProduct.remainingStock < 5 ? 'text-red-500' : 'text-gray-400'}`}>{currentProduct.remainingStock}</span> : <span className="text-gray-200 font-bold">-</span>}
                                          </td>
                                          <td className="p-3">
-                                             <select 
-                                                className="w-full border border-gray-200 rounded-lg px-1 py-1.5 text-[10px] font-black text-center uppercase appearance-none hover:border-black transition-all" 
-                                                value={item.uom} 
-                                                onChange={(e) => handleRequestItemChange(idx, 'uom', e.target.value)}
-                                             >
+                                             <select className="w-full border border-gray-200 rounded-lg px-1 py-1.5 text-[10px] font-black text-center uppercase appearance-none hover:border-black transition-all" value={item.uom} onChange={(e) => handleRequestItemChange(idx, 'uom', e.target.value)}>
                                                  <option value="">UOM</option>
                                                  {MOCK_UOM_DATA.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
                                              </select>
@@ -484,20 +513,9 @@ export const AddStockModal: React.FC<Props> = ({
         <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end gap-3 shrink-0">
           {isViewMode ? (
             isApprovalModule ? (
-              /* --- APPROVAL BUTTONS --- */
               <>
-                <button 
-                  onClick={onReject} 
-                  className="px-8 py-2.5 text-[11px] font-black uppercase tracking-widest text-red-500 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-all flex items-center gap-2"
-                >
-                  <XCircle size={14} /> Reject
-                </button>
-                <button 
-                  onClick={onApprove} 
-                  className="px-12 py-2.5 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-lg hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95 flex items-center gap-2"
-                >
-                  <Check size={14} /> Approve
-                </button>
+                <button onClick={onReject} className="px-8 py-2.5 text-[11px] font-black uppercase tracking-widest text-red-500 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-all flex items-center gap-2"><XCircle size={14} /> Reject</button>
+                <button onClick={onApprove} className="px-12 py-2.5 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-lg hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95 flex items-center gap-2"><Check size={14} /> Approve</button>
               </>
             ) : (
               <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-black bg-gray-100 rounded-lg hover:bg-gray-200 transition-all">Close</button>
@@ -505,16 +523,12 @@ export const AddStockModal: React.FC<Props> = ({
           ) : (
             <>
               <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-black transition-all">Cancel</button>
-              {isStationeryRequest && (
-                <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-black transition-all">DRAF</button>
-              )}
+              {isStationeryRequest && <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-black transition-all">DRAF</button>}
               <button onClick={handleSave} className="px-12 py-2.5 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-lg hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95">Save Data</button>
             </>
           )}
         </div>
       </div>
-
-      {/* Approval History Modal */}
       {renderApprovalHistory()}
     </div>
   );
