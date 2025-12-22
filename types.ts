@@ -25,7 +25,7 @@ export interface AssetRecord {
   date: string;
   remainingStock: number;
   itemCode: string;
-  status: 'Approved' | 'Pending' | 'Rejected' | 'Closed' | 'Draft';
+  status: 'Approved' | 'Pending' | 'Rejected' | 'Closed' | 'Draft' | 'On Progress';
 }
 
 export interface BuildingRecord {
@@ -207,6 +207,8 @@ export interface MasterItem {
 export interface StationeryRequestItem {
   itemId: string;
   qty: string;
+  categoryId?: string;
+  uom?: string;
 }
 
 export interface StationeryRequestRecord {
@@ -258,12 +260,6 @@ export interface VendorRecord {
 export interface GeneralMasterItem {
   id: number;
   name: string;
-}
-
-export interface RoleMasterItem {
-  id: number;
-  name: string;
-  description: string;
 }
 
 export interface DeliveryLocationRecord {

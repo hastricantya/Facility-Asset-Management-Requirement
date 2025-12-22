@@ -33,9 +33,6 @@ const translations: Record<string, Record<Language, string>> = {
 
   'Log Book': { id: 'Log Book', en: 'Log Book' },
   'Gedung': { id: 'Gedung', en: 'Building' },
-  'Kontrak Gedung': { id: 'Kontrak Gedung', en: 'Building Contract' },
-  'List Reminder Dokumen': { id: 'Reminder Dokumen', en: 'Document Reminder' },
-  'Office Equipment': { id: 'Peralatan Kantor', en: 'Office Equipment' },
   'Contract': { id: 'Kontrak', en: 'Contract' },
   'Timesheet': { id: 'Absensi', en: 'Timesheet' },
   'Vendor': { id: 'Vendor', en: 'Vendor' },
@@ -83,6 +80,7 @@ const translations: Record<string, Record<Language, string>> = {
   'Tidak Aktif': { id: 'Tidak Aktif', en: 'Inactive' },
   'Semua': { id: 'Semua', en: 'All' },
   'Persetujuan': { id: 'Persetujuan', en: 'Approval' },
+  'On Progress': { id: 'Sedang Berjalan', en: 'On Progress' },
   
   // Action Buttons
   'Revise': { id: 'Revisi', en: 'Revise' },
@@ -177,8 +175,8 @@ const translations: Record<string, Record<Language, string>> = {
   'Jam Datang': { id: 'Jam Datang', en: 'Arrival Time' },
   'Jam Pulang': { id: 'Jam Pulang', en: 'Departure Time' },
   'Wanita': { id: 'Wanita', en: 'Female' },
-  'Laki-Laki': { id: 'Laki-Laki', en: 'Male' },
-  'Anak-Anak': { id: 'Anak-Anak', en: 'Children' },
+  'LakiLaki': { id: 'Laki-Laki', en: 'Male' },
+  'AnakAnak': { id: 'Anak-Anak', en: 'Children' },
   'Note': { id: 'Catatan', en: 'Note' },
   'No data available': { id: 'Tidak ada data', en: 'No data available' },
   'Baru': { id: 'Baru', en: 'New' },

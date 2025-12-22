@@ -99,6 +99,7 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView }) => {
                               item.status === 'Pending' ? 'bg-orange-500 text-white border-orange-600' : 
                               item.status === 'Rejected' ? 'bg-red-500 text-white border-red-600' : 
                               item.status === 'Closed' ? 'bg-gray-100 text-gray-500 border-gray-200' : 
+                              item.status === 'On Progress' ? 'bg-blue-500 text-white border-blue-600' :
                               'bg-white text-gray-300 border-gray-200' // Draft
                             }`}>
                             {item.status}
