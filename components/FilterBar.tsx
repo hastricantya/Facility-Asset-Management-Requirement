@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, Filter, Plus, Download, Upload } from 'lucide-react';
+import { Search, Filter, Plus, Download, Calendar, MapPin, Tag, ChevronDown, X } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props {
@@ -11,6 +11,14 @@ interface Props {
   searchPlaceholder?: string;
   moduleName?: string;
   hideAdd?: boolean;
+  
+  // Log Book specific filters
+  logBookFilters?: {
+    location: string;
+    category: string;
+    date: string;
+  };
+  onLogBookFilterChange?: (field: string, value: string) => void;
 }
 
 export const FilterBar: React.FC<Props> = ({ 
@@ -20,66 +28,139 @@ export const FilterBar: React.FC<Props> = ({
   onAddClick, 
   searchPlaceholder, 
   moduleName,
-  hideAdd = false
+  hideAdd = false,
+  logBookFilters,
+  onLogBookFilterChange
 }) => {
   const { t } = useLanguage();
-  const isPajakKir = moduleName === 'Pajak & KIR';
+  const isLogBook = moduleName === 'Log Book';
+
+  const hasActiveFilters = logBookFilters && (logBookFilters.location || logBookFilters.category || logBookFilters.date);
+
+  const resetFilters = () => {
+    if (onLogBookFilterChange) {
+        onLogBookFilterChange('location', '');
+        onLogBookFilterChange('category', '');
+        onLogBookFilterChange('date', '');
+    }
+  };
 
   return (
-    <div className="mb-6 space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        {/* Tabs - Pill style as in Image */}
-        <div className="flex bg-white rounded-lg border border-gray-200 p-1 shadow-sm overflow-hidden">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab;
-            const label = tab === 'Persetujuan' ? `${t('Persetujuan')} 0` : t(tab);
-            return (
-              <button
-                key={tab}
-                onClick={() => onTabChange(tab)}
-                className={`px-6 py-2 text-[11px] font-bold transition-all rounded-md 
-                ${isActive 
-                  ? 'bg-black text-white' 
-                  : 'text-gray-400 hover:text-black hover:bg-gray-50'
-                }`}
-              >
-                {label}
-              </button>
-            )
-          })}
+    <div className="mb-8 space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-6">
+        {/* Left Side: Tabs or Specific Filters */}
+        <div className="flex items-center gap-4 flex-wrap">
+          {tabs.length > 0 && (
+            <div className="flex bg-white rounded-xl border border-gray-200 p-1 shadow-sm overflow-hidden">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab;
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => onTabChange(tab)}
+                    className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg 
+                    ${isActive 
+                      ? 'bg-black text-white shadow-lg shadow-black/10' 
+                      : 'text-gray-400 hover:text-black hover:bg-gray-50'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          {isLogBook && logBookFilters && (
+            <div className="flex items-center gap-3 bg-gray-100/50 p-1.5 rounded-2xl border border-gray-200 shadow-inner">
+              {/* Location Filter */}
+              <div className="relative group">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
+                    <MapPin size={14} className="text-gray-400 group-hover:text-black transition-colors" />
+                </div>
+                <select 
+                  className={`pl-9 pr-8 py-2.5 bg-white border border-gray-200 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-black transition-all appearance-none cursor-pointer shadow-sm ${logBookFilters.location ? 'text-black border-black' : 'text-gray-400'}`}
+                  value={logBookFilters.location}
+                  onChange={(e) => onLogBookFilterChange?.('location', e.target.value)}
+                >
+                  <option value="">{t('Semua Lokasi')}</option>
+                  <option value="MODENA Head Office">MODENA Head Office</option>
+                  <option value="MODENA Kemang">MODENA Kemang</option>
+                  <option value="MODENA Suryo">MODENA Suryo</option>
+                  <option value="Warehouse Cakung">Warehouse Cakung</option>
+                </select>
+                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" />
+              </div>
+
+              {/* Category Filter */}
+              <div className="relative group">
+                <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-black transition-colors pointer-events-none" />
+                <select 
+                  className={`pl-9 pr-8 py-2.5 bg-white border border-gray-200 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-black transition-all appearance-none cursor-pointer shadow-sm ${logBookFilters.category ? 'text-black border-black' : 'text-gray-400'}`}
+                  value={logBookFilters.category}
+                  onChange={(e) => onLogBookFilterChange?.('category', e.target.value)}
+                >
+                  <option value="">{t('Semua Kategori')}</option>
+                  <option value="Customer">Customer</option>
+                  <option value="Supplier">Supplier</option>
+                  <option value="Partner">Partner</option>
+                  <option value="Other">Other</option>
+                </select>
+                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" />
+              </div>
+
+              {/* Date Filter */}
+              <div className="relative group">
+                <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-black transition-colors pointer-events-none" />
+                <input 
+                  type="date"
+                  className={`pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-black transition-all cursor-pointer shadow-sm ${logBookFilters.date ? 'text-black border-black' : 'text-gray-400'}`}
+                  value={logBookFilters.date}
+                  onChange={(e) => onLogBookFilterChange?.('date', e.target.value)}
+                />
+              </div>
+
+              {hasActiveFilters && (
+                <button 
+                  onClick={resetFilters}
+                  className="p-2.5 hover:bg-white hover:text-red-500 text-gray-400 transition-all rounded-xl"
+                  title="Clear Filters"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2">
-            <div className="relative w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" size={14} />
-                <input 
-                    type="text" 
-                    placeholder={t(searchPlaceholder || "Cari berdasarkan Karyawan, Barang...")} 
-                    className="w-full bg-white pl-9 pr-4 py-2 text-[11px] border border-gray-200 rounded-md focus:border-black outline-none transition-all placeholder:text-gray-400"
-                />
-            </div>
+        {/* Right Side: Search & Actions */}
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" size={16} />
+            <input 
+              type="text" 
+              placeholder={searchPlaceholder || "Search records..."} 
+              className="w-64 bg-white pl-10 pr-4 py-2.5 text-[11px] font-bold border border-gray-200 rounded-xl focus:border-black outline-none transition-all placeholder:text-gray-300 shadow-sm"
+            />
+          </div>
+          
+          <div className="flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            <button className="p-2.5 hover:bg-gray-50 border-r border-gray-100 text-gray-400 hover:text-black transition-all" title="Unduh Data">
+              <Download size={18} />
+            </button>
+            <button className="p-2.5 hover:bg-gray-50 text-gray-400 hover:text-black transition-all" title="Saring Lanjutan">
+              <Filter size={18} />
+            </button>
+          </div>
 
-            <button className="flex items-center gap-2 px-4 py-2 text-[11px] font-bold text-black bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
-                <Upload size={14} /> {t('Impor')}
+          {!hideAdd && (
+            <button 
+              onClick={onAddClick}
+              className="bg-black text-white px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-[0.15em] flex items-center gap-2 hover:bg-gray-800 transition-all active:scale-95 shadow-xl shadow-black/10"
+            >
+              <Plus size={18} /> {t('Add Data')}
             </button>
-            
-            <button className="flex items-center gap-2 px-4 py-2 text-[11px] font-bold text-black bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
-                <Download size={14} /> {t('Ekspor')}
-            </button>
-            
-            <button className="flex items-center gap-2 px-4 py-2 text-[11px] font-bold text-black bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
-                <Filter size={14} /> {t('Saring')}
-            </button>
-
-            {!hideAdd && (
-                <button 
-                    onClick={onAddClick}
-                    className="bg-black text-white px-5 py-2 rounded-md font-bold text-[11px] flex items-center gap-2 hover:bg-gray-800 transition-all active:scale-95"
-                >
-                    <Plus size={16} /> {isPajakKir ? `+ ${t('Buat Permintaan')}` : t('Add Data')}
-                </button>
-            )}
+          )}
         </div>
       </div>
     </div>

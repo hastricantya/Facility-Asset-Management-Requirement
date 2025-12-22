@@ -13,14 +13,13 @@ import { ReminderTable } from './components/ReminderTable';
 import { GeneralMasterTable } from './components/GeneralMasterTable';
 import { StationeryRequestTable } from './components/StationeryRequestTable';
 import { MasterAtkTable } from './components/MasterAtkTable';
+import { MasterDeliveryLocationTable } from './components/MasterDeliveryLocationTable';
 import { LogBookTable } from './components/LogBookTable';
 import { VehicleModal } from './components/VehicleModal';
 import { BuildingModal } from './components/BuildingModal';
 import { GeneralMasterModal } from './components/GeneralMasterModal';
-import { MasterVendorModal } from './components/MasterVendorModal';
 import { AddStockModal } from './components/AddStockModal';
-import { TaxKirModal } from './components/TaxKirModal';
-import { VehicleContractModal } from './components/VehicleContractModal';
+import { Users, User, Baby, Activity } from 'lucide-react';
 import { 
   MOCK_VEHICLE_DATA, 
   MOCK_SERVICE_DATA, 
@@ -34,7 +33,11 @@ import {
   MOCK_ARK_DATA,
   MOCK_MASTER_DATA as MOCK_ATK_MASTER,
   MOCK_MASTER_ARK_DATA,
-  MOCK_LOGBOOK_DATA
+  MOCK_LOGBOOK_DATA,
+  MOCK_UOM_DATA,
+  MOCK_ATK_CATEGORY,
+  MOCK_ARK_CATEGORY,
+  MOCK_DELIVERY_LOCATIONS
 } from './constants';
 import { 
   VehicleRecord, 
@@ -47,32 +50,49 @@ import {
   AssetRecord,
   LogBookRecord,
   MasterItem,
-  MasterVendorRecord
+  DeliveryLocationRecord
 } from './types';
 import { useLanguage } from './contexts/LanguageContext';
 
 const App: React.FC = () => {
   const { t } = useLanguage();
-  const [activeModule, setActiveModule] = useState('Servis'); 
-  const [activeTab, setActiveTab] = useState('Semua');
+  const [activeModule, setActiveModule] = useState('Log Book'); 
+  const [activeTab, setActiveTab] = useState('');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
-  // Data States with Setters
-  const [vehicleData, setVehicleData] = useState<VehicleRecord[]>(MOCK_VEHICLE_DATA);
-  const [buildingData, setBuildingData] = useState<BuildingRecord[]>(MOCK_BUILDING_DATA);
+  // Log Book Filters State
+  const [logBookFilters, setLogBookFilters] = useState({
+    location: '',
+    category: '',
+    date: ''
+  });
+
+  const handleLogBookFilterChange = (field: string, value: string) => {
+    setLogBookFilters(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Data States
+  const [vehicleData] = useState<VehicleRecord[]>(MOCK_VEHICLE_DATA);
+  const [buildingData] = useState<BuildingRecord[]>(MOCK_BUILDING_DATA);
   const [reminderData] = useState<ReminderRecord[]>(MOCK_REMINDER_DATA);
-  const [vehicleContractData, setVehicleContractData] = useState<VehicleContractRecord[]>(MOCK_VEHICLE_CONTRACT_DATA);
-  const [serviceData, setServiceData] = useState<ServiceRecord[]>(MOCK_SERVICE_DATA);
-  const [taxKirData, setTaxKirData] = useState<TaxKirRecord[]>(MOCK_TAX_KIR_DATA); 
-  const [vendorData, setVendorData] = useState<MasterVendorRecord[]>(MOCK_MASTER_VENDOR_DATA);
+  const [vehicleContractData] = useState<VehicleContractRecord[]>(MOCK_VEHICLE_CONTRACT_DATA);
+  const [serviceData] = useState<ServiceRecord[]>(MOCK_SERVICE_DATA);
+  const [taxKirData] = useState<TaxKirRecord[]>(MOCK_TAX_KIR_DATA);
+  const [masterVendors] = useState(MOCK_MASTER_VENDOR_DATA);
   const [atkData] = useState<AssetRecord[]>(MOCK_ATK_DATA);
   const [arkData] = useState<AssetRecord[]>(MOCK_ARK_DATA);
   const [atkMaster] = useState<MasterItem[]>(MOCK_ATK_MASTER);
   const [arkMaster] = useState<MasterItem[]>(MOCK_MASTER_ARK_DATA);
-  const [logBookData] = useState<LogBookRecord[]>(MOCK_LOGBOOK_DATA);
+  const [logBookData, setLogBookData] = useState<LogBookRecord[]>(MOCK_LOGBOOK_DATA);
+  
+  // Master Lists (UOM, Category, Loc)
+  const [uomList] = useState<GeneralMasterItem[]>(MOCK_UOM_DATA);
+  const [atkCategories] = useState<GeneralMasterItem[]>(MOCK_ATK_CATEGORY);
+  const [arkCategories] = useState<GeneralMasterItem[]>(MOCK_ARK_CATEGORY);
+  const [delivLocations] = useState<DeliveryLocationRecord[]>(MOCK_DELIVERY_LOCATIONS);
 
-  // Master Data Lists
+  // Master Data States (Generic)
   const [masterLists, setMasterLists] = useState<Record<string, GeneralMasterItem[]>>({
     'Jenis Pajak': MOCK_GENERAL_MASTER_DATA.jenisPajak,
     'Jenis Pembayaran': MOCK_GENERAL_MASTER_DATA.jenisPembayaran,
@@ -89,20 +109,14 @@ const App: React.FC = () => {
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isBuildingModalOpen, setIsBuildingModalOpen] = useState(false);
   const [isMasterModalOpen, setIsMasterModalOpen] = useState(false);
-  const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
   const [isStockModalOpen, setIsStockModalOpen] = useState(false);
-  const [isTaxKirModalOpen, setIsTaxKirModalOpen] = useState(false);
-  const [isVehicleContractModalOpen, setIsVehicleContractModalOpen] = useState(false);
   
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleRecord | null>(null);
   const [selectedBuilding, setSelectedBuilding] = useState<BuildingRecord | null>(null);
   const [selectedMasterItem, setSelectedMasterItem] = useState<GeneralMasterItem | null>(null);
-  const [selectedVendor, setSelectedVendor] = useState<MasterVendorRecord | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<AssetRecord | null>(null);
-  const [selectedService, setSelectedService] = useState<ServiceRecord | null>(null);
-  const [selectedTaxKir, setSelectedTaxKir] = useState<TaxKirRecord | null>(null);
-  const [selectedVehicleContract, setSelectedVehicleContract] = useState<VehicleContractRecord | null>(null);
+  const [selectedLogBook, setSelectedLogBook] = useState<LogBookRecord | null>(null);
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -113,6 +127,10 @@ const App: React.FC = () => {
         setActiveTab('Milik Sendiri');
     } else if (module === 'Daftar Aset') {
         setActiveTab('Aktif');
+    } else if (module.includes('Master')) {
+        setActiveTab('Items');
+    } else if (module === 'Log Book') {
+        setActiveTab(''); // No active tab for logbook
     } else {
         setActiveTab('Semua');
     }
@@ -121,120 +139,96 @@ const App: React.FC = () => {
 
   const handleAddClick = () => {
     setModalMode('create');
-    setSelectedVehicle(null);
-    setSelectedBuilding(null);
-    setSelectedMasterItem(null);
-    setSelectedVendor(null);
+    setSelectedLogBook(null);
     setSelectedAsset(null);
-    setSelectedService(null);
-    setSelectedTaxKir(null);
-    setSelectedVehicleContract(null);
-
-    if (activeModule === 'Pajak & KIR') {
-        setIsTaxKirModalOpen(true);
-    } else if (activeModule === 'Daftar Aset') {
+    if (activeModule === 'Daftar Aset') {
+        setSelectedVehicle(null);
         setIsVehicleModalOpen(true);
     } else if (activeModule === 'Kontrak Gedung') {
+        setSelectedBuilding(null);
         setIsBuildingModalOpen(true);
-    } else if (activeModule === 'Master Vendor') {
-        setIsVendorModalOpen(true);
-    } else if (activeModule === 'Servis') {
-        setIsStockModalOpen(true);
-    } else if (activeModule === 'Kontrak Kendaraan') {
-        setIsVehicleContractModalOpen(true);
-    } else if (activeModule.includes('ATK') || activeModule.includes('ARK') || activeModule === 'Log Book') {
+    } else if (activeModule.includes('ATK') || activeModule.includes('ARK') || activeModule === 'Log Book' || activeModule === 'Servis') {
         setIsStockModalOpen(true);
     } else if (masterLists[activeModule]) {
+        setSelectedMasterItem(null);
         setIsMasterModalOpen(true);
     }
   };
 
-  const handleSaveBuilding = (data: Partial<BuildingRecord>) => {
+  const handleSaveLogBook = (data: Partial<LogBookRecord>) => {
     if (modalMode === 'create') {
-        const newId = (buildingData.length + 1).toString();
-        const newRecord: BuildingRecord = {
-            ...data,
-            id: newId,
-            assetNo: data.assetNo || `BDG-NEW-${newId.padStart(3, '0')}`,
-            status: 'Open'
-        } as BuildingRecord;
-        setBuildingData([newRecord, ...buildingData]);
-    } else if (modalMode === 'edit' && selectedBuilding) {
-        setBuildingData(prev => prev.map(b => b.id === selectedBuilding.id ? { ...b, ...data } : b));
-    }
-    setIsBuildingModalOpen(false);
-  };
-
-  const handleSaveVehicle = (data: Partial<VehicleRecord>) => {
-    if (modalMode === 'create') {
-        const newId = vehicleData.length + 1;
-        const newRecord: VehicleRecord = {
-            ...data,
-            id: newId,
-            noRegistrasi: data.noRegistrasi || `REG/2024/${newId.toString().padStart(3, '0')}`
-        } as VehicleRecord;
-        setVehicleData([newRecord, ...vehicleData]);
-    } else if (modalMode === 'edit' && selectedVehicle) {
-        setVehicleData(prev => prev.map(v => v.id === selectedVehicle.id ? { ...v, ...data } : v));
-    }
-    setIsVehicleModalOpen(false);
-  };
-
-  const handleSaveService = (data: Partial<ServiceRecord>) => {
-    if (modalMode === 'create') {
-        const newId = `S${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(serviceData.length + 1).padStart(4, '0')}`;
-        const total = (data.spareParts || []).reduce((acc, curr) => {
-            const price = typeof curr.price === 'string' ? parseInt(curr.price.replace(/[^0-9]/g, '')) || 0 : curr.price;
-            return acc + (price * curr.qty);
-        }, 0);
-
-        const newService: ServiceRecord = {
-            ...data,
-            id: newId,
-            tglRequest: new Date().toLocaleString(),
-            status: 'Proses',
-            estimasiBiaya: total.toString()
-        } as ServiceRecord;
-        setServiceData([newService, ...serviceData]);
-    } else if (modalMode === 'edit' && selectedService) {
-        setServiceData(prev => prev.map(s => s.id === selectedService.id ? { ...s, ...data } : s));
+        const newRecord: LogBookRecord = {
+            id: Date.now(),
+            lokasiModena: data.lokasiModena || 'MODENA Head Office',
+            kategoriTamu: data.kategoriTamu || 'Customer',
+            namaTamu: data.namaTamu || 'New Guest',
+            tanggalKunjungan: data.tanggalKunjungan || new Date().toISOString().split('T')[0],
+            jamDatang: data.jamDatang || '00:00',
+            jamPulang: data.jamPulang || '',
+            wanita: data.wanita || 0,
+            lakiLaki: data.lakiLaki || 0,
+            anakAnak: data.anakAnak || 0,
+            note: data.note || ''
+        };
+        setLogBookData([newRecord, ...logBookData]);
+    } else {
+        setLogBookData(logBookData.map(item => item.id === data.id ? { ...item, ...data } : item));
     }
     setIsStockModalOpen(false);
   };
 
-  const handleSaveVehicleContract = (data: Partial<VehicleContractRecord>) => {
-    if (modalMode === 'create') {
-        const newId = `CON/VEH/${vehicleContractData.length + 101}`;
-        const newRecord: VehicleContractRecord = {
-            ...data,
-            id: newId,
-            status: data.status || 'Aktif'
-        } as VehicleContractRecord;
-        setVehicleContractData([newRecord, ...vehicleContractData]);
-    } else if (modalMode === 'edit' && selectedVehicleContract) {
-        setVehicleContractData(prev => prev.map(c => c.id === selectedVehicleContract.id ? { ...c, ...data } : c));
+  const filteredBuildingData = useMemo(() => {
+    if (activeModule === 'Kontrak Gedung') {
+        const ownership = activeTab === 'Milik Sendiri' ? 'Own' : 'Rent';
+        return buildingData.filter(b => b.ownership === ownership);
     }
-    setIsVehicleContractModalOpen(false);
-    setSelectedVehicleContract(null);
+    return buildingData;
+  }, [activeModule, activeTab, buildingData]);
+
+  const getFilteredAssetData = (data: AssetRecord[]) => {
+    if (activeTab === 'Semua' || activeTab === '') return data;
+    return data.filter(item => item.status === activeTab);
   };
 
-  const handleSaveMaster = (name: string) => {
-    if (modalMode === 'create') {
-        const newList = masterLists[activeModule] || [];
-        const newItem: GeneralMasterItem = { id: Date.now(), name };
-        setMasterLists(prev => ({ ...prev, [activeModule]: [newItem, ...newList] }));
-    } else if (modalMode === 'edit' && selectedMasterItem) {
-        setMasterLists(prev => ({
-            ...prev,
-            [activeModule]: prev[activeModule].map(i => i.id === selectedMasterItem.id ? { ...i, name } : i)
-        }));
-    }
-    setIsMasterModalOpen(false);
-  };
+  const filteredLogBookData = useMemo(() => {
+    return logBookData.filter(item => {
+      const matchLocation = !logBookFilters.location || item.lokasiModena === logBookFilters.location;
+      const matchCategory = !logBookFilters.category || item.kategoriTamu === logBookFilters.category;
+      const matchDate = !logBookFilters.date || item.tanggalKunjungan === logBookFilters.date;
+      return matchLocation && matchCategory && matchDate;
+    });
+  }, [logBookData, logBookFilters]);
+
+  // Log Book stats calculation
+  const logBookStats = useMemo(() => {
+    return filteredLogBookData.reduce((acc, curr) => ({
+      wanita: acc.wanita + curr.wanita,
+      lakiLaki: acc.lakiLaki + curr.lakiLaki,
+      anakAnak: acc.anakAnak + curr.anakAnak,
+      total: acc.total + curr.wanita + curr.lakiLaki + curr.anakAnak
+    }), { wanita: 0, lakiLaki: 0, anakAnak: 0, total: 0 });
+  }, [filteredLogBookData]);
 
   const renderContent = () => {
      if (masterLists[activeModule]) {
-         return <GeneralMasterTable data={masterLists[activeModule]} onEdit={(item) => { setSelectedMasterItem(item); setModalMode('edit'); setIsMasterModalOpen(true); }} onDelete={(id) => setMasterLists(prev => ({ ...prev, [activeModule]: prev[activeModule].filter(i => i.id !== id)}))} />;
+         return (
+            <GeneralMasterTable 
+                data={masterLists[activeModule]} 
+                onEdit={(item) => { setSelectedMasterItem(item); setModalMode('edit'); setIsMasterModalOpen(true); }}
+                onDelete={(id) => { if(confirm('Hapus?')) setMasterLists(prev => ({...prev, [activeModule]: prev[activeModule].filter(i => i.id !== id)})); }}
+            />
+         );
+     }
+
+     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
+        const isArk = activeModule === 'Master ARK';
+        switch(activeTab) {
+            case 'Items': return <MasterAtkTable data={isArk ? arkMaster : atkMaster} />;
+            case 'UOM': return <GeneralMasterTable data={uomList} onEdit={()=>{}} onDelete={()=>{}} />;
+            case 'Category': return <GeneralMasterTable data={isArk ? arkCategories : atkCategories} onEdit={()=>{}} onDelete={()=>{}} />;
+            case 'Delivery Location': return <MasterDeliveryLocationTable data={delivLocations} onEdit={()=>{}} onDelete={()=>{}} />;
+            default: return <MasterAtkTable data={isArk ? arkMaster : atkMaster} />;
+        }
      }
 
      switch(activeModule) {
@@ -245,66 +239,46 @@ const App: React.FC = () => {
                 onView={(v) => { setSelectedVehicle(v); setModalMode('view'); setIsVehicleModalOpen(true); }}
             />
          );
-         case 'Pajak & KIR': return (
-            <TaxKirTable 
-                data={taxKirData} 
-                onEdit={(item) => { setSelectedTaxKir(item); setModalMode('edit'); setIsTaxKirModalOpen(true); }}
-                onView={(item) => { setSelectedTaxKir(item); setModalMode('view'); setIsTaxKirModalOpen(true); }}
-            />
-         );
          case 'Kontrak Gedung': return (
             <BuildingTable 
-                data={buildingData.filter(b => b.ownership === (activeTab === 'Milik Sendiri' ? 'Own' : 'Rent'))}
+                data={filteredBuildingData}
                 onEdit={(b) => { setSelectedBuilding(b); setModalMode('edit'); setIsBuildingModalOpen(true); }}
                 onView={(b) => { setSelectedBuilding(b); setModalMode('view'); setIsBuildingModalOpen(true); }}
             />
          );
          case 'List Reminder Dokumen': return <ReminderTable data={reminderData} />;
-         case 'Kontrak Kendaraan': return (
-            <VehicleContractTable 
-                data={vehicleContractData} 
-                onEdit={(c) => { setSelectedVehicleContract(c); setModalMode('edit'); setIsVehicleContractModalOpen(true); }}
-                onView={(c) => { setSelectedVehicleContract(c); setModalMode('view'); setIsVehicleContractModalOpen(true); }}
-                onDelete={(id) => setVehicleContractData(prev => prev.filter(c => c.id !== id))}
-            />
-         );
-         case 'Servis': return (
-            <ServiceLogTable 
-                data={activeTab === 'Semua' ? serviceData : []} 
-                onEdit={(s) => { setSelectedService(s); setModalMode('edit'); setIsStockModalOpen(true); }}
-                onView={(s) => { setSelectedService(s); setModalMode('view'); setIsStockModalOpen(true); }}
-            />
-         );
-         case 'Master Vendor': return (
-            <MasterVendorTable 
-                data={vendorData} 
-                onEdit={(v) => { setSelectedVendor(v); setModalMode('edit'); setIsVendorModalOpen(true); }}
-                onView={(v) => { setSelectedVendor(v); setModalMode('view'); setIsVendorModalOpen(true); }}
-                onDelete={(id) => setVendorData(prev => prev.filter(v => v.id !== id))}
-            />
-         );
+         case 'Kontrak Kendaraan': return <VehicleContractTable data={vehicleContractData} />;
+         case 'Servis': return <ServiceLogTable data={serviceData} />;
+         case 'Pajak & KIR': return <TaxKirTable data={taxKirData} />;
+         case 'Master Vendor': return <MasterVendorTable data={masterVendors} />;
          case 'Daftar ATK':
          case 'Stationery Request Approval':
-            return <StationeryRequestTable data={atkData.filter(i => activeTab === 'Semua' || i.status === activeTab)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
-         case 'Master ATK':
-            return <MasterAtkTable data={atkMaster} />;
+            return <StationeryRequestTable data={getFilteredAssetData(atkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
+         case 'Daftar ARK':
+         case 'Household Request Approval':
+            return <StationeryRequestTable data={getFilteredAssetData(arkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Log Book':
-            return <LogBookTable data={logBookData} onView={() => setModalMode('view')} />;
+            return <LogBookTable 
+                data={filteredLogBookData} 
+                onView={(item) => { setSelectedLogBook(item); setModalMode('view'); setIsStockModalOpen(true); }} 
+                onEdit={(item) => { setSelectedLogBook(item); setModalMode('edit'); setIsStockModalOpen(true); }}
+            />;
          default: return <div className="p-8 text-center text-gray-500">Konten Modul {activeModule}</div>;
      }
   };
 
   const showFilterBar = !['Dashboard', 'Timesheet'].includes(activeModule);
   const mainTabs = useMemo(() => {
-    if (activeModule === 'Pajak & KIR' || activeModule === 'Servis') return ['Semua', 'Persetujuan'];
     if (activeModule === 'Kontrak Gedung') return ['Milik Sendiri', 'Sewa'];
     if (activeModule === 'Daftar Aset') return ['Aktif', 'Tidak Aktif'];
-    if (activeModule.includes('Daftar') || activeModule.includes('Approval')) return ['Semua', 'Approved', 'Pending', 'Rejected', 'Closed', 'Draft'];
+    if (activeModule === 'Master ATK' || activeModule === 'Master ARK') return ['Items', 'UOM', 'Category', 'Delivery Location'];
+    if (activeModule.includes('Daftar') || activeModule.includes('Approval')) return ['Semua', 'Draft', 'Approved', 'Pending', 'Rejected', 'Closed'];
+    if (activeModule === 'Log Book') return []; 
     return ['Semua'];
   }, [activeModule]);
 
   return (
-    <div className="flex bg-[#fbfbfb] min-h-screen font-sans relative overflow-x-hidden">
+    <div className="flex bg-[#fbfbfb] min-h-screen font-sans relative overflow-x-hidden text-black">
       {isMobileMenuOpen && (
         <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={toggleMobileMenu} />
       )}
@@ -319,13 +293,43 @@ const App: React.FC = () => {
       />
       
       <div className={`flex-1 flex flex-col transition-all duration-300 w-full ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
-        <TopBar breadcrumbs={[t('Beranda'), t('Pemantauan Aset')]} onMenuClick={toggleMobileMenu} />
+        <TopBar breadcrumbs={['Beranda', activeModule]} onMenuClick={toggleMobileMenu} />
         
         <main className="flex-1 p-8 overflow-y-auto">
           <div className="max-w-[1600px] mx-auto">
-            <h1 className="text-[20px] font-bold text-black tracking-tight mb-8 uppercase">
-                {activeModule === 'Pajak & KIR' ? `${t('Pajak & KIR')} Kendaraan` : activeModule === 'Servis' ? `${t('Servis')} Kendaraan` : t(activeModule)}
-            </h1>
+            <div className="flex items-center justify-between mb-8">
+                <h1 className="text-[20px] font-bold text-black tracking-tight">
+                    {activeModule === 'Kontrak Gedung' ? 'Daftar Gedung' : t(activeModule)}
+                </h1>
+                
+                {activeModule === 'Log Book' && (
+                    <div className="flex items-center gap-6 bg-white border border-gray-100 rounded-2xl px-6 py-3 shadow-sm">
+                        <div className="flex items-center gap-2">
+                            <Activity size={14} className="text-gray-400" />
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Today Summary</span>
+                        </div>
+                        <div className="h-6 w-[1px] bg-gray-100"></div>
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                <Users size={14} className="text-pink-500" />
+                                <span className="text-[12px] font-black">{logBookStats.wanita}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <User size={14} className="text-blue-500" />
+                                <span className="text-[12px] font-black">{logBookStats.lakiLaki}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Baby size={14} className="text-orange-500" />
+                                <span className="text-[12px] font-black">{logBookStats.anakAnak}</span>
+                            </div>
+                        </div>
+                        <div className="h-6 w-[1px] bg-gray-100"></div>
+                        <div className="bg-black text-white px-3 py-1 rounded-lg text-[10px] font-black">
+                            {logBookStats.total} TOTAL
+                        </div>
+                    </div>
+                )}
+            </div>
             
             {showFilterBar && (
                 <FilterBar 
@@ -334,6 +338,10 @@ const App: React.FC = () => {
                     onTabChange={setActiveTab} 
                     onAddClick={handleAddClick}
                     moduleName={activeModule}
+                    searchPlaceholder={activeModule === 'Log Book' ? "Cari berdasarkan Nama Tamu..." : activeModule === 'Kontrak Gedung' ? "Cari berdasarkan Karyawan, Barang..." : undefined}
+                    hideAdd={['List Reminder Dokumen'].includes(activeModule)}
+                    logBookFilters={activeModule === 'Log Book' ? logBookFilters : undefined}
+                    onLogBookFilterChange={handleLogBookFilterChange}
                 />
             )}
             
@@ -342,32 +350,27 @@ const App: React.FC = () => {
         </main>
       </div>
 
-      <TaxKirModal 
-        isOpen={isTaxKirModalOpen}
-        onClose={() => setIsTaxKirModalOpen(false)}
-        onSave={(data) => {
-            const newItem = { ...data, id: `REQ/2024/00${taxKirData.length + 1}` } as TaxKirRecord;
-            setTaxKirData([newItem, ...taxKirData]);
-            setIsTaxKirModalOpen(false);
-        }}
-        initialData={selectedTaxKir || undefined}
-        mode={modalMode}
-        vehicleList={vehicleData}
-      />
-
-      <VehicleModal 
-        isOpen={isVehicleModalOpen}
-        onClose={() => setIsVehicleModalOpen(false)}
-        onSave={handleSaveVehicle}
-        initialData={selectedVehicle || undefined}
-        mode={modalMode}
+      <GeneralMasterModal 
+        isOpen={isMasterModalOpen}
+        onClose={() => setIsMasterModalOpen(false)}
+        onSave={(name) => { /* Handle Master Save */ setIsMasterModalOpen(false); }}
+        initialData={selectedMasterItem}
+        title={activeModule}
       />
 
       <BuildingModal 
         isOpen={isBuildingModalOpen}
         onClose={() => setIsBuildingModalOpen(false)}
-        onSave={handleSaveBuilding}
+        onSave={() => setIsBuildingModalOpen(false)}
         initialData={selectedBuilding || undefined}
+        mode={modalMode}
+      />
+
+      <VehicleModal 
+        isOpen={isVehicleModalOpen}
+        onClose={() => setIsVehicleModalOpen(false)}
+        onSave={() => setIsVehicleModalOpen(false)}
+        initialData={selectedVehicle || undefined}
         mode={modalMode}
       />
 
@@ -377,44 +380,9 @@ const App: React.FC = () => {
         moduleName={activeModule}
         mode={modalMode}
         initialAssetData={selectedAsset || undefined}
-        initialServiceData={selectedService || undefined}
-        onSaveService={handleSaveService}
+        initialLogBookData={selectedLogBook || undefined}
+        onSaveLogBook={handleSaveLogBook}
         vehicleList={vehicleData}
-      />
-
-      <VehicleContractModal
-        isOpen={isVehicleContractModalOpen}
-        onClose={() => {
-            setIsVehicleContractModalOpen(false);
-            setSelectedVehicleContract(null);
-        }}
-        onSave={handleSaveVehicleContract}
-        initialData={selectedVehicleContract || undefined}
-        mode={modalMode}
-        vehicleList={vehicleData}
-      />
-
-      <GeneralMasterModal 
-        isOpen={isMasterModalOpen}
-        onClose={() => setIsMasterModalOpen(false)}
-        onSave={handleSaveMaster}
-        initialData={selectedMasterItem}
-        title={activeModule}
-      />
-
-      <MasterVendorModal 
-        isOpen={isVendorModalOpen}
-        onClose={() => setIsVendorModalOpen(false)}
-        onSave={(data) => {
-            if (modalMode === 'create') {
-                setVendorData([{ ...data, id: Date.now() } as MasterVendorRecord, ...vendorData]);
-            } else {
-                setVendorData(prev => prev.map(v => v.id === selectedVendor?.id ? { ...v, ...data } : v));
-            }
-            setIsVendorModalOpen(false);
-        }}
-        initialData={selectedVendor}
-        mode={modalMode}
       />
     </div>
   );

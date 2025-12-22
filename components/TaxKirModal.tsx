@@ -63,16 +63,16 @@ export const TaxKirModal: React.FC<Props> = ({ isOpen, onClose, onSave, initialD
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-8 bg-white custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-8 bg-gray-50/30 custom-scrollbar">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {/* Identitas Unit */}
-            <div className="bg-white p-8 rounded-2xl border border-gray-200 space-y-6">
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
               <SectionHeader icon={Building} title="Informasi Kendaraan" />
               <div className="space-y-5">
                 <div>
                   <label className="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">Pilih Unit</label>
                   <select 
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none disabled:bg-gray-50 transition-all appearance-none"
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black focus:ring-2 focus:ring-gray-100 outline-none disabled:bg-gray-50 transition-all appearance-none"
                     value={form.aset || ''}
                     onChange={(e) => {
                         const v = vehicleList.find(x => x.nama === e.target.value);
@@ -93,7 +93,7 @@ export const TaxKirModal: React.FC<Props> = ({ isOpen, onClose, onSave, initialD
                             disabled={isView}
                             onClick={() => setForm({...form, jenis: type})}
                             className={`flex-1 py-3 text-xs font-black rounded-xl border transition-all ${
-                                form.jenis === type ? 'bg-black text-white border-black' : 'bg-white text-gray-400 border-gray-200 hover:border-black hover:text-black'
+                                form.jenis === type ? 'bg-black text-white border-black shadow-md' : 'bg-white text-gray-400 border-gray-200 hover:border-black hover:text-black'
                             }`}
                         >
                             {type}
@@ -115,7 +115,7 @@ export const TaxKirModal: React.FC<Props> = ({ isOpen, onClose, onSave, initialD
             </div>
 
             {/* Administrasi & Biaya */}
-            <div className="bg-white p-8 rounded-2xl border border-gray-200 space-y-6">
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
               <SectionHeader icon={DollarSign} title="Administrasi & Biaya" />
               <div className="space-y-5">
                 <div className="grid grid-cols-2 gap-4">
@@ -123,7 +123,7 @@ export const TaxKirModal: React.FC<Props> = ({ isOpen, onClose, onSave, initialD
                         <label className="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">Tgl Request</label>
                         <input 
                             type="date" 
-                            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none disabled:bg-gray-50 transition-all"
+                            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black focus:ring-2 focus:ring-gray-100 outline-none disabled:bg-gray-50 transition-all"
                             value={form.tglRequest || ''}
                             onChange={(e) => setForm({...form, tglRequest: e.target.value})}
                             disabled={isView}
@@ -133,7 +133,7 @@ export const TaxKirModal: React.FC<Props> = ({ isOpen, onClose, onSave, initialD
                         <label className="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">Target Selesai</label>
                         <input 
                             type="date" 
-                            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none disabled:bg-gray-50 transition-all"
+                            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black focus:ring-2 focus:ring-gray-100 outline-none disabled:bg-gray-50 transition-all"
                             value={form.targetSelesai || ''}
                             onChange={(e) => setForm({...form, targetSelesai: e.target.value})}
                             disabled={isView}
@@ -144,7 +144,7 @@ export const TaxKirModal: React.FC<Props> = ({ isOpen, onClose, onSave, initialD
                   <label className="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">Estimasi Biaya (Rp)</label>
                   <input 
                     type="number" 
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-black focus:border-black outline-none disabled:bg-gray-50 transition-all placeholder:text-gray-300"
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-black focus:border-black focus:ring-2 focus:ring-gray-100 outline-none disabled:bg-gray-50 transition-all placeholder:text-gray-300"
                     value={form.estimasiBiaya || ''}
                     onChange={(e) => setForm({...form, estimasiBiaya: e.target.value})}
                     disabled={isView}
@@ -154,7 +154,7 @@ export const TaxKirModal: React.FC<Props> = ({ isOpen, onClose, onSave, initialD
                 <div>
                     <label className="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">Metode Pembayaran</label>
                     <select 
-                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none disabled:bg-gray-50 transition-all appearance-none"
+                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black focus:ring-2 focus:ring-gray-100 outline-none disabled:bg-gray-50 transition-all appearance-none"
                         value={form.jenisPembayaran || ''}
                         onChange={(e) => setForm({...form, jenisPembayaran: e.target.value})}
                         disabled={isView}
@@ -175,7 +175,7 @@ export const TaxKirModal: React.FC<Props> = ({ isOpen, onClose, onSave, initialD
                 <button onClick={onClose} className="flex-1 py-4 text-[11px] font-black text-gray-400 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:text-black transition-all uppercase tracking-widest">Batal</button>
                 <button 
                     onClick={() => onSave(form)} 
-                    className="flex-[2] py-4 text-[11px] font-black text-white bg-black rounded-xl hover:bg-gray-900 transition-all flex items-center justify-center gap-2 uppercase tracking-widest active:scale-95"
+                    className="flex-[2] py-4 text-[11px] font-black text-white bg-black rounded-xl shadow-xl shadow-black/10 hover:bg-gray-900 transition-all flex items-center justify-center gap-2 uppercase tracking-widest active:scale-95"
                 >
                     <Save size={16} /> {mode === 'create' ? 'Ajukan Permintaan' : 'Simpan Perubahan'}
                 </button>
