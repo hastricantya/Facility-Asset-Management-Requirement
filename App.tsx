@@ -20,6 +20,7 @@ import { GeneralMasterModal } from './components/GeneralMasterModal';
 import { AddStockModal } from './components/AddStockModal';
 import { MasterItemModal } from './components/MasterItemModal';
 import { DeliveryLocationModal } from './components/DeliveryLocationModal';
+import { ConfirmationModal } from './components/ConfirmationModal';
 import { Users, User, Baby, Activity } from 'lucide-react';
 import { 
   MOCK_VEHICLE_DATA, 
@@ -134,6 +135,7 @@ const App: React.FC = () => {
   const [isStockModalOpen, setIsStockModalOpen] = useState(false);
   const [isMasterItemModalOpen, setIsMasterItemModalOpen] = useState(false);
   const [isDeliveryLocationModalOpen, setIsDeliveryLocationModalOpen] = useState(false);
+  const [isCloseTransactionConfirmOpen, setIsCloseTransactionConfirmOpen] = useState(false);
   
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleRecord | null>(null);
@@ -143,6 +145,7 @@ const App: React.FC = () => {
   const [selectedLogBook, setSelectedLogBook] = useState<LogBookRecord | null>(null);
   const [selectedMasterProduct, setSelectedMasterProduct] = useState<MasterItem | null>(null);
   const [selectedDeliveryLocation, setSelectedDeliveryLocation] = useState<DeliveryLocationRecord | null>(null);
+  const [assetToClose, setAssetToClose] = useState<AssetRecord | null>(null);
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -310,6 +313,23 @@ const App: React.FC = () => {
     }
   };
 
+  const handleOpenCloseConfirm = (asset: AssetRecord) => {
+    setAssetToClose(asset);
+    setIsCloseTransactionConfirmOpen(true);
+  };
+
+  const handleConfirmCloseAsset = () => {
+    if (assetToClose) {
+      if (activeModule.includes('ATK')) {
+        setAtkData(atkData.map(item => item.id === assetToClose.id ? { ...item, status: 'Closed' } : item));
+      } else {
+        setArkData(arkData.map(item => item.id === assetToClose.id ? { ...item, status: 'Closed' } : item));
+      }
+      setIsCloseTransactionConfirmOpen(false);
+      setAssetToClose(null);
+    }
+  };
+
   const filteredBuildingData = useMemo(() => {
     if (activeModule === 'Kontrak Gedung') {
         const ownership = activeTab === 'Milik Sendiri' ? 'Own' : 'Rent';
@@ -417,10 +437,10 @@ const App: React.FC = () => {
          case 'Master Vendor': return <MasterVendorTable data={masterVendors} />;
          case 'Request ATK':
          case 'Stationery Request Approval':
-            return <StationeryRequestTable data={getFilteredAssetData(atkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
+            return <StationeryRequestTable data={getFilteredAssetData(atkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} onCloseTransaction={handleOpenCloseConfirm} />;
          case 'Daftar ARK':
          case 'Household Request Approval':
-            return <StationeryRequestTable data={getFilteredAssetData(arkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
+            return <StationeryRequestTable data={getFilteredAssetData(arkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} onCloseTransaction={handleOpenCloseConfirm} />;
          case 'Log Book':
             return <LogBookTable 
                 data={filteredLogBookData} 
@@ -577,6 +597,15 @@ const App: React.FC = () => {
         onSave={handleSaveDeliveryLocation}
         initialData={selectedDeliveryLocation}
         mode={modalMode}
+      />
+
+      <ConfirmationModal 
+        isOpen={isCloseTransactionConfirmOpen}
+        onClose={() => setIsCloseTransactionConfirmOpen(false)}
+        onConfirm={handleConfirmCloseAsset}
+        title="Close Transaction"
+        message={`Are you sure to close this transaction (${assetToClose?.transactionNumber})? This action will archive the record.`}
+        variant="info"
       />
     </div>
   );

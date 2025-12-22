@@ -1,13 +1,14 @@
 import React from 'react';
 import { AssetRecord } from '../types';
-import { ChevronsUpDown, ChevronLeft, ChevronRight, Eye, MoreHorizontal } from 'lucide-react';
+import { ChevronsUpDown, ChevronLeft, ChevronRight, Eye, MoreHorizontal, Check } from 'lucide-react';
 
 interface Props {
   data: AssetRecord[];
   onView?: (item: AssetRecord) => void;
+  onCloseTransaction?: (item: AssetRecord) => void;
 }
 
-export const StationeryRequestTable: React.FC<Props> = ({ data, onView }) => {
+export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseTransaction }) => {
   return (
     <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden transition-all duration-500">
       <div className="overflow-x-auto custom-scrollbar">
@@ -107,13 +108,23 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView }) => {
                 </td>
                 <td className="p-5 text-center">
                     <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {item.status === 'Approved' && (
+                          <button 
+                              onClick={(e) => { e.stopPropagation(); onCloseTransaction?.(item); }}
+                              className="text-green-500 hover:text-green-700 transition-all p-2 rounded-xl hover:bg-green-50 active:scale-90 border border-green-100 shadow-sm bg-white"
+                              title="Close Transaction"
+                          >
+                              <Check size={18} className="stroke-[3]" />
+                          </button>
+                        )}
                         <button 
                             onClick={(e) => { e.stopPropagation(); onView?.(item); }}
                             className="text-gray-400 hover:text-black transition-all p-2 rounded-xl hover:bg-gray-100 active:scale-90"
+                            title="View Details"
                         >
                             <Eye size={18} />
                         </button>
-                        <button className="text-gray-400 hover:text-black transition-all p-2 rounded-xl hover:bg-gray-100">
+                        <button className="text-gray-400 hover:text-black transition-all p-2 rounded-xl hover:bg-gray-100" title="More">
                             <MoreHorizontal size={18} />
                         </button>
                     </div>
