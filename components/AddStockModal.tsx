@@ -90,6 +90,13 @@ export const AddStockModal: React.FC<Props> = ({
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
   const [showApprovalHistory, setShowApprovalHistory] = useState(false);
 
+  // Robust detection using string includes to handle both Request and Approval variants
+  const isArkModule = moduleName.includes('ARK') || moduleName.includes('Household');
+  const isStationeryRequest = moduleName.includes('ATK') || moduleName.includes('ARK') || moduleName.includes('Stationery') || moduleName.includes('Household');
+  const isApprovalModule = moduleName.includes('Approval');
+  const isLogBook = moduleName === 'Log Book';
+  const isViewMode = mode === 'view';
+
   useEffect(() => {
     if (isOpen) {
         if (mode === 'edit' || mode === 'view') {
@@ -101,8 +108,7 @@ export const AddStockModal: React.FC<Props> = ({
            if (initialLogBookData) setLogBookForm(initialLogBookData);
            
            if (initialAssetData) {
-               const isArk = moduleName?.includes('ARK') || false;
-               const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+               const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
                const matchedMaster = masterList.find(m => m.itemName === initialAssetData.itemName);
                
                let formattedDate = new Date().toISOString().split('T')[0];
@@ -119,27 +125,33 @@ export const AddStockModal: React.FC<Props> = ({
                    location: 'MODENA Head Office'
                });
 
-               // For demo purposes, we populate with initial item + one extra to look more complete
+               // Populate items list for details view
                setRequestItems([
                  { 
                    itemId: matchedMaster ? matchedMaster.id.toString() : '', 
                    qty: initialAssetData.qty ? initialAssetData.qty.toString() : '0',
                    categoryId: matchedMaster ? matchedMaster.category : '',
                    uom: matchedMaster ? matchedMaster.uom : ''
-                 },
-                 { itemId: '2', qty: '5', categoryId: 'Kertas', uom: 'RIM' }
+                 }
                ]);
            }
         } else {
-            setStationeryRequestForm({ type: 'DAILY REQUEST', deliveryType: 'Dikirim', location: 'MODENA Head Office', date: new Date().toISOString().split('T')[0] });
+            // Reset form for create mode
+            setStationeryRequestForm({ 
+                type: 'DAILY REQUEST', 
+                deliveryType: 'Dikirim', 
+                location: 'MODENA Head Office', 
+                date: new Date().toISOString().split('T')[0],
+                remarks: `Permintaan rutin ${isArkModule ? 'ARK' : 'ATK'} untuk operasional kantor.`
+            });
             setRequestItems([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
         }
     }
-  }, [isOpen, initialAssetData, mode, moduleName]);
+  }, [isOpen, initialAssetData, mode, moduleName, isArkModule]);
 
   const handleSave = () => {
-      if (moduleName === 'Log Book' && onSaveLogBook) onSaveLogBook(logBookForm);
-      if ((moduleName === 'Request ATK' || moduleName === 'Daftar ARK') && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
+      if (isLogBook && onSaveLogBook) onSaveLogBook(logBookForm);
+      if (isStationeryRequest && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
       onClose();
   }
 
@@ -151,8 +163,7 @@ export const AddStockModal: React.FC<Props> = ({
       if (field === 'categoryId') {
           newItems[index] = { ...newItems[index], [field]: value, itemId: '', uom: '' };
       } else if (field === 'itemId') {
-          const isArk = moduleName.includes('ARK');
-          const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+          const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
           const selectedProduct = masterList.find(m => m.id.toString() === value);
           newItems[index] = { ...newItems[index], [field]: value, uom: selectedProduct?.uom || '' };
       } else {
@@ -165,16 +176,11 @@ export const AddStockModal: React.FC<Props> = ({
   const removeRequestItemRow = (index: number) => { if (requestItems.length > 1) setRequestItems(requestItems.filter((_, i) => i !== index)); }
 
   const SectionHeader = ({ icon: Icon, title }: { icon: any, title: string }) => (
-    <div className="flex items-center gap-3 mb-6 pb-2 border-b border-gray-100">
+    <div className="flex items-center gap-3 mb-6">
         <Icon size={18} className="text-black" />
-        <h3 className="text-[10px] font-black text-black uppercase tracking-[0.2em]">{title}</h3>
+        <h3 className="text-[11px] font-black text-black uppercase tracking-[0.2em]">{title}</h3>
     </div>
   );
-
-  const isStationeryRequest = moduleName === 'Request ATK' || moduleName === 'Daftar ARK' || moduleName === 'Stationery Request Approval' || moduleName === 'Household Request Approval';
-  const isApprovalModule = moduleName.includes('Approval');
-  const isViewMode = mode === 'view';
-  const isLogBook = moduleName === 'Log Book';
 
   const renderApprovalHistory = () => {
     if (!showApprovalHistory) return null;
@@ -232,29 +238,29 @@ export const AddStockModal: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-[2px] p-4 transition-opacity duration-300">
-      <div className={`bg-white w-full ${isLogBook || (isStationeryRequest && !isViewMode) ? 'max-w-6xl' : 'max-w-7xl'} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transform transition-all scale-100`}>
+      <div className={`bg-[#F8F9FA] w-full ${isLogBook || (isStationeryRequest && !isViewMode) ? 'max-w-5xl' : 'max-w-7xl'} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transform transition-all scale-100`}>
         {/* Header */}
         <div className="px-8 py-5 bg-white border-b border-gray-100 flex items-center justify-between shrink-0">
           <div>
-              <h2 className="text-lg font-bold tracking-tight text-gray-900 uppercase tracking-tighter">
-                {isStationeryRequest ? (isViewMode ? (isApprovalModule ? 'Stationery Approval Process' : 'Stationery Request Details') : 'Create Stationery Request') : isLogBook ? 'Guest Log Detail' : moduleName}
+              <h2 className="text-[14px] font-black text-black uppercase tracking-widest">
+                {isStationeryRequest ? (isViewMode ? (isApprovalModule ? 'Stationery Approval Process' : 'Stationery Request Details') : (isArkModule ? 'CREATE HOUSEHOLD REQUEST' : 'CREATE STATIONERY REQUEST')) : isLogBook ? 'Guest Log Detail' : moduleName}
               </h2>
               {isViewMode && initialAssetData?.transactionNumber && (
-                <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase">ID: {initialAssetData.transactionNumber}</span>
+                <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase mt-1 block">ID: {initialAssetData.transactionNumber}</span>
               )}
           </div>
           <div className="flex items-center gap-3">
             {isViewMode && isStationeryRequest && (
               <button onClick={() => setShowApprovalHistory(true)} className="flex items-center gap-2 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-black bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all"><History size={14} /> History</button>
             )}
-            <button className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-100" onClick={onClose}>
-              <X size={20} className="cursor-pointer"/>
+            <button className="text-gray-300 hover:text-red-500 transition-colors p-1" onClick={onClose}>
+              <X size={24} />
             </button>
           </div>
         </div>
         
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-[#F8F9FA]">
+        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
           {isStationeryRequest && isViewMode ? (
             /* --- POPUP CONTENT FOR VIEW MODE STATIONERY (APPROVAL) --- */
             <div className="space-y-8">
@@ -281,7 +287,7 @@ export const AddStockModal: React.FC<Props> = ({
                           <div>
                             <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Category</label>
                             <select 
-                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-black bg-white uppercase" 
+                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-black bg-white uppercase shadow-sm" 
                               value={stationeryRequestForm.type} 
                               onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
                             >
@@ -293,7 +299,7 @@ export const AddStockModal: React.FC<Props> = ({
                             <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Submit Date</label>
                             <input 
                               type="date" 
-                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-bold bg-white" 
+                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-bold bg-white shadow-sm" 
                               value={stationeryRequestForm.date} 
                               onChange={(e) => handleStationeryRequestChange('date', e.target.value)} 
                             />
@@ -308,7 +314,7 @@ export const AddStockModal: React.FC<Props> = ({
                           <div>
                             <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Location</label>
                             <select 
-                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-black bg-white uppercase" 
+                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-black bg-white uppercase shadow-sm" 
                               value={stationeryRequestForm.location} 
                               onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
                             >
@@ -346,9 +352,8 @@ export const AddStockModal: React.FC<Props> = ({
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {requestItems.map((item, index) => {
-                                const isArk = moduleName.includes('ARK');
-                                const categoryList = isArk ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY;
-                                const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+                                const categoryList = isArkModule ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY;
+                                const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
                                 const filteredItems = item.categoryId ? masterList.filter(m => m.category === item.categoryId) : [];
                                 const currentProduct = masterList.find(m => m.id.toString() === item.itemId);
                                 
@@ -439,69 +444,145 @@ export const AddStockModal: React.FC<Props> = ({
                 </div>
             </div>
           ) : isStationeryRequest && !isViewMode ? (
-            /* --- CREATE MODE STATIONERY --- */
+            /* --- CREATE MODE STATIONERY (MATCHING SCREENSHOT) --- */
              <div className="space-y-6">
+                 {/* ORDER SETUP Section */}
                  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                     <SectionHeader icon={FileText} title="Order Setup" />
-                     <div className="grid grid-cols-2 gap-4">
-                         <div><label className="block text-[10px] font-black text-gray-500 uppercase mb-2">Order Type</label>
-                            <select className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-bold bg-white" value={stationeryRequestForm.type} onChange={(e) => handleStationeryRequestChange('type', e.target.value)}>
-                                <option value="DAILY REQUEST">DAILY REQUEST</option>
-                                <option value="EVENT REQUEST">EVENT REQUEST</option>
-                            </select>
+                     <SectionHeader icon={FileText} title="ORDER SETUP" />
+                     <div className="grid grid-cols-2 gap-8">
+                         <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">ORDER TYPE</label>
+                            <div className="relative">
+                                <select 
+                                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[12px] font-black bg-white uppercase appearance-none shadow-sm focus:border-black outline-none transition-all" 
+                                    value={stationeryRequestForm.type} 
+                                    onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
+                                >
+                                    <option value="DAILY REQUEST">DAILY REQUEST</option>
+                                    <option value="EVENT REQUEST">EVENT REQUEST</option>
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
                          </div>
-                         <div><label className="block text-[10px] font-black text-gray-500 uppercase mb-2">Date</label><input type="date" className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-bold bg-white" value={stationeryRequestForm.date} onChange={(e) => handleStationeryRequestChange('date', e.target.value)} /></div>
+                         <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">DATE</label>
+                            <div className="relative">
+                                <input 
+                                    type="date" 
+                                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[12px] font-bold bg-white shadow-sm focus:border-black outline-none transition-all" 
+                                    value={stationeryRequestForm.date} 
+                                    onChange={(e) => handleStationeryRequestChange('date', e.target.value)} 
+                                />
+                            </div>
+                         </div>
                      </div>
                  </div>
-                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                    <div className="flex justify-between items-center mb-4"><SectionHeader icon={List} title="Items List" /><button onClick={addRequestItemRow} className="text-[10px] font-black uppercase tracking-widest px-4 py-1.5 bg-black text-white rounded-lg">+ Add Row</button></div>
-                    <div className="overflow-hidden border border-gray-100 rounded-lg mb-4">
+
+                 {/* ITEMS LIST Section */}
+                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative">
+                    <div className="flex justify-between items-center mb-6">
+                        <SectionHeader icon={List} title="ITEMS LIST" />
+                        <button 
+                            onClick={addRequestItemRow} 
+                            className="px-6 py-2 bg-black text-white text-[11px] font-black uppercase tracking-widest rounded-lg hover:bg-gray-800 transition-all flex items-center gap-2"
+                        >
+                            + ADD ROW
+                        </button>
+                    </div>
+                    
+                    <div className="overflow-hidden border border-gray-100 rounded-xl mb-6 shadow-sm">
                          <table className="w-full text-left">
-                             <thead className="bg-gray-50 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                 <tr><th className="p-3 w-12 text-center">#</th><th className="p-3 w-40">Category</th><th className="p-3">Product Name</th><th className="p-3 w-24 text-center">In Stock</th><th className="p-3 w-24 text-center">UOM</th><th className="p-3 w-24 text-center">Qty</th><th className="p-3 w-16"></th></tr>
+                             <thead className="bg-[#F8F9FA] text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                                 <tr>
+                                     <th className="p-4 w-12 text-center">#</th>
+                                     <th className="p-4 w-48">CATEGORY</th>
+                                     <th className="p-4">PRODUCT NAME</th>
+                                     <th className="p-4 w-28 text-center">IN STOCK</th>
+                                     <th className="p-4 w-24 text-center">UOM</th>
+                                     <th className="p-4 w-24 text-center">QTY</th>
+                                     <th className="p-4 w-12 text-center"></th>
+                                 </tr>
                              </thead>
                              <tbody className="divide-y divide-gray-50">
                                  {requestItems.map((item, idx) => {
-                                     const isArk = moduleName.includes('ARK');
-                                     const categoryList = isArk ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY;
-                                     const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+                                     const categoryList = isArkModule ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY;
+                                     const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
                                      const filteredItems = item.categoryId ? masterList.filter(m => m.category === item.categoryId) : [];
                                      const currentProduct = masterList.find(m => m.id.toString() === item.itemId);
                                      
                                      return (
-                                     <tr key={idx} className="hover:bg-gray-50/30 transition-colors">
-                                         <td className="p-3 text-center text-gray-300 font-bold">{idx + 1}</td>
-                                         <td className="p-3">
-                                             <select className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold" value={item.categoryId} onChange={(e) => handleRequestItemChange(idx, 'categoryId', e.target.value)}>
-                                                 <option value="">Category...</option>
-                                                 {categoryList.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                                             </select>
+                                     <tr key={idx} className="hover:bg-gray-50/20 transition-colors">
+                                         <td className="p-4 text-center text-gray-300 font-black text-[12px]">{idx + 1}</td>
+                                         <td className="p-4">
+                                             <div className="relative">
+                                                <select 
+                                                    className="w-full border border-gray-200 rounded-full px-4 py-2 text-[11px] font-bold bg-white shadow-sm appearance-none focus:border-black outline-none" 
+                                                    value={item.categoryId} 
+                                                    onChange={(e) => handleRequestItemChange(idx, 'categoryId', e.target.value)}
+                                                >
+                                                    <option value="">Category...</option>
+                                                    {categoryList.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                                                </select>
+                                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                    <svg className="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+                                                </div>
+                                             </div>
                                          </td>
-                                         <td className="p-3">
-                                             <select disabled={!item.categoryId} className={`w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold ${!item.categoryId ? 'bg-gray-50 text-gray-400' : 'text-black'}`} value={item.itemId} onChange={(e) => handleRequestItemChange(idx, 'itemId', e.target.value)}>
-                                                 <option value="">{item.categoryId ? 'Search Product...' : 'Select category'}</option>
-                                                 {filteredItems.map(m => <option key={m.id} value={m.id}>{m.itemName}</option>)}
-                                             </select>
+                                         <td className="p-4">
+                                             <div className="relative">
+                                                <select 
+                                                    disabled={!item.categoryId} 
+                                                    className={`w-full border border-gray-200 rounded-full px-4 py-2 text-[11px] font-bold shadow-sm appearance-none focus:border-black outline-none transition-all ${!item.categoryId ? 'bg-gray-50 text-gray-400' : 'text-black bg-white'}`} 
+                                                    value={item.itemId} 
+                                                    onChange={(e) => handleRequestItemChange(idx, 'itemId', e.target.value)}
+                                                >
+                                                    <option value="">{item.categoryId ? 'Search Product...' : 'Select category'}</option>
+                                                    {filteredItems.map(m => <option key={m.id} value={m.id}>{m.itemName}</option>)}
+                                                </select>
+                                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                    <svg className="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+                                                </div>
+                                             </div>
                                          </td>
-                                         <td className="p-3 text-center">
-                                             {currentProduct ? <span className={`text-[12px] font-black ${currentProduct.remainingStock < 5 ? 'text-red-500' : 'text-gray-400'}`}>{currentProduct.remainingStock}</span> : <span className="text-gray-200 font-bold">-</span>}
+                                         <td className="p-4 text-center">
+                                             {currentProduct ? <span className={`text-[13px] font-black ${currentProduct.remainingStock < 5 ? 'text-red-500' : 'text-gray-400'}`}>{currentProduct.remainingStock}</span> : <span className="text-gray-300 font-bold">-</span>}
                                          </td>
-                                         <td className="p-3">
-                                             <select className="w-full border border-gray-200 rounded-lg px-1 py-1.5 text-[10px] font-black text-center uppercase appearance-none hover:border-black transition-all" value={item.uom} onChange={(e) => handleRequestItemChange(idx, 'uom', e.target.value)}>
-                                                 <option value="">UOM</option>
-                                                 {MOCK_UOM_DATA.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
-                                             </select>
+                                         <td className="p-4 text-center">
+                                             <div className="bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-[10px] font-black text-black inline-block min-w-[60px] shadow-sm uppercase">
+                                                 {item.uom || 'UOM'}
+                                             </div>
                                          </td>
-                                         <td className="p-3">
-                                            <input type="number" className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm font-black text-center" value={item.qty} onChange={(e) => handleRequestItemChange(idx, 'qty', e.target.value)} />
+                                         <td className="p-4 text-center">
+                                            <input 
+                                                type="number" 
+                                                className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm font-black text-center bg-white shadow-sm focus:border-black outline-none" 
+                                                value={item.qty} 
+                                                onChange={(e) => handleRequestItemChange(idx, 'qty', e.target.value)} 
+                                            />
                                          </td>
-                                         <td className="p-3 text-center"><button onClick={() => removeRequestItemRow(idx)} className="text-gray-300 hover:text-red-500 transition-all"><X size={16}/></button></td>
+                                         <td className="p-4 text-center">
+                                            <button onClick={() => removeRequestItemRow(idx)} className="text-gray-200 hover:text-red-500 transition-all">
+                                                <X size={20} className="stroke-[3]" />
+                                            </button>
+                                         </td>
                                      </tr>
                                  )})}
                              </tbody>
                          </table>
                     </div>
-                    <textarea rows={2} className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm italic" placeholder="Add remarks..." value={stationeryRequestForm.remarks} onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)} />
+                    
+                    {/* Remarks field inside ITEMS LIST box but below table as per screenshot */}
+                    <div className="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                        <textarea 
+                            rows={3} 
+                            className="w-full p-4 text-[13px] font-medium italic text-black bg-white focus:border-black outline-none resize-none" 
+                            placeholder="Add remarks..." 
+                            value={stationeryRequestForm.remarks} 
+                            onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)} 
+                        />
+                    </div>
                  </div>
              </div>
           ) : (
@@ -510,21 +591,21 @@ export const AddStockModal: React.FC<Props> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end gap-3 shrink-0">
+        <div className="px-8 py-6 bg-white border-t border-gray-100 flex justify-end gap-3 shrink-0">
           {isViewMode ? (
             isApprovalModule ? (
               <>
-                <button onClick={onReject} className="px-8 py-2.5 text-[11px] font-black uppercase tracking-widest text-red-500 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-all flex items-center gap-2"><XCircle size={14} /> Reject</button>
-                <button onClick={onApprove} className="px-12 py-2.5 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-lg hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95 flex items-center gap-2"><Check size={14} /> Approve</button>
+                <button onClick={onReject} className="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-red-500 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-all flex items-center gap-2"><XCircle size={14} /> Reject</button>
+                <button onClick={onApprove} className="px-12 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-xl hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95 flex items-center gap-2"><Check size={14} /> Approve</button>
               </>
             ) : (
-              <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-black bg-gray-100 rounded-lg hover:bg-gray-200 transition-all">Close</button>
+              <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-black bg-gray-100 rounded-xl hover:bg-gray-200 transition-all">Close</button>
             )
           ) : (
             <>
-              <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-black transition-all">Cancel</button>
-              {isStationeryRequest && <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-black transition-all">DRAF</button>}
-              <button onClick={handleSave} className="px-12 py-2.5 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-lg hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95">Save Data</button>
+              <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:text-black transition-all">CANCEL</button>
+              {isStationeryRequest && <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:text-black transition-all">DRAF</button>}
+              <button onClick={handleSave} className="px-12 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-xl hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95">SAVE DATA</button>
             </>
           )}
         </div>

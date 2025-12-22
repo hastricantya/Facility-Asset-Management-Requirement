@@ -19,6 +19,7 @@ import { BuildingModal } from './components/BuildingModal';
 import { GeneralMasterModal } from './components/GeneralMasterModal';
 import { AddStockModal } from './components/AddStockModal';
 import { MasterItemModal } from './components/MasterItemModal';
+import { DeliveryLocationModal } from './components/DeliveryLocationModal';
 import { Users, User, Baby, Activity } from 'lucide-react';
 import { 
   MOCK_VEHICLE_DATA, 
@@ -107,11 +108,11 @@ const App: React.FC = () => {
   const [arkMaster, setArkMaster] = useState<MasterItem[]>(MOCK_MASTER_ARK_DATA);
   const [logBookData, setLogBookData] = useState<LogBookRecord[]>(MOCK_LOGBOOK_DATA);
   
-  // Master Lists (UOM, Category, Loc)
-  const [uomList] = useState<GeneralMasterItem[]>(MOCK_UOM_DATA);
-  const [atkCategories] = useState<GeneralMasterItem[]>(MOCK_ATK_CATEGORY);
-  const [arkCategories] = useState<GeneralMasterItem[]>(MOCK_ARK_CATEGORY);
-  const [delivLocations] = useState<DeliveryLocationRecord[]>(MOCK_DELIVERY_LOCATIONS);
+  // Master Lists (UOM, Category, Loc) with setters
+  const [uomList, setUomList] = useState<GeneralMasterItem[]>(MOCK_UOM_DATA);
+  const [atkCategories, setAtkCategories] = useState<GeneralMasterItem[]>(MOCK_ATK_CATEGORY);
+  const [arkCategories, setArkCategories] = useState<GeneralMasterItem[]>(MOCK_ARK_CATEGORY);
+  const [delivLocations, setDelivLocations] = useState<DeliveryLocationRecord[]>(MOCK_DELIVERY_LOCATIONS);
 
   // Master Data States (Generic)
   const [masterLists, setMasterLists] = useState<Record<string, GeneralMasterItem[]>>({
@@ -132,6 +133,7 @@ const App: React.FC = () => {
   const [isMasterModalOpen, setIsMasterModalOpen] = useState(false);
   const [isStockModalOpen, setIsStockModalOpen] = useState(false);
   const [isMasterItemModalOpen, setIsMasterItemModalOpen] = useState(false);
+  const [isDeliveryLocationModalOpen, setIsDeliveryLocationModalOpen] = useState(false);
   
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleRecord | null>(null);
@@ -140,6 +142,7 @@ const App: React.FC = () => {
   const [selectedAsset, setSelectedAsset] = useState<AssetRecord | null>(null);
   const [selectedLogBook, setSelectedLogBook] = useState<LogBookRecord | null>(null);
   const [selectedMasterProduct, setSelectedMasterProduct] = useState<MasterItem | null>(null);
+  const [selectedDeliveryLocation, setSelectedDeliveryLocation] = useState<DeliveryLocationRecord | null>(null);
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -169,6 +172,7 @@ const App: React.FC = () => {
     setSelectedLogBook(null);
     setSelectedAsset(null);
     setSelectedMasterProduct(null);
+    setSelectedDeliveryLocation(null);
 
     if (activeModule === 'Daftar Aset') {
         setSelectedVehicle(null);
@@ -177,7 +181,15 @@ const App: React.FC = () => {
         setSelectedBuilding(null);
         setIsBuildingModalOpen(true);
     } else if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
-        setIsMasterItemModalOpen(true);
+        if (activeTab === 'UOM' || activeTab === 'Category') {
+            setSelectedMasterItem(null);
+            setIsMasterModalOpen(true);
+        } else if (activeTab === 'Delivery Location') {
+            setSelectedDeliveryLocation(null);
+            setIsDeliveryLocationModalOpen(true);
+        } else {
+            setIsMasterItemModalOpen(true);
+        }
     } else if (activeModule.includes('ATK') || activeModule.includes('ARK') || activeModule === 'Log Book' || activeModule === 'Servis') {
         setIsStockModalOpen(true);
     } else if (masterLists[activeModule]) {
@@ -195,7 +207,7 @@ const App: React.FC = () => {
             category: data.category || 'General',
             itemCode: data.itemCode || 'CODE-001',
             uom: data.uom || 'PCS',
-            remainingStock: 0,
+            remainingStock: data.remainingStock || 0,
             minimumStock: data.minimumStock || 0,
             maximumStock: data.maximumStock || 0,
             requestedStock: 0,
@@ -210,6 +222,48 @@ const App: React.FC = () => {
         else setAtkMaster(atkMaster.map(i => i.id === data.id ? { ...i, ...data } : i));
     }
     setIsMasterItemModalOpen(false);
+  };
+
+  const handleSaveGeneralMaster = (name: string) => {
+    if (modalMode === 'create') {
+      const newItem = { id: Date.now(), name };
+      if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
+        if (activeTab === 'UOM') setUomList([...uomList, newItem]);
+        else if (activeTab === 'Category') {
+          if (activeModule === 'Master ATK') setAtkCategories([...atkCategories, newItem]);
+          else setArkCategories([...arkCategories, newItem]);
+        }
+      } else if (masterLists[activeModule]) {
+        setMasterLists(prev => ({ ...prev, [activeModule]: [...prev[activeModule], newItem] }));
+      }
+    } else if (selectedMasterItem) {
+      const updateItem = (list: GeneralMasterItem[]) => list.map(i => i.id === selectedMasterItem.id ? { ...i, name } : i);
+      if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
+        if (activeTab === 'UOM') setUomList(updateItem(uomList));
+        else if (activeTab === 'Category') {
+          if (activeModule === 'Master ATK') setAtkCategories(updateItem(atkCategories));
+          else setArkCategories(updateItem(arkCategories));
+        }
+      } else if (masterLists[activeModule]) {
+        setMasterLists(prev => ({ ...prev, [activeModule]: updateItem(prev[activeModule]) }));
+      }
+    }
+    setIsMasterModalOpen(false);
+  };
+
+  const handleSaveDeliveryLocation = (data: Partial<DeliveryLocationRecord>) => {
+    if (modalMode === 'create') {
+      const newItem: DeliveryLocationRecord = {
+        id: Date.now(),
+        name: data.name || 'New Location',
+        address: data.address || '',
+        type: data.type || 'HO'
+      };
+      setDelivLocations([...delivLocations, newItem]);
+    } else if (selectedDeliveryLocation) {
+      setDelivLocations(delivLocations.map(l => l.id === selectedDeliveryLocation.id ? { ...l, ...data } : l));
+    }
+    setIsDeliveryLocationModalOpen(false);
   };
 
   const handleSaveLogBook = (data: Partial<LogBookRecord>) => {
@@ -334,9 +388,9 @@ const App: React.FC = () => {
         const isArk = activeModule === 'Master ARK';
         switch(activeTab) {
             case 'Items': return <MasterAtkTable data={getFilteredMasterData(isArk ? arkMaster : atkMaster)} onEdit={(item) => { setSelectedMasterProduct(item); setModalMode('edit'); setIsMasterItemModalOpen(true); }} />;
-            case 'UOM': return <GeneralMasterTable data={uomList} onEdit={()=>{}} onDelete={()=>{}} />;
-            case 'Category': return <GeneralMasterTable data={isArk ? arkCategories : atkCategories} onEdit={()=>{}} onDelete={()=>{}} />;
-            case 'Delivery Location': return <MasterDeliveryLocationTable data={delivLocations} onEdit={()=>{}} onDelete={()=>{}} />;
+            case 'UOM': return <GeneralMasterTable data={uomList} onEdit={(item) => { setSelectedMasterItem(item); setModalMode('edit'); setIsMasterModalOpen(true); }} onDelete={()=>{}} />;
+            case 'Category': return <GeneralMasterTable data={isArk ? arkCategories : atkCategories} onEdit={(item) => { setSelectedMasterItem(item); setModalMode('edit'); setIsMasterModalOpen(true); }} onDelete={()=>{}} />;
+            case 'Delivery Location': return <MasterDeliveryLocationTable data={delivLocations} onEdit={(item) => { setSelectedDeliveryLocation(item); setModalMode('edit'); setIsDeliveryLocationModalOpen(true); }} onDelete={()=>{}} />;
             default: return <MasterAtkTable data={getFilteredMasterData(isArk ? arkMaster : atkMaster)} onEdit={(item) => { setSelectedMasterProduct(item); setModalMode('edit'); setIsMasterItemModalOpen(true); }} />;
         }
      }
@@ -386,6 +440,13 @@ const App: React.FC = () => {
     if (activeModule === 'Log Book') return []; 
     return ['Semua'];
   }, [activeModule]);
+
+  const masterModalTitle = useMemo(() => {
+    if ((activeModule === 'Master ATK' || activeModule === 'Master ARK') && activeTab && activeTab !== 'Items') {
+      return activeTab;
+    }
+    return activeModule;
+  }, [activeModule, activeTab]);
 
   return (
     <div className="flex bg-[#fbfbfb] min-h-screen font-sans relative overflow-x-hidden text-black">
@@ -467,9 +528,9 @@ const App: React.FC = () => {
       <GeneralMasterModal 
         isOpen={isMasterModalOpen}
         onClose={() => setIsMasterModalOpen(false)}
-        onSave={(name) => { /* Handle Master Save */ setIsMasterModalOpen(false); }}
+        onSave={handleSaveGeneralMaster}
         initialData={selectedMasterItem}
-        title={activeModule}
+        title={masterModalTitle}
       />
 
       <BuildingModal 
@@ -507,6 +568,14 @@ const App: React.FC = () => {
         onSave={handleSaveMasterItem}
         initialData={selectedMasterProduct}
         moduleName={activeModule}
+        mode={modalMode}
+      />
+
+      <DeliveryLocationModal 
+        isOpen={isDeliveryLocationModalOpen}
+        onClose={() => setIsDeliveryLocationModalOpen(false)}
+        onSave={handleSaveDeliveryLocation}
+        initialData={selectedDeliveryLocation}
         mode={modalMode}
       />
     </div>
