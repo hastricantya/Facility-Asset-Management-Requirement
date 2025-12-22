@@ -83,6 +83,16 @@ const App: React.FC = () => {
     setStationeryFilters(prev => ({ ...prev, [field]: value }));
   };
 
+  // Master ATK/ARK Filters State
+  const [masterFilters, setMasterFilters] = useState({
+    category: '',
+    partCode: ''
+  });
+
+  const handleMasterFilterChange = (field: string, value: string) => {
+    setMasterFilters(prev => ({ ...prev, [field]: value }));
+  };
+
   // Data States
   const [vehicleData] = useState<VehicleRecord[]>(MOCK_VEHICLE_DATA);
   const [buildingData] = useState<BuildingRecord[]>(MOCK_BUILDING_DATA);
@@ -136,6 +146,10 @@ const App: React.FC = () => {
 
   const handleModuleNavigate = (module: string) => {
     setActiveModule(module);
+    // Reset filters when navigating
+    setMasterFilters({ category: '', partCode: '' });
+    setStationeryFilters({ transactionId: '', requester: '', date: '' });
+    
     if (module === 'Kontrak Gedung') {
         setActiveTab('Milik Sendiri');
     } else if (module === 'Daftar Aset') {
@@ -143,7 +157,7 @@ const App: React.FC = () => {
     } else if (module.includes('Master')) {
         setActiveTab('Items');
     } else if (module === 'Log Book') {
-        setActiveTab(''); // No active tab for logbook
+        setActiveTab(''); 
     } else {
         setActiveTab('Semua');
     }
@@ -266,12 +280,23 @@ const App: React.FC = () => {
         result = result.filter(item => item.employee.name.toLowerCase().includes(stationeryFilters.requester.toLowerCase()));
     }
     if (stationeryFilters.date) {
-        // Data format in MOCK is DD/MM/YYYY, Filter input is YYYY-MM-DD
         const filterDateParts = stationeryFilters.date.split('-');
         const formattedFilterDate = `${filterDateParts[2]}/${filterDateParts[1]}/${filterDateParts[0]}`;
         result = result.filter(item => item.date === formattedFilterDate);
     }
 
+    return result;
+  };
+
+  // Master Filtered Data
+  const getFilteredMasterData = (data: MasterItem[]) => {
+    let result = data;
+    if (masterFilters.category) {
+      result = result.filter(i => i.category.toLowerCase().includes(masterFilters.category.toLowerCase()));
+    }
+    if (masterFilters.partCode) {
+      result = result.filter(i => i.itemCode.toLowerCase().includes(masterFilters.partCode.toLowerCase()));
+    }
     return result;
   };
 
@@ -308,11 +333,11 @@ const App: React.FC = () => {
      if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
         const isArk = activeModule === 'Master ARK';
         switch(activeTab) {
-            case 'Items': return <MasterAtkTable data={isArk ? arkMaster : atkMaster} onEdit={(item) => { setSelectedMasterProduct(item); setModalMode('edit'); setIsMasterItemModalOpen(true); }} />;
+            case 'Items': return <MasterAtkTable data={getFilteredMasterData(isArk ? arkMaster : atkMaster)} onEdit={(item) => { setSelectedMasterProduct(item); setModalMode('edit'); setIsMasterItemModalOpen(true); }} />;
             case 'UOM': return <GeneralMasterTable data={uomList} onEdit={()=>{}} onDelete={()=>{}} />;
             case 'Category': return <GeneralMasterTable data={isArk ? arkCategories : atkCategories} onEdit={()=>{}} onDelete={()=>{}} />;
             case 'Delivery Location': return <MasterDeliveryLocationTable data={delivLocations} onEdit={()=>{}} onDelete={()=>{}} />;
-            default: return <MasterAtkTable data={isArk ? arkMaster : atkMaster} onEdit={(item) => { setSelectedMasterProduct(item); setModalMode('edit'); setIsMasterItemModalOpen(true); }} />;
+            default: return <MasterAtkTable data={getFilteredMasterData(isArk ? arkMaster : atkMaster)} onEdit={(item) => { setSelectedMasterProduct(item); setModalMode('edit'); setIsMasterItemModalOpen(true); }} />;
         }
      }
 
@@ -429,6 +454,8 @@ const App: React.FC = () => {
                     onLogBookFilterChange={handleLogBookFilterChange}
                     stationeryFilters={stationeryFilters}
                     onStationeryFilterChange={handleStationeryFilterChange}
+                    masterFilters={masterFilters}
+                    onMasterFilterChange={handleMasterFilterChange}
                 />
             )}
             
