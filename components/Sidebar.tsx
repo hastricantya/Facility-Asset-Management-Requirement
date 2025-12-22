@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, 
@@ -86,7 +85,7 @@ export const Sidebar: React.FC<Props> = ({
         label: 'ATK', 
         icon: <Box size={20} />,
         subItems: [
-            { label: 'Daftar ATK', icon: <Database size={18} /> },
+            { label: 'Request ATK', icon: <Database size={18} /> },
             { label: 'Stationery Request Approval', icon: <UserCheck size={18} /> },
             { label: 'Master ATK', icon: <Settings size={18} /> },
         ]
@@ -187,7 +186,7 @@ export const Sidebar: React.FC<Props> = ({
                                             ? 'bg-[#1a1a1a] text-white border-l-4 border-white' 
                                             : 'hover:bg-[#1a1a1a] hover:text-white border-l-4 border-transparent text-gray-500'}`}
                                     >
-                                        {sub.label}
+                                        {t(sub.label)}
                                     </button>
                                   )
                               })}

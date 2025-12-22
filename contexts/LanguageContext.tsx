@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 type Language = 'id' | 'en';
@@ -22,7 +21,7 @@ const translations: Record<string, Record<Language, string>> = {
   'Mutasi': { id: 'Mutasi', en: 'Mutation' },
   'Penjualan': { id: 'Penjualan', en: 'Sales' },
   'ATK': { id: 'ATK', en: 'Stationery' },
-  'Daftar ATK': { id: 'Permintaan ATK', en: 'Stationery Request' },
+  'Request ATK': { id: 'Permintaan ATK', en: 'Stationery Request' },
   'Stationery Request Approval': { id: 'Persetujuan ATK', en: 'Stationery Request Approval' },
   'Master ATK': { id: 'Master ATK', en: 'Master Stationery' },
   
@@ -116,7 +115,6 @@ const translations: Record<string, Record<Language, string>> = {
   'Daftar Aset ATK': { id: 'Permintaan ATK', en: 'Stationery Request' },
   'Header Stationery Request Approval': { id: 'Persetujuan Permintaan ATK', en: 'Stationery Request Approval' },
   'Master Data ATK': { id: 'Master Data ATK', en: 'Master Stationery Data' },
-  'Request ATK': { id: 'Request ATK', en: 'Stationery Request' },
   'Header Household Request Approval': { id: 'Persetujuan Permintaan ARK', en: 'Household Request Approval' },
   'Master Data ARK': { id: 'Master Data ARK', en: 'Master Household Data' },
   'Request ARK': { id: 'Request ARK', en: 'Household Request' },

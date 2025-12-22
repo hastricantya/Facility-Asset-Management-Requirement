@@ -80,8 +80,8 @@ const App: React.FC = () => {
   const [serviceData] = useState<ServiceRecord[]>(MOCK_SERVICE_DATA);
   const [taxKirData] = useState<TaxKirRecord[]>(MOCK_TAX_KIR_DATA);
   const [masterVendors] = useState(MOCK_MASTER_VENDOR_DATA);
-  const [atkData] = useState<AssetRecord[]>(MOCK_ATK_DATA);
-  const [arkData] = useState<AssetRecord[]>(MOCK_ARK_DATA);
+  const [atkData, setAtkData] = useState<AssetRecord[]>(MOCK_ATK_DATA);
+  const [arkData, setArkData] = useState<AssetRecord[]>(MOCK_ARK_DATA);
   const [atkMaster] = useState<MasterItem[]>(MOCK_ATK_MASTER);
   const [arkMaster] = useState<MasterItem[]>(MOCK_MASTER_ARK_DATA);
   const [logBookData, setLogBookData] = useState<LogBookRecord[]>(MOCK_LOGBOOK_DATA);
@@ -177,6 +177,28 @@ const App: React.FC = () => {
     setIsStockModalOpen(false);
   };
 
+  const handleApproveAsset = () => {
+    if (selectedAsset) {
+      if (activeModule.includes('ATK')) {
+        setAtkData(atkData.map(item => item.id === selectedAsset.id ? { ...item, status: 'Approved' } : item));
+      } else {
+        setArkData(arkData.map(item => item.id === selectedAsset.id ? { ...item, status: 'Approved' } : item));
+      }
+      setIsStockModalOpen(false);
+    }
+  };
+
+  const handleRejectAsset = () => {
+    if (selectedAsset) {
+      if (activeModule.includes('ATK')) {
+        setAtkData(atkData.map(item => item.id === selectedAsset.id ? { ...item, status: 'Rejected' } : item));
+      } else {
+        setArkData(arkData.map(item => item.id === selectedAsset.id ? { ...item, status: 'Rejected' } : item));
+      }
+      setIsStockModalOpen(false);
+    }
+  };
+
   const filteredBuildingData = useMemo(() => {
     if (activeModule === 'Kontrak Gedung') {
         const ownership = activeTab === 'Milik Sendiri' ? 'Own' : 'Rent';
@@ -251,7 +273,7 @@ const App: React.FC = () => {
          case 'Servis': return <ServiceLogTable data={serviceData} />;
          case 'Pajak & KIR': return <TaxKirTable data={taxKirData} />;
          case 'Master Vendor': return <MasterVendorTable data={masterVendors} />;
-         case 'Daftar ATK':
+         case 'Request ATK':
          case 'Stationery Request Approval':
             return <StationeryRequestTable data={getFilteredAssetData(atkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Daftar ARK':
@@ -272,7 +294,7 @@ const App: React.FC = () => {
     if (activeModule === 'Kontrak Gedung') return ['Milik Sendiri', 'Sewa'];
     if (activeModule === 'Daftar Aset') return ['Aktif', 'Tidak Aktif'];
     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') return ['Items', 'UOM', 'Category', 'Delivery Location'];
-    if (activeModule.includes('Daftar') || activeModule.includes('Approval')) return ['Semua', 'Draft', 'On Progress', 'Pending', 'Approved', 'Rejected', 'Closed'];
+    if (activeModule.includes('Daftar') || activeModule.includes('Approval') || activeModule.includes('Request')) return ['Semua', 'Draft', 'On Progress', 'Pending', 'Approved', 'Rejected', 'Closed'];
     if (activeModule === 'Log Book') return []; 
     return ['Semua'];
   }, [activeModule]);
@@ -293,7 +315,7 @@ const App: React.FC = () => {
       />
       
       <div className={`flex-1 flex flex-col transition-all duration-300 w-full ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
-        <TopBar breadcrumbs={['Beranda', activeModule]} onMenuClick={toggleMobileMenu} />
+        <TopBar breadcrumbs={['Beranda', t(activeModule)]} onMenuClick={toggleMobileMenu} />
         
         <main className="flex-1 p-8 overflow-y-auto">
           <div className="max-w-[1600px] mx-auto">
@@ -382,6 +404,8 @@ const App: React.FC = () => {
         initialAssetData={selectedAsset || undefined}
         initialLogBookData={selectedLogBook || undefined}
         onSaveLogBook={handleSaveLogBook}
+        onApprove={handleApproveAsset}
+        onReject={handleRejectAsset}
         vehicleList={vehicleData}
       />
     </div>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BuildingRecord } from '../types';
 import { ChevronsUpDown, Eye, Pencil, Building } from 'lucide-react';
@@ -15,38 +14,38 @@ export const BuildingTable: React.FC<Props> = ({ data, onEdit, onView }) => {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1200px] text-left border-separate border-spacing-0">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-100 transition-colors">
+            <tr className="bg-[#F2F2F2] border-b border-gray-200">
+              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Name / Asset No
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-100 transition-colors">
+              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Type
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-100 transition-colors">
+              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Ownership
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-100 transition-colors">
+              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Location (Branch)
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-100 transition-colors">
+              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-200 transition-colors">
                 <div className="flex items-center justify-between">
                   Address
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-100 transition-colors text-center">
+              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-200 transition-colors text-center">
                 <div className="flex items-center justify-center gap-2">
                   Status
                   <ChevronsUpDown size={14} className="text-gray-300" />

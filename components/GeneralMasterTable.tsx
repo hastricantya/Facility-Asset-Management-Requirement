@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { GeneralMasterItem } from '../types';
 import { Pencil, Trash2, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, MoreHorizontal } from 'lucide-react';
@@ -15,7 +14,7 @@ export const GeneralMasterTable: React.FC<Props> = ({ data, onEdit, onDelete }) 
       <div className="overflow-x-auto">
         <table className="w-full text-left border-separate border-spacing-0">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
+            <tr className="bg-[#F2F2F2] border-b border-gray-200">
               <th className="p-5 w-20 text-center text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200">No</th>
               <th className="p-5 text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200">Nama Item</th>
               <th className="p-5 w-32 text-center text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200">Action</th>

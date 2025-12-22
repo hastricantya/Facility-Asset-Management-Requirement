@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AssetRecord } from '../types';
 import { ChevronsUpDown, ChevronLeft, ChevronRight, Eye, MoreHorizontal } from 'lucide-react';
@@ -14,27 +13,27 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView }) => {
       <div className="overflow-x-auto custom-scrollbar">
         <table className="w-full min-w-[1300px] text-left border-collapse">
           <thead>
-            <tr className="bg-[#FAFAFA] border-b border-gray-100">
+            <tr className="bg-[#F2F2F2] border-b border-gray-200">
               <th className="p-5 w-14 text-center pl-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">#</th>
-              <th className="p-5 w-48 group cursor-pointer hover:bg-gray-100 transition-colors">
+              <th className="p-5 w-48 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Transaction ID</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-72 group cursor-pointer hover:bg-gray-100 transition-colors">
+              <th className="p-5 w-72 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Requester</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-40 group cursor-pointer hover:bg-gray-100 transition-colors">
+              <th className="p-5 w-40 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                     <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Category</span>
                     <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-64 group cursor-pointer hover:bg-gray-100 transition-colors">
+              <th className="p-5 w-64 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                     <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Item Details</span>
                     <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>

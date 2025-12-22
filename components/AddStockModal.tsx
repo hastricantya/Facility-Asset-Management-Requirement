@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare } from 'lucide-react';
+import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA } from '../constants';
@@ -20,6 +20,8 @@ interface Props {
   onSaveDeliveryLocation?: (location: Partial<DeliveryLocationRecord>) => void;
   onSaveLogBook?: (logbook: Partial<LogBookRecord>) => void;
   onRevise?: () => void;
+  onApprove?: () => void;
+  onReject?: () => void;
   
   initialVehicleData?: VehicleRecord;
   initialServiceData?: ServiceRecord;
@@ -54,6 +56,8 @@ export const AddStockModal: React.FC<Props> = ({
     onSaveDeliveryLocation,
     onSaveLogBook,
     onRevise,
+    onApprove,
+    onReject,
     initialVehicleData,
     initialServiceData,
     initialTaxKirData,
@@ -131,7 +135,7 @@ export const AddStockModal: React.FC<Props> = ({
 
   const handleSave = () => {
       if (moduleName === 'Log Book' && onSaveLogBook) onSaveLogBook(logBookForm);
-      if ((moduleName === 'Daftar ATK' || moduleName === 'Daftar ARK') && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
+      if ((moduleName === 'Request ATK' || moduleName === 'Daftar ARK') && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
       onClose();
   }
 
@@ -165,7 +169,8 @@ export const AddStockModal: React.FC<Props> = ({
     </div>
   );
 
-  const isStationeryRequest = moduleName === 'Daftar ATK' || moduleName === 'Daftar ARK' || moduleName === 'Stationery Request Approval' || moduleName === 'Household Request Approval';
+  const isStationeryRequest = moduleName === 'Request ATK' || moduleName === 'Daftar ARK' || moduleName === 'Stationery Request Approval' || moduleName === 'Household Request Approval';
+  const isApprovalModule = moduleName.includes('Approval');
   const isViewMode = mode === 'view';
   const isLogBook = moduleName === 'Log Book';
   const Required = () => <span className="text-red-600 font-bold ml-0.5">*</span>;
@@ -251,7 +256,7 @@ export const AddStockModal: React.FC<Props> = ({
         <div className="px-8 py-5 bg-white border-b border-gray-100 flex items-center justify-between shrink-0">
           <div>
               <h2 className="text-lg font-bold tracking-tight text-gray-900 uppercase tracking-tighter">
-                {isStationeryRequest ? (isViewMode ? 'Stationery Request Details' : 'Create Stationery Request') : isLogBook ? 'Guest Log Detail' : moduleName}
+                {isStationeryRequest ? (isViewMode ? (isApprovalModule ? 'Stationery Approval Process' : 'Stationery Request Details') : 'Create Stationery Request') : isLogBook ? 'Guest Log Detail' : moduleName}
               </h2>
               {isViewMode && initialAssetData?.transactionNumber && (
                 <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase">ID: {initialAssetData.transactionNumber}</span>
@@ -298,7 +303,7 @@ export const AddStockModal: React.FC<Props> = ({
                       <div className="space-y-4">
                           <div><label className="text-[9px] font-black text-gray-400 uppercase block">Location</label><div className="text-[14px] font-black text-black uppercase">{stationeryRequestForm.location}</div></div>
                           <div><label className="text-[9px] font-black text-gray-400 uppercase block">Status</label>
-                            <span className="inline-block mt-1 px-2 py-0.5 bg-green-500 text-white text-[9px] font-black rounded uppercase">{initialAssetData?.status}</span>
+                            <span className={`inline-block mt-1 px-2 py-0.5 text-white text-[9px] font-black rounded uppercase ${initialAssetData?.status === 'Approved' ? 'bg-green-500' : 'bg-orange-500'}`}>{initialAssetData?.status}</span>
                           </div>
                       </div>
                    </div>
@@ -478,7 +483,25 @@ export const AddStockModal: React.FC<Props> = ({
         {/* Footer */}
         <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end gap-3 shrink-0">
           {isViewMode ? (
-            <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-black bg-gray-100 rounded-lg hover:bg-gray-200 transition-all">Close</button>
+            isApprovalModule ? (
+              /* --- APPROVAL BUTTONS --- */
+              <>
+                <button 
+                  onClick={onReject} 
+                  className="px-8 py-2.5 text-[11px] font-black uppercase tracking-widest text-red-500 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-all flex items-center gap-2"
+                >
+                  <XCircle size={14} /> Reject
+                </button>
+                <button 
+                  onClick={onApprove} 
+                  className="px-12 py-2.5 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-lg hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95 flex items-center gap-2"
+                >
+                  <Check size={14} /> Approve
+                </button>
+              </>
+            ) : (
+              <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-black bg-gray-100 rounded-lg hover:bg-gray-200 transition-all">Close</button>
+            )
           ) : (
             <>
               <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-black transition-all">Cancel</button>
