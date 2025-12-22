@@ -134,6 +134,11 @@ export interface TaxKirRecord {
   cabang: string;
   status: string;
   statusApproval: string;
+  aset?: string;
+  tahunPembuatan?: string;
+  vendor?: string;
+  estimasiBiaya?: string;
+  jenisPembayaran?: string;
 }
 
 export interface MutationRecord {
@@ -199,6 +204,24 @@ export interface MasterItem {
   averagePrice: string;
 }
 
+export interface StationeryRequestItem {
+  itemId: string;
+  qty: string;
+}
+
+export interface StationeryRequestRecord {
+  type: string;
+  date: string;
+  remarks?: string;
+  deliveryType: string;
+  location: string;
+  items: StationeryRequestItem[];
+}
+
+/**
+ * ContractRecord interface representing common contract fields.
+ * Includes optional ownership and department fields used in AddStockModal.
+ */
 export interface ContractRecord {
   id: number;
   assetCategory: string;
@@ -209,6 +232,8 @@ export interface ContractRecord {
   channel: string;
   subLocation: string;
   status: string;
+  ownership?: string;
+  department?: string;
 }
 
 export interface TimesheetRecord {

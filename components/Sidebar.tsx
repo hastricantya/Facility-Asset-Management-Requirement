@@ -23,7 +23,9 @@ import {
   ShieldCheck,
   CreditCard,
   Settings,
-  UserCheck
+  UserCheck,
+  Box,
+  House
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -51,7 +53,7 @@ export const Sidebar: React.FC<Props> = ({
   onCloseMobile 
 }) => {
   const { t } = useLanguage();
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Gedung', 'Master Data']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Gedung', 'ATK', 'ARK', 'Master Data']);
 
   const toggleMenu = (label: string) => {
     if (isCollapsed) {
@@ -78,6 +80,24 @@ export const Sidebar: React.FC<Props> = ({
             { label: 'Pajak & KIR', icon: <FileText size={18} /> },
             { label: 'Mutasi', icon: <Send size={18} /> },
             { label: 'Penjualan', icon: <DollarSign size={18} /> },
+        ]
+    },
+    { 
+        label: 'ATK', 
+        icon: <Box size={20} />,
+        subItems: [
+            { label: 'Daftar ATK', icon: <Database size={18} /> },
+            { label: 'Stationery Request Approval', icon: <UserCheck size={18} /> },
+            { label: 'Master ATK', icon: <Settings size={18} /> },
+        ]
+    },
+    { 
+        label: 'ARK', 
+        icon: <House size={20} />,
+        subItems: [
+            { label: 'Daftar ARK', icon: <Database size={18} /> },
+            { label: 'Household Request Approval', icon: <UserCheck size={18} /> },
+            { label: 'Master ARK', icon: <Settings size={18} /> },
         ]
     },
     { label: 'Log Book', icon: <BookOpen size={20} /> },
@@ -117,7 +137,6 @@ export const Sidebar: React.FC<Props> = ({
 
   return (
     <div className={sidebarClasses}>
-      {/* Logo Area */}
       <div className={`p-6 flex items-center justify-between text-white mb-2`}>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 min-w-8 bg-white text-black rounded-full flex items-center justify-center font-bold text-xl">M</div>
@@ -128,7 +147,6 @@ export const Sidebar: React.FC<Props> = ({
               </div>
           )}
         </div>
-        {/* Close Button for Mobile */}
         {isMobileOpen && (
           <button onClick={onCloseMobile} className="lg:hidden p-1 hover:bg-gray-800 rounded">
             <X size={20} />
@@ -136,7 +154,6 @@ export const Sidebar: React.FC<Props> = ({
         )}
       </div>
 
-      {/* Navigation List */}
       <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-1 mt-4">
         {menuItems.map((item, index) => {
           const hasSub = item.subItems && item.subItems.length > 0;
@@ -196,7 +213,6 @@ export const Sidebar: React.FC<Props> = ({
         })}
       </nav>
 
-      {/* Minimize Button - Hide on Mobile */}
       <div className="p-4 border-t border-gray-900 hidden lg:block">
         <button 
             onClick={onToggle}

@@ -1,5 +1,81 @@
 
-import { VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, BuildingRecord, ReminderRecord, GeneralMasterItem, VehicleContractRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord } from './types';
+
+// Helper function to generate mock data for ATK/ARK
+const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] => {
+  const statuses: AssetRecord['status'][] = ['Draft', 'Pending', 'Rejected', 'Approved', 'Closed'];
+  const data: AssetRecord[] = [];
+  let idCounter = startId;
+
+  const employees = [
+    { name: 'Aan Junaidi', role: 'Technician Team Leader', phone: '08123456789' },
+    { name: 'Budi Santoso', role: 'Staff Admin', phone: '08129876543' },
+    { name: 'Citra Lestari', role: 'HRGA Manager', phone: '08134567890' },
+    { name: 'Dewi Putri', role: 'Finance Staff', phone: '08145678901' },
+    { name: 'Eko Prasetyo', role: 'General Affair', phone: '08156789012' }
+  ];
+
+  const itemsATK = [
+      { name: 'HP Laserjet 204A Black', cat: 'Tinta Printer', code: 'TP-HP0048' },
+      { name: 'Kertas A4 70gr', cat: 'Kertas', code: 'KRT-A4-70' },
+      { name: 'Pulpen Standard AE7', cat: 'Alat Tulis', code: 'ATK-PEN-01' },
+      { name: 'Baterai AA Alkaline', cat: 'Elektronik', code: 'EL-BAT-AA' },
+      { name: 'Map Plastik Clear', cat: 'Filing', code: 'FIL-MAP-01' }
+  ];
+
+  const itemsARK = [
+      { name: 'Wipol Karbol', cat: 'Pembersih', code: 'CL-WPL-01' },
+      { name: 'Tisu Nice 250s', cat: 'Tisu', code: 'TS-NIC-250' },
+      { name: 'Sabun Cuci Tangan', cat: 'Kebersihan', code: 'SOAP-HW-01' },
+      { name: 'Pengharum Ruangan', cat: 'Kebersihan', code: 'AIR-FRESH-01' },
+      { name: 'Lampu LED 10W', cat: 'Elektronik', code: 'LMP-LED-10' }
+  ];
+
+  const items = type === 'ATK' ? itemsATK : itemsARK;
+
+  // Create records for each status
+  statuses.forEach(status => {
+    for (let i = 0; i < 5; i++) {
+      const emp = employees[i % employees.length];
+      const item = items[i % items.length];
+      
+      data.push({
+        id: idCounter++,
+        transactionNumber: `TRX/${type}/${new Date().getFullYear()}/${idCounter.toString().padStart(4, '0')}`,
+        employee: {
+          name: emp.name,
+          phone: emp.phone,
+          role: emp.role,
+          avatar: `https://i.pravatar.cc/150?u=${idCounter + 50}`
+        },
+        category: item.cat,
+        itemName: item.name,
+        itemDescription: `Permintaan rutin ${type} untuk kebutuhan operasional cabang.`,
+        qty: Math.floor(Math.random() * 10) + 1,
+        date: new Date().toISOString().split('T')[0].split('-').reverse().join('/'),
+        remainingStock: Math.floor(Math.random() * 50) + 5,
+        itemCode: item.code,
+        status: status
+      });
+    }
+  });
+
+  return data;
+};
+
+export const MOCK_DATA: AssetRecord[] = generateAssetData('ATK', 1);
+export const MOCK_ARK_DATA: AssetRecord[] = generateAssetData('ARK', 100);
+
+export const MOCK_MASTER_DATA: MasterItem[] = [
+  { id: 1, category: 'Tinta Printer', itemName: 'HP Laserjet 204A Black', itemCode: 'TP-HP0048', uom: 'Pcs', remainingStock: 5, minimumStock: 2, maximumStock: 10, requestedStock: 0, purchaseDate: '27/08/2008', lastPurchasePrice: 'Rp. 22.000', averagePrice: 'Rp. 21.082' },
+  { id: 2, category: 'Kertas', itemName: 'Kertas A4 70gr', itemCode: 'KRT-A4-70', uom: 'Rim', remainingStock: 50, minimumStock: 10, maximumStock: 100, requestedStock: 5, purchaseDate: '01/03/2024', lastPurchasePrice: 'Rp. 45.000', averagePrice: 'Rp. 44.500' },
+  { id: 3, category: 'Alat Tulis', itemName: 'Pulpen Standard AE7', itemCode: 'ATK-PEN-01', uom: 'Pcs', remainingStock: 120, minimumStock: 20, maximumStock: 200, requestedStock: 0, purchaseDate: '15/02/2024', lastPurchasePrice: 'Rp. 2.500', averagePrice: 'Rp. 2.400' }
+];
+
+export const MOCK_MASTER_ARK_DATA: MasterItem[] = [
+  { id: 1, category: 'Pembersih', itemName: 'Wipol Karbol', itemCode: 'CL-WPL-01', uom: 'Pcs', remainingStock: 10, minimumStock: 5, maximumStock: 20, requestedStock: 0, purchaseDate: '10/03/2024', lastPurchasePrice: 'Rp. 15.000', averagePrice: 'Rp. 14.800' },
+  { id: 2, category: 'Tisu', itemName: 'Tisu Nice 250s', itemCode: 'TS-NIC-250', uom: 'Pack', remainingStock: 30, minimumStock: 10, maximumStock: 50, requestedStock: 10, purchaseDate: '12/03/2024', lastPurchasePrice: 'Rp. 8.000', averagePrice: 'Rp. 7.900' }
+];
 
 export const MOCK_BUILDING_DATA: BuildingRecord[] = [
     {
@@ -39,80 +115,19 @@ export const MOCK_REMINDER_DATA: ReminderRecord[] = [
         expiryDate: '2024-12-31',
         daysRemaining: 15,
         status: 'Urgent'
-    },
-    {
-        id: 'REM-002',
-        documentName: 'Pajak Bumi Bangunan (PBB)',
-        buildingName: 'Branch Office Surabaya',
-        assetNo: 'BDG-SBY-012',
-        expiryDate: '2025-03-15',
-        daysRemaining: 90,
-        status: 'Safe'
-    },
-    {
-        id: 'REM-003',
-        documentName: 'Izin Mendirikan Bangunan (IMB)',
-        buildingName: 'Warehouse Cakung',
-        assetNo: 'BDG-WH-005',
-        expiryDate: '2025-01-20',
-        daysRemaining: 35,
-        status: 'Warning'
     }
 ];
 
-export const MOCK_MASTER_DATA = {
-    jenisPajak: [
-        { id: 1, name: 'Pajak STNK 1 Tahun' },
-        { id: 2, name: 'Pajak STNK 5 Tahun' },
-        { id: 3, name: 'Pajak Properti (PBB)' },
-    ],
-    jenisPembayaran: [
-        { id: 1, name: 'Kasbon' },
-        { id: 2, name: 'Reimbursement' },
-        { id: 3, name: 'Corporate Card' },
-        { id: 4, name: 'Transfer Bank' },
-    ],
-    jenisServis: [
-        { id: 1, name: 'Servis Rutin' },
-        { id: 2, name: 'Perbaikan Mesin' },
-        { id: 3, name: 'Body Repair' },
-        { id: 4, name: 'Ganti Ban' },
-    ],
-    statusMutasi: [
-        { id: 1, name: 'Draft' },
-        { id: 2, name: 'Pending Approval' },
-        { id: 3, name: 'In Progress' },
-        { id: 4, name: 'Completed' },
-    ],
-    statusPenjualan: [
-        { id: 1, name: 'Open for Bidding' },
-        { id: 2, name: 'Under Negotiation' },
-        { id: 3, name: 'Sold' },
-        { id: 4, name: 'Cancelled' },
-    ],
-    statusRequest: [
-        { id: 1, name: 'New' },
-        { id: 2, name: 'Verified' },
-        { id: 3, name: 'On Hold' },
-        { id: 4, name: 'Closed' },
-    ],
-    tipeMutasi: [
-        { id: 1, name: 'Antar Cabang' },
-        { id: 2, name: 'Antar Departemen' },
-        { id: 3, name: 'Pengembalian Unit' },
-    ],
-    tipeVendor: [
-        { id: 1, name: 'Bengkel Resmi' },
-        { id: 2, name: 'Leasing / Rental' },
-        { id: 3, name: 'Kontraktor Sipil' },
-        { id: 4, name: 'Asuransi' },
-    ],
-    peran: [
-        { id: 1, name: 'Super Admin' },
-        { id: 2, name: 'Branch Manager' },
-        { id: 3, name: 'Fleet Coordinator' },
-        { id: 4, name: 'Finance Controller' },
-    ]
+export const MOCK_GENERAL_MASTER_DATA = {
+    jenisPajak: [{ id: 1, name: 'Pajak STNK 1 Tahun' }, { id: 2, name: 'Pajak STNK 5 Tahun' }],
+    jenisPembayaran: [{ id: 1, name: 'Kasbon' }, { id: 2, name: 'Reimbursement' }],
+    jenisServis: [{ id: 1, name: 'Servis Rutin' }, { id: 2, name: 'Perbaikan Mesin' }],
+    statusMutasi: [{ id: 1, name: 'Draft' }, { id: 2, name: 'Pending Approval' }],
+    statusPenjualan: [{ id: 1, name: 'Open for Bidding' }, { id: 2, name: 'Sold' }],
+    statusRequest: [{ id: 1, name: 'New' }, { id: 2, name: 'Verified' }],
+    tipeMutasi: [{ id: 1, name: 'Antar Cabang' }, { id: 2, name: 'Antar Departemen' }],
+    tipeVendor: [{ id: 1, name: 'Bengkel Resmi' }, { id: 2, name: 'Asuransi' }],
+    peran: [{ id: 1, name: 'Super Admin' }, { id: 2, name: 'Fleet Coordinator' }]
 };
 
 export const MOCK_VEHICLE_DATA: VehicleRecord[] = [
@@ -120,7 +135,6 @@ export const MOCK_VEHICLE_DATA: VehicleRecord[] = [
     { id: 2, noRegistrasi: 'REG/2023/002', nama: 'Toyota Avanza', noPolisi: 'B 5678 EF', channel: 'Management', cabang: 'Bandung', status: 'Aktif', tahunPembuatan: '2021' }
 ];
 
-// Added VehicleContractRecord to imports above
 export const MOCK_VEHICLE_CONTRACT_DATA: VehicleContractRecord[] = [
     {
         id: 'CON/VEH/001',
@@ -156,19 +170,61 @@ export const MOCK_SERVICE_DATA: ServiceRecord[] = [
         jenisPembayaran: 'Kasbon',
         namaBank: 'Bank BCA',
         nomorRekening: '0981234455',
-        spareParts: [
-            { name: 'Oli Mesin 10W-40 (4L)', qty: 1, price: '450000' },
-            { name: 'Filter Oli', qty: 1, price: '75000' },
-            { name: 'Filter Udara', qty: 1, price: '185000' },
-            { name: 'Jasa Servis Berkala', qty: 1, price: '540000' }
-        ]
+        spareParts: []
     }
 ];
 
-export const MOCK_TAX_KIR_DATA: TaxKirRecord[] = [];
+export const MOCK_TAX_KIR_DATA: TaxKirRecord[] = [
+    {
+        id: 'REQ/KIR/2024/001',
+        noPolisi: 'B 1234 CD',
+        tglRequest: '2024-03-15',
+        jenis: 'KIR',
+        channel: 'HCO',
+        cabang: 'Jakarta',
+        status: 'Draft',
+        statusApproval: '-',
+        aset: 'Grand Max Blind Van',
+        tahunPembuatan: '2020',
+        vendor: 'Bengkel Resmi Daihatsu',
+        estimasiBiaya: '1500000',
+        jenisPembayaran: 'Kasbon'
+    }
+];
+
 export const MOCK_MUTATION_DATA: MutationRecord[] = [];
 export const MOCK_SALES_DATA: SalesRecord[] = [];
-export const MOCK_MASTER_VENDOR_DATA: MasterVendorRecord[] = [
-    { id: 1, nama: 'PT Astra International', merek: 'Toyota, Daihatsu', alamat: 'Jl. Gaya Motor No. 8', noTelp: '021-6522555', tipe: 'Authorized Dealer', cabang: 'Pusat', aktif: true },
-    { id: 2, nama: 'PT Jaya Rental', merek: 'Multi Brand', alamat: 'Jl. Sudirman Kav 10', noTelp: '021-500600', tipe: 'Rental / Leasing', cabang: 'Jakarta', aktif: true },
+export const MOCK_MASTER_VENDOR_DATA: MasterVendorRecord[] = [];
+export const MOCK_DELIVERY_LOCATIONS: DeliveryLocationRecord[] = [];
+
+export const MOCK_LOGBOOK_DATA: LogBookRecord[] = [
+  {
+    id: 1,
+    lokasiModena: 'MODENA Head Office',
+    kategoriTamu: 'Customer',
+    namaTamu: 'Budi Santoso',
+    tanggalKunjungan: '2024-03-20',
+    jamDatang: '09:00',
+    jamPulang: '11:30',
+    wanita: 0,
+    lakiLaki: 1,
+    anakAnak: 0,
+    note: 'Meeting regarding kitchen set installation.'
+  },
+  {
+    id: 2,
+    lokasiModena: 'MODENA Kemang',
+    kategoriTamu: 'Supplier',
+    namaTamu: 'Siti Aminah',
+    tanggalKunjungan: '2024-03-20',
+    jamDatang: '10:15',
+    jamPulang: '12:00',
+    wanita: 1,
+    lakiLaki: 0,
+    anakAnak: 0,
+    note: 'Delivery of spare parts.'
+  }
 ];
+
+export const MOCK_TIMESHEET_DATA: TimesheetRecord[] = [];
+export const MOCK_VENDOR_DATA: VendorRecord[] = [];
