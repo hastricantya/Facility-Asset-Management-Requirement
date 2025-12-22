@@ -11,7 +11,7 @@ import { VehicleContractTable } from './components/VehicleContractTable';
 import { BuildingTable } from './components/BuildingTable';
 import { ReminderTable } from './components/ReminderTable';
 import { GeneralMasterTable } from './components/GeneralMasterTable';
-import { AssetTable } from './components/AssetTable';
+import { StationeryRequestTable } from './components/StationeryRequestTable';
 import { MasterAtkTable } from './components/MasterAtkTable';
 import { LogBookTable } from './components/LogBookTable';
 import { VehicleModal } from './components/VehicleModal';
@@ -173,16 +173,16 @@ const App: React.FC = () => {
          case 'Master Vendor': return <MasterVendorTable data={masterVendors} />;
          case 'Daftar ATK':
          case 'Stationery Request Approval':
-            return <AssetTable data={getFilteredAssetData(atkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
+            return <StationeryRequestTable data={getFilteredAssetData(atkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Daftar ARK':
          case 'Household Request Approval':
-            return <AssetTable data={getFilteredAssetData(arkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
+            return <StationeryRequestTable data={getFilteredAssetData(arkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Master ATK':
             return <MasterAtkTable data={atkMaster} />;
          case 'Master ARK':
             return <MasterAtkTable data={arkMaster} />;
          case 'Log Book':
-            return <LogBookTable data={logBookData} onView={(item) => { /* Set Log Detail */ }} />;
+            return <LogBookTable data={logBookData} onView={(item) => { setSelectedAsset(null); setModalMode('view'); setIsStockModalOpen(true); }} />;
          default: return <div className="p-8 text-center text-gray-500">Konten Modul {activeModule}</div>;
      }
   };
@@ -267,7 +267,6 @@ const App: React.FC = () => {
         mode={modalMode}
         initialAssetData={selectedAsset || undefined}
         vehicleList={vehicleData}
-        allServiceData={serviceData}
       />
     </div>
   );

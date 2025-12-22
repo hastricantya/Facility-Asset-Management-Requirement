@@ -3,16 +3,16 @@ import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord,
 
 // Helper function to generate mock data for ATK/ARK
 const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] => {
-  const statuses: AssetRecord['status'][] = ['Draft', 'Pending', 'Rejected', 'Approved', 'Closed'];
+  const statuses: AssetRecord['status'][] = ['Approved', 'Pending', 'Rejected', 'Closed', 'Draft'];
   const data: AssetRecord[] = [];
   let idCounter = startId;
 
   const employees = [
-    { name: 'Aan Junaidi', role: 'Technician Team Leader', phone: '08123456789' },
-    { name: 'Budi Santoso', role: 'Staff Admin', phone: '08129876543' },
-    { name: 'Citra Lestari', role: 'HRGA Manager', phone: '08134567890' },
-    { name: 'Dewi Putri', role: 'Finance Staff', phone: '08145678901' },
-    { name: 'Eko Prasetyo', role: 'General Affair', phone: '08156789012' }
+    { name: 'Aan Junaidi', role: 'Technician Team Leader', phone: '08123456789', avatar: 'https://i.pravatar.cc/150?u=aan' },
+    { name: 'Budi Santoso', role: 'Staff Admin', phone: '08129876543', avatar: 'https://i.pravatar.cc/150?u=budi' },
+    { name: 'Citra Lestari', role: 'HRGA Manager', phone: '08134567890', avatar: 'https://i.pravatar.cc/150?u=citra' },
+    { name: 'Dewi Putri', role: 'Finance Staff', phone: '08145678901', avatar: 'https://i.pravatar.cc/150?u=dewi' },
+    { name: 'Eko Prasetyo', role: 'General Affair', phone: '08156789012', avatar: 'https://i.pravatar.cc/150?u=eko' }
   ];
 
   const itemsATK = [
@@ -33,32 +33,29 @@ const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] 
 
   const items = type === 'ATK' ? itemsATK : itemsARK;
 
-  // Create records for each status
-  statuses.forEach(status => {
-    for (let i = 0; i < 5; i++) {
-      const emp = employees[i % employees.length];
-      const item = items[i % items.length];
-      
-      data.push({
-        id: idCounter++,
-        transactionNumber: `TRX/${type}/${new Date().getFullYear()}/${idCounter.toString().padStart(4, '0')}`,
-        employee: {
-          name: emp.name,
-          phone: emp.phone,
-          role: emp.role,
-          avatar: `https://i.pravatar.cc/150?u=${idCounter + 50}`
-        },
-        category: item.cat,
-        itemName: item.name,
-        itemDescription: `Permintaan rutin ${type} untuk kebutuhan operasional cabang.`,
-        qty: Math.floor(Math.random() * 10) + 1,
-        date: new Date().toISOString().split('T')[0].split('-').reverse().join('/'),
-        remainingStock: Math.floor(Math.random() * 50) + 5,
-        itemCode: item.code,
-        status: status
-      });
-    }
-  });
+  // Create records
+  for (let i = 0; i < 15; i++) {
+    const emp = employees[i % employees.length];
+    const item = items[i % items.length];
+    const status = statuses[i % statuses.length];
+    
+    data.push({
+      id: idCounter++,
+      transactionNumber: `TRX/${type}/${new Date().getFullYear()}/${idCounter.toString().padStart(4, '0')}`,
+      employee: {
+        ...emp,
+        avatar: `https://i.pravatar.cc/150?u=${idCounter + 50}`
+      },
+      category: item.cat,
+      itemName: item.name,
+      itemDescription: `Permintaan rutin ${type} untuk operasional kantor.`,
+      qty: Math.floor(Math.random() * 10) + 1,
+      date: new Date(Date.now() - i * 86400000).toISOString().split('T')[0].split('-').reverse().join('/'),
+      remainingStock: Math.floor(Math.random() * 50) + 5,
+      itemCode: item.code,
+      status: status
+    });
+  }
 
   return data;
 };
