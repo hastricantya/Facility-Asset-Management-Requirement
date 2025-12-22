@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
@@ -298,6 +297,26 @@ const App: React.FC = () => {
         setLogBookData([newRecord, ...logBookData]);
     } else {
         setLogBookData(logBookData.map(item => item.id === data.id ? { ...item, ...data } : item));
+    }
+    setIsStockModalOpen(false);
+  };
+
+  const handleSaveStockOpname = (data: Partial<StockOpnameRecord>) => {
+    if (modalMode === 'create') {
+      const newRecord: StockOpnameRecord = {
+        id: Date.now(),
+        opnameNumber: data.opnameNumber || '',
+        itemCode: data.itemCode || '',
+        itemName: data.itemName || '',
+        category: data.category || '',
+        systemQty: data.systemQty || 0,
+        physicalQty: data.physicalQty || 0,
+        difference: data.difference || 0,
+        date: data.date || new Date().toISOString().split('T')[0],
+        performedBy: data.performedBy || 'System',
+        status: data.status as any || 'Draft'
+      };
+      setStockOpnameData([newRecord, ...stockOpnameData]);
     }
     setIsStockModalOpen(false);
   };
@@ -607,7 +626,9 @@ const App: React.FC = () => {
         mode={modalMode}
         initialAssetData={selectedAsset || undefined}
         initialLogBookData={selectedLogBook || undefined}
+        initialStockOpnameData={selectedStockOpname || undefined}
         onSaveLogBook={handleSaveLogBook}
+        onSaveStockOpname={handleSaveStockOpname}
         onApprove={handleApproveAsset}
         onReject={handleRejectAsset}
         vehicleList={vehicleData}

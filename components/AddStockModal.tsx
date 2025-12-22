@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle } from 'lucide-react';
-import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord } from '../types';
+import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search } from 'lucide-react';
+import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_DELIVERY_LOCATIONS } from '../constants';
 
@@ -19,6 +19,7 @@ interface Props {
   onSaveStationeryRequest?: (request: Partial<StationeryRequestRecord>) => void;
   onSaveDeliveryLocation?: (location: Partial<DeliveryLocationRecord>) => void;
   onSaveLogBook?: (logbook: Partial<LogBookRecord>) => void;
+  onSaveStockOpname?: (opname: Partial<StockOpnameRecord>) => void;
   onRevise?: () => void;
   onApprove?: () => void;
   onReject?: () => void;
@@ -34,6 +35,7 @@ interface Props {
   initialDeliveryLocationData?: DeliveryLocationRecord;
   initialAssetData?: AssetRecord;
   initialLogBookData?: LogBookRecord;
+  initialStockOpnameData?: StockOpnameRecord;
   
   mode?: 'create' | 'edit' | 'view';
   vehicleList?: VehicleRecord[];
@@ -55,6 +57,7 @@ export const AddStockModal: React.FC<Props> = ({
     onSaveStationeryRequest,
     onSaveDeliveryLocation,
     onSaveLogBook,
+    onSaveStockOpname,
     onRevise,
     onApprove,
     onReject,
@@ -69,6 +72,7 @@ export const AddStockModal: React.FC<Props> = ({
     initialDeliveryLocationData,
     initialAssetData,
     initialLogBookData,
+    initialStockOpnameData,
     mode = 'create',
     vehicleList = [],
     masterData = {}
@@ -87,14 +91,15 @@ export const AddStockModal: React.FC<Props> = ({
       date: new Date().toISOString().split('T')[0]
   });
   const [logBookForm, setLogBookForm] = useState<Partial<LogBookRecord>>({});
+  const [stockOpnameForm, setStockOpnameForm] = useState<Partial<StockOpnameRecord>>({});
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
   const [showApprovalHistory, setShowApprovalHistory] = useState(false);
 
-  // Robust detection using string includes to handle both Request and Approval variants
   const isArkModule = moduleName.includes('ARK') || moduleName.includes('Household');
   const isStationeryRequest = moduleName.includes('ATK') || moduleName.includes('ARK') || moduleName.includes('Stationery') || moduleName.includes('Household');
   const isApprovalModule = moduleName.includes('Approval');
   const isLogBook = moduleName === 'Log Book';
+  const isStockOpname = moduleName === 'Stock Opname';
   const isViewMode = mode === 'view';
 
   useEffect(() => {
@@ -106,6 +111,7 @@ export const AddStockModal: React.FC<Props> = ({
            if (initialTaxKirData) setTaxKirForm(initialTaxKirData);
            if (initialMasterData) setMasterForm(initialMasterData);
            if (initialLogBookData) setLogBookForm(initialLogBookData);
+           if (initialStockOpnameData) setStockOpnameForm(initialStockOpnameData);
            
            if (initialAssetData) {
                const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
@@ -125,7 +131,6 @@ export const AddStockModal: React.FC<Props> = ({
                    location: 'MODENA Head Office'
                });
 
-               // Populate items list for details view
                setRequestItems([
                  { 
                    itemId: matchedMaster ? matchedMaster.id.toString() : '', 
@@ -136,7 +141,17 @@ export const AddStockModal: React.FC<Props> = ({
                ]);
            }
         } else {
-            // Reset form for create mode
+            if (isStockOpname) {
+              setStockOpnameForm({
+                opnameNumber: `SO/ATK/${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`,
+                date: new Date().toISOString().split('T')[0],
+                performedBy: 'Aan Junaidi',
+                systemQty: 0,
+                physicalQty: 0,
+                difference: 0,
+                status: 'Draft'
+              });
+            }
             setStationeryRequestForm({ 
                 type: 'DAILY REQUEST', 
                 deliveryType: 'DELIVERY', 
@@ -147,17 +162,30 @@ export const AddStockModal: React.FC<Props> = ({
             setRequestItems([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
         }
     }
-  }, [isOpen, initialAssetData, mode, moduleName, isArkModule]);
+  }, [isOpen, initialAssetData, mode, moduleName, isArkModule, initialStockOpnameData, isStockOpname]);
 
   const handleSave = () => {
       if (isLogBook && onSaveLogBook) onSaveLogBook(logBookForm);
       if (isStationeryRequest && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
+      if (isStockOpname && onSaveStockOpname) onSaveStockOpname(stockOpnameForm);
       onClose();
   }
 
   const handleLogBookChange = (field: keyof LogBookRecord, value: any) => setLogBookForm(prev => ({ ...prev, [field]: value }));
+  const handleStockOpnameChange = (field: keyof StockOpnameRecord, value: any) => {
+    setStockOpnameForm(prev => {
+      const next = { ...prev, [field]: value };
+      if (field === 'physicalQty' || field === 'systemQty' || field === 'itemCode') {
+        const sys = next.systemQty || 0;
+        const phys = next.physicalQty || 0;
+        next.difference = phys - sys;
+        next.status = next.difference === 0 ? 'Matched' : 'Discrepancy';
+      }
+      return next;
+    });
+  };
+
   const handleStationeryRequestChange = (field: keyof StationeryRequestRecord, value: any) => {
-    // Custom logic for location/delivery dependencies
     if (field === 'location') {
         const isHO = value === 'MODENA Head Office';
         setStationeryRequestForm(prev => ({ 
@@ -250,15 +278,17 @@ export const AddStockModal: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-[2px] p-4 transition-opacity duration-300">
-      <div className={`bg-[#F8F9FA] w-full ${isLogBook || (isStationeryRequest && !isViewMode) ? 'max-w-5xl' : 'max-w-7xl'} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transform transition-all scale-100`}>
+      <div className={`bg-[#F8F9FA] w-full ${isLogBook || (isStationeryRequest && !isViewMode) || isStockOpname ? 'max-w-5xl' : 'max-w-7xl'} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transform transition-all scale-100`}>
         {/* Header */}
         <div className="px-8 py-5 bg-white border-b border-gray-100 flex items-center justify-between shrink-0">
           <div>
               <h2 className="text-[14px] font-black text-black uppercase tracking-widest">
-                {isStationeryRequest ? (isViewMode ? (isApprovalModule ? 'Stationery Approval Process' : 'Stationery Request Details') : (isArkModule ? 'CREATE HOUSEHOLD REQUEST' : 'CREATE STATIONERY REQUEST')) : isLogBook ? 'Guest Log Detail' : moduleName}
+                {isStockOpname ? (isViewMode ? 'Stock Opname Records Detail' : 'Create New Stock Opname') :
+                 isStationeryRequest ? (isViewMode ? (isApprovalModule ? 'Stationery Approval Process' : 'Stationery Request Details') : (isArkModule ? 'CREATE HOUSEHOLD REQUEST' : 'CREATE STATIONERY REQUEST')) : 
+                 isLogBook ? 'Guest Log Detail' : moduleName}
               </h2>
-              {isViewMode && initialAssetData?.transactionNumber && (
-                <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase mt-1 block">ID: {initialAssetData.transactionNumber}</span>
+              {isViewMode && (initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber) && (
+                <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase mt-1 block">ID: {initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber}</span>
               )}
           </div>
           <div className="flex items-center gap-3">
@@ -273,7 +303,119 @@ export const AddStockModal: React.FC<Props> = ({
         
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          {isStationeryRequest && isViewMode ? (
+          {isStockOpname ? (
+            /* --- STOCK OPNAME FORM --- */
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Identification */}
+                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                  <SectionHeader icon={Activity} title="Record Metadata" />
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Opname Number</label>
+                      <input type="text" readOnly className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-mono font-bold text-gray-500" value={stockOpnameForm.opnameNumber || ''} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Date</label>
+                        <input 
+                          type="date" 
+                          disabled={isViewMode}
+                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
+                          value={stockOpnameForm.date || ''} 
+                          onChange={(e) => handleStockOpnameChange('date', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Performed By</label>
+                        <input 
+                          type="text" 
+                          disabled={isViewMode}
+                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
+                          value={stockOpnameForm.performedBy || ''} 
+                          onChange={(e) => handleStockOpnameChange('performedBy', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Item Selection */}
+                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                  <SectionHeader icon={Search} title="Inventory Selection" />
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Select Item</label>
+                      <select 
+                        disabled={isViewMode}
+                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
+                        value={stockOpnameForm.itemCode || ''}
+                        onChange={(e) => {
+                          const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+                          const found = masterList.find(m => m.itemCode === e.target.value);
+                          if (found) {
+                            handleStockOpnameChange('itemCode', found.itemCode);
+                            handleStockOpnameChange('itemName', found.itemName);
+                            handleStockOpnameChange('category', found.category);
+                            handleStockOpnameChange('systemQty', found.remainingStock);
+                          }
+                        }}
+                      >
+                        <option value="">(Select Item from Master)</option>
+                        {(isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA).map(m => (
+                          <option key={m.id} value={m.itemCode}>{m.itemCode} - {m.itemName}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {stockOpnameForm.itemName && (
+                      <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
+                        <div>
+                          <div className="text-[12px] font-black text-black uppercase">{stockOpnameForm.itemName}</div>
+                          <div className="text-[10px] font-bold text-gray-400 uppercase">{stockOpnameForm.category}</div>
+                        </div>
+                        <span className="text-[10px] font-mono font-black text-blue-600 bg-white px-2 py-0.5 rounded border border-blue-100">{stockOpnameForm.itemCode}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Quantification Grid */}
+              <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-black"></div>
+                <SectionHeader icon={Hash} title="Quantity Audit" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center mt-8">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">System Qty</label>
+                    <div className="text-[42px] font-black text-gray-300">{stockOpnameForm.systemQty || 0}</div>
+                    <p className="text-[9px] font-bold text-gray-400 uppercase">Existing in Database</p>
+                  </div>
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">Physical Qty</label>
+                    <input 
+                      type="number"
+                      disabled={isViewMode}
+                      className="w-32 mx-auto border-b-4 border-black text-center text-[42px] font-black focus:outline-none bg-transparent transition-all"
+                      value={stockOpnameForm.physicalQty}
+                      onChange={(e) => handleStockOpnameChange('physicalQty', parseInt(e.target.value) || 0)}
+                    />
+                    <p className="text-[9px] font-bold text-black uppercase">Counted Manually</p>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Difference</label>
+                    <div className={`text-[42px] font-black ${(stockOpnameForm.difference || 0) === 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      {(stockOpnameForm.difference || 0) > 0 ? `+${stockOpnameForm.difference}` : stockOpnameForm.difference || 0}
+                    </div>
+                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border
+                      ${(stockOpnameForm.difference || 0) === 0 ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
+                      {(stockOpnameForm.difference || 0) === 0 ? <CheckCircle size={10} /> : <AlertTriangle size={10} />}
+                      {stockOpnameForm.status}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : isStationeryRequest && isViewMode ? (
             /* --- POPUP CONTENT FOR VIEW MODE STATIONERY (APPROVAL) --- */
             <div className="space-y-8">
                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -646,7 +788,6 @@ export const AddStockModal: React.FC<Props> = ({
                          </table>
                     </div>
                     
-                    {/* Remarks field inside ITEMS LIST box but below table as per screenshot */}
                     <div className="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                         <textarea 
                             rows={3} 
