@@ -21,6 +21,7 @@ import { AddStockModal } from './components/AddStockModal';
 import { MasterItemModal } from './components/MasterItemModal';
 import { DeliveryLocationModal } from './components/DeliveryLocationModal';
 import { ConfirmationModal } from './components/ConfirmationModal';
+import { ImportExcelModal } from './components/ImportExcelModal';
 import { Users, User, Baby, Activity } from 'lucide-react';
 import { 
   MOCK_VEHICLE_DATA, 
@@ -136,6 +137,7 @@ const App: React.FC = () => {
   const [isMasterItemModalOpen, setIsMasterItemModalOpen] = useState(false);
   const [isDeliveryLocationModalOpen, setIsDeliveryLocationModalOpen] = useState(false);
   const [isCloseTransactionConfirmOpen, setIsCloseTransactionConfirmOpen] = useState(false);
+  const [isImportExcelModalOpen, setIsImportExcelModalOpen] = useState(false);
   
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleRecord | null>(null);
@@ -328,6 +330,12 @@ const App: React.FC = () => {
       setIsCloseTransactionConfirmOpen(false);
       setAssetToClose(null);
     }
+  };
+
+  const handleImportExcel = (file: File) => {
+    console.log('Importing file:', file.name);
+    // In real app, process file with XLSX library
+    alert(`File ${file.name} successfully imported! Data processing started.`);
   };
 
   const filteredBuildingData = useMemo(() => {
@@ -528,6 +536,7 @@ const App: React.FC = () => {
                     activeTab={activeTab} 
                     onTabChange={setActiveTab} 
                     onAddClick={handleAddClick}
+                    onImportExcelClick={() => setIsImportExcelModalOpen(true)}
                     moduleName={activeModule}
                     searchPlaceholder={activeModule === 'Log Book' ? "Cari berdasarkan Nama Tamu..." : activeModule === 'Kontrak Gedung' ? "Cari berdasarkan Karyawan, Barang..." : undefined}
                     hideAdd={['List Reminder Dokumen'].includes(activeModule)}
@@ -606,6 +615,13 @@ const App: React.FC = () => {
         title="Close Transaction"
         message={`Are you sure to close this transaction (${assetToClose?.transactionNumber})? This action will archive the record.`}
         variant="info"
+      />
+
+      <ImportExcelModal 
+        isOpen={isImportExcelModalOpen}
+        onClose={() => setIsImportExcelModalOpen(false)}
+        onImport={handleImportExcel}
+        title={`Import Master ${activeModule === 'Master ARK' ? 'ARK' : 'ATK'}`}
       />
     </div>
   );

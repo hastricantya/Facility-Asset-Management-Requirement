@@ -15,6 +15,12 @@ export const MasterAtkTable: React.FC<Props> = ({ data, onEdit }) => {
           <thead>
             <tr className="bg-[#F2F2F2] border-b border-gray-200">
               <th className="p-5 w-14 text-center pl-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">#</th>
+              <th className="p-5 w-40 group cursor-pointer hover:bg-gray-200/50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Part Code</span>
+                  <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
+                </div>
+              </th>
               <th className="p-5 w-44 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Category</span>
@@ -24,12 +30,6 @@ export const MasterAtkTable: React.FC<Props> = ({ data, onEdit }) => {
               <th className="p-5 w-64 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Item Name</span>
-                  <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
-                </div>
-              </th>
-              <th className="p-5 w-40 group cursor-pointer hover:bg-gray-200/50 transition-colors">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Part Code</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
@@ -51,15 +51,15 @@ export const MasterAtkTable: React.FC<Props> = ({ data, onEdit }) => {
               >
                 <td className="p-5 text-center font-bold text-gray-300 text-[11px] pl-8">{index + 1}</td>
                 <td className="p-5">
+                    <span className="font-mono text-[11px] text-gray-400 font-black">{item.itemCode}</span>
+                </td>
+                <td className="p-5">
                     <span className="text-[11px] font-black text-gray-500 uppercase tracking-tighter border border-gray-100 px-2 py-1 rounded">
                         {item.category}
                     </span>
                 </td>
                 <td className="p-5">
                     <span className="font-black text-black text-[13px] uppercase tracking-tight group-hover:text-blue-600 transition-colors">{item.itemName}</span>
-                </td>
-                <td className="p-5">
-                    <span className="font-mono text-[11px] text-gray-400 font-black">{item.itemCode}</span>
                 </td>
                 <td className="p-5">
                     <span className="text-[11px] font-black text-black uppercase">{item.uom}</span>

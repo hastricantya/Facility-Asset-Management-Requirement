@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Filter, Plus, Download, Calendar, MapPin, Tag, ChevronDown, X, Hash, User, Layers } from 'lucide-react';
+import { Search, Filter, Plus, Download, Calendar, MapPin, Tag, ChevronDown, X, Hash, User, Layers, FileSpreadsheet, Upload } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props {
@@ -7,6 +7,7 @@ interface Props {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onAddClick: () => void;
+  onImportExcelClick?: () => void;
   searchPlaceholder?: string;
   moduleName?: string;
   hideAdd?: boolean;
@@ -40,6 +41,7 @@ export const FilterBar: React.FC<Props> = ({
   activeTab, 
   onTabChange, 
   onAddClick, 
+  onImportExcelClick,
   searchPlaceholder, 
   moduleName,
   hideAdd = false,
@@ -57,6 +59,7 @@ export const FilterBar: React.FC<Props> = ({
   const isLogBook = moduleName === 'Log Book';
   const isMaster = moduleName?.includes('Master');
   const isStationeryModule = moduleName?.includes('ATK') || moduleName?.includes('ARK') || moduleName?.includes('Request') || moduleName?.includes('Approval');
+  const isMasterATKARK = moduleName === 'Master ATK' || moduleName === 'Master ARK';
 
   const hasActiveStatFilters = stationeryFilters && (stationeryFilters.transactionId || stationeryFilters.requester || stationeryFilters.date);
   const hasActiveMasterFilters = masterFilters && (masterFilters.category || masterFilters.partCode);
@@ -133,12 +136,33 @@ export const FilterBar: React.FC<Props> = ({
 
         {/* Right Side: Search & Actions */}
         <div className="flex items-center gap-3">
+          {/* Excel Actions for Master ATK/ARK */}
+          {isMasterATKARK && (
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={onImportExcelClick}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-[10px] font-black text-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm active:scale-95"
+                title="Import data from Excel"
+              >
+                <Upload size={16} />
+                <span className="hidden sm:inline">IMPORT EXCEL</span>
+              </button>
+              <button 
+                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-[10px] font-black text-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm active:scale-95"
+                title="Export data to Excel"
+              >
+                <FileSpreadsheet size={16} />
+                <span className="hidden sm:inline">EXPORT EXCEL</span>
+              </button>
+            </div>
+          )}
+
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" size={16} />
             <input 
               type="text" 
               placeholder={searchPlaceholder || "Search records..."} 
-              className="w-64 bg-white pl-10 pr-4 py-2.5 text-[11px] font-bold border border-gray-200 rounded-xl focus:border-black outline-none transition-all placeholder:text-gray-300 shadow-sm"
+              className="w-48 sm:w-64 bg-white pl-10 pr-4 py-2.5 text-[11px] font-bold border border-gray-200 rounded-xl focus:border-black outline-none transition-all placeholder:text-gray-300 shadow-sm"
             />
           </div>
           
@@ -159,7 +183,7 @@ export const FilterBar: React.FC<Props> = ({
             {isFilterDropdownOpen && (
               <div 
                 ref={dropdownRef}
-                className="absolute top-full right-0 mt-2 w-[450px] bg-white rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-gray-200 z-[100] animate-in fade-in zoom-in-95 duration-150 origin-top-right overflow-hidden"
+                className="absolute top-full right-0 mt-2 w-[320px] sm:w-[450px] bg-white rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-gray-200 z-[100] animate-in fade-in zoom-in-95 duration-150 origin-top-right overflow-hidden"
               >
                 <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
                   <div className="flex items-center gap-2">
