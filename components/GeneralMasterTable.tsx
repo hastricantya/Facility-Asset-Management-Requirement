@@ -1,8 +1,6 @@
-
 import React from 'react';
 import { GeneralMasterItem } from '../types';
-import { Pencil, Trash2, ChevronLeft, ChevronRight, ChevronsUpDown, MoreHorizontal } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Pencil, Trash2, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, MoreHorizontal } from 'lucide-react';
 
 interface Props {
   data: GeneralMasterItem[];
@@ -11,41 +9,23 @@ interface Props {
 }
 
 export const GeneralMasterTable: React.FC<Props> = ({ data, onEdit, onDelete }) => {
-  const { t } = useLanguage();
-
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-separate border-spacing-0">
           <thead>
-            <tr className="bg-white border-b border-gray-100">
-              <th className="p-5 w-24 border-b border-gray-100 group cursor-pointer hover:bg-gray-50 transition-colors">
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Id</span>
-                  <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors" />
-                </div>
-              </th>
-              <th className="p-5 border-b border-gray-100 group cursor-pointer hover:bg-gray-50 transition-colors">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Nama</span>
-                  <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors" />
-                </div>
-              </th>
-              <th className="p-5 w-32 text-center text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
-                Action
-              </th>
+            <tr className="bg-[#F2F2F2] border-b border-gray-200">
+              <th className="p-5 w-20 text-center text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200">No</th>
+              <th className="p-5 text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200">Nama Item</th>
+              <th className="p-5 w-32 text-center text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50 text-[12px] text-gray-700">
+          <tbody className="divide-y divide-gray-100 text-[12px] text-gray-700">
             {data.length > 0 ? (
-                data.map((item) => (
+                data.map((item, index) => (
                     <tr key={item.id} className="bg-white hover:bg-gray-50/50 transition-colors group">
-                        <td className="p-5 text-center font-bold text-gray-400 border-r border-gray-50/50">
-                            {item.id}
-                        </td>
-                        <td className="p-5 font-bold text-black group-hover:pl-7 transition-all duration-300 uppercase tracking-tight">
-                            {item.name}
-                        </td>
+                        <td className="p-5 text-center font-bold text-gray-400 border-r border-gray-50/50">{index + 1}</td>
+                        <td className="p-5 font-bold text-black group-hover:pl-7 transition-all duration-300 uppercase tracking-tight">{item.name}</td>
                         <td className="p-5 text-center">
                             <div className="flex items-center justify-center gap-2">
                                 <button 
@@ -68,8 +48,8 @@ export const GeneralMasterTable: React.FC<Props> = ({ data, onEdit, onDelete }) 
                 ))
             ) : (
                 <tr>
-                    <td colSpan={3} className="p-24 text-center">
-                        <div className="flex flex-col items-center justify-center opacity-20">
+                    <td colSpan={3} className="p-20 text-center">
+                        <div className="flex flex-col items-center justify-center opacity-30">
                             <MoreHorizontal size={48} className="text-gray-400 mb-4" />
                             <p className="text-[11px] font-black uppercase tracking-widest">Tidak ada data tersedia</p>
                         </div>
@@ -79,11 +59,10 @@ export const GeneralMasterTable: React.FC<Props> = ({ data, onEdit, onDelete }) 
           </tbody>
         </table>
       </div>
-      
        {/* Pagination Footer */}
        <div className="px-6 py-5 border-t border-gray-100 bg-white flex items-center justify-between">
-            <div className="text-[11px] font-black text-gray-400 uppercase tracking-widest">
-                Menampilkan {data.length > 0 ? 1 : 0} - {data.length} dari <span className="text-black">{data.length}</span> item
+            <div className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                Showing {data.length > 0 ? 1 : 0} - {data.length} of <span className="text-black">{data.length}</span> items
             </div>
             
             <div className="flex items-center gap-1">
@@ -91,7 +70,7 @@ export const GeneralMasterTable: React.FC<Props> = ({ data, onEdit, onDelete }) 
                     <ChevronLeft size={16} />
                  </button>
                  <div className="flex gap-1">
-                    <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-black text-white font-black text-[11px]">1</button>
+                    <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-black text-white font-bold text-[11px]">1</button>
                  </div>
                  <button className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-black transition-colors">
                     <ChevronRight size={16} />

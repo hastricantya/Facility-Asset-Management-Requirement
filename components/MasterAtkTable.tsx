@@ -1,33 +1,33 @@
-
 import React from 'react';
 import { MasterItem } from '../types';
 import { ChevronsUpDown, ChevronLeft, ChevronRight, Edit3, Trash2 } from 'lucide-react';
 
 interface Props {
   data: MasterItem[];
+  onEdit?: (item: MasterItem) => void;
 }
 
-export const MasterAtkTable: React.FC<Props> = ({ data }) => {
+export const MasterAtkTable: React.FC<Props> = ({ data, onEdit }) => {
   return (
     <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
       <div className="overflow-x-auto custom-scrollbar">
         <table className="w-full min-w-[1600px] text-left border-collapse">
           <thead>
-            <tr className="bg-[#FAFAFA] border-b border-gray-100">
+            <tr className="bg-[#F2F2F2] border-b border-gray-200">
               <th className="p-5 w-14 text-center pl-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">#</th>
-              <th className="p-5 w-44 group cursor-pointer hover:bg-gray-100 transition-colors">
+              <th className="p-5 w-44 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Category</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-64 group cursor-pointer hover:bg-gray-100 transition-colors">
+              <th className="p-5 w-64 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Item Name</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-40 group cursor-pointer hover:bg-gray-100 transition-colors">
+              <th className="p-5 w-40 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Part Code</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
@@ -45,7 +45,11 @@ export const MasterAtkTable: React.FC<Props> = ({ data }) => {
           </thead>
           <tbody className="divide-y divide-gray-50">
             {data.map((item, index) => (
-              <tr key={item.id} className="bg-white hover:bg-[#FDFDFD] transition-all cursor-pointer group">
+              <tr 
+                key={item.id} 
+                className="bg-white hover:bg-[#FDFDFD] transition-all cursor-pointer group"
+                onClick={() => onEdit?.(item)}
+              >
                 <td className="p-5 text-center font-bold text-gray-300 text-[11px] pl-8">{index + 1}</td>
                 <td className="p-5">
                     <span className="text-[11px] font-black text-gray-500 uppercase tracking-tighter border border-gray-100 px-2 py-1 rounded">

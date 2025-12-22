@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ServiceRecord } from '../types';
 import { Eye, Pencil, Calendar, Wrench, Package, Info, History, Landmark, CreditCard } from 'lucide-react';
@@ -29,7 +28,7 @@ export const ServiceLogTable: React.FC<Props> = ({ data, onEdit, onView }) => {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1500px] text-left border-collapse">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200 text-[11px] font-bold text-gray-500 uppercase tracking-widest">
+            <tr className="bg-[#F2F2F2] border-b border-gray-200 text-[11px] font-bold text-gray-500 uppercase tracking-widest">
               <th className="p-5 w-32">Log ID</th>
               <th className="p-5 w-48">Unit & Nopol</th>
               <th className="p-5 w-36 text-center">Tgl STNK</th>

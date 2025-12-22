@@ -1,6 +1,5 @@
-
-import React from 'react';
-import { Search, Filter, Plus, Download, Calendar, MapPin, Tag, ChevronDown, X } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, Filter, Plus, Download, Calendar, MapPin, Tag, ChevronDown, X, Hash, User } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props {
@@ -19,6 +18,14 @@ interface Props {
     date: string;
   };
   onLogBookFilterChange?: (field: string, value: string) => void;
+
+  // Stationery specific filters
+  stationeryFilters?: {
+    transactionId: string;
+    requester: string;
+    date: string;
+  };
+  onStationeryFilterChange?: (field: string, value: string) => void;
 }
 
 export const FilterBar: React.FC<Props> = ({ 
@@ -30,14 +37,33 @@ export const FilterBar: React.FC<Props> = ({
   moduleName,
   hideAdd = false,
   logBookFilters,
-  onLogBookFilterChange
+  onLogBookFilterChange,
+  stationeryFilters,
+  onStationeryFilterChange
 }) => {
   const { t } = useLanguage();
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
   const isLogBook = moduleName === 'Log Book';
+  const isStationery = moduleName?.includes('ATK') || moduleName?.includes('ARK') || moduleName?.includes('Request') || moduleName?.includes('Approval');
+  const isMaster = moduleName?.includes('Master');
 
-  const hasActiveFilters = logBookFilters && (logBookFilters.location || logBookFilters.category || logBookFilters.date);
+  const hasActiveLogFilters = logBookFilters && (logBookFilters.location || logBookFilters.category || logBookFilters.date);
+  const hasActiveStatFilters = stationeryFilters && (stationeryFilters.transactionId || stationeryFilters.requester || stationeryFilters.date);
 
-  const resetFilters = () => {
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsFilterDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const resetLogFilters = () => {
     if (onLogBookFilterChange) {
         onLogBookFilterChange('location', '');
         onLogBookFilterChange('category', '');
@@ -45,10 +71,18 @@ export const FilterBar: React.FC<Props> = ({
     }
   };
 
+  const resetStatFilters = () => {
+    if (onStationeryFilterChange) {
+        onStationeryFilterChange('transactionId', '');
+        onStationeryFilterChange('requester', '');
+        onStationeryFilterChange('date', '');
+    }
+  };
+
   return (
     <div className="mb-8 space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-6">
-        {/* Left Side: Tabs or Specific Filters */}
+        {/* Left Side: Tabs */}
         <div className="flex items-center gap-4 flex-wrap">
           {tabs.length > 0 && (
             <div className="flex bg-white rounded-xl border border-gray-200 p-1 shadow-sm overflow-hidden">
@@ -71,13 +105,11 @@ export const FilterBar: React.FC<Props> = ({
             </div>
           )}
 
+          {/* Log Book inline filters preserved as they were not explicitly asked to be moved to dropdown */}
           {isLogBook && logBookFilters && (
             <div className="flex items-center gap-3 bg-gray-100/50 p-1.5 rounded-2xl border border-gray-200 shadow-inner">
-              {/* Location Filter */}
               <div className="relative group">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
-                    <MapPin size={14} className="text-gray-400 group-hover:text-black transition-colors" />
-                </div>
+                <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 <select 
                   className={`pl-9 pr-8 py-2.5 bg-white border border-gray-200 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-black transition-all appearance-none cursor-pointer shadow-sm ${logBookFilters.location ? 'text-black border-black' : 'text-gray-400'}`}
                   value={logBookFilters.location}
@@ -86,48 +118,12 @@ export const FilterBar: React.FC<Props> = ({
                   <option value="">{t('Semua Lokasi')}</option>
                   <option value="MODENA Head Office">MODENA Head Office</option>
                   <option value="MODENA Kemang">MODENA Kemang</option>
-                  <option value="MODENA Suryo">MODENA Suryo</option>
                   <option value="Warehouse Cakung">Warehouse Cakung</option>
                 </select>
                 <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" />
               </div>
-
-              {/* Category Filter */}
-              <div className="relative group">
-                <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-black transition-colors pointer-events-none" />
-                <select 
-                  className={`pl-9 pr-8 py-2.5 bg-white border border-gray-200 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-black transition-all appearance-none cursor-pointer shadow-sm ${logBookFilters.category ? 'text-black border-black' : 'text-gray-400'}`}
-                  value={logBookFilters.category}
-                  onChange={(e) => onLogBookFilterChange?.('category', e.target.value)}
-                >
-                  <option value="">{t('Semua Kategori')}</option>
-                  <option value="Customer">Customer</option>
-                  <option value="Supplier">Supplier</option>
-                  <option value="Partner">Partner</option>
-                  <option value="Other">Other</option>
-                </select>
-                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" />
-              </div>
-
-              {/* Date Filter */}
-              <div className="relative group">
-                <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-black transition-colors pointer-events-none" />
-                <input 
-                  type="date"
-                  className={`pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-black transition-all cursor-pointer shadow-sm ${logBookFilters.date ? 'text-black border-black' : 'text-gray-400'}`}
-                  value={logBookFilters.date}
-                  onChange={(e) => onLogBookFilterChange?.('date', e.target.value)}
-                />
-              </div>
-
-              {hasActiveFilters && (
-                <button 
-                  onClick={resetFilters}
-                  className="p-2.5 hover:bg-white hover:text-red-500 text-gray-400 transition-all rounded-xl"
-                  title="Clear Filters"
-                >
-                  <X size={16} />
-                </button>
+              {hasActiveLogFilters && (
+                <button onClick={resetLogFilters} className="p-2.5 hover:bg-white hover:text-red-500 text-gray-400 transition-all rounded-xl"><X size={16} /></button>
               )}
             </div>
           )}
@@ -144,13 +140,118 @@ export const FilterBar: React.FC<Props> = ({
             />
           </div>
           
-          <div className="flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+          <div className="flex items-center bg-white border border-gray-200 rounded-xl shadow-sm relative">
             <button className="p-2.5 hover:bg-gray-50 border-r border-gray-100 text-gray-400 hover:text-black transition-all" title="Unduh Data">
               <Download size={18} />
             </button>
-            <button className="p-2.5 hover:bg-gray-50 text-gray-400 hover:text-black transition-all" title="Saring Lanjutan">
+            <button 
+              onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+              className={`p-2.5 hover:bg-gray-50 text-gray-400 hover:text-black transition-all ${isFilterDropdownOpen ? 'bg-gray-50 text-black' : ''} ${hasActiveStatFilters ? 'text-blue-600' : ''}`} 
+              title="Saring Lanjutan"
+            >
               <Filter size={18} />
+              {hasActiveStatFilters && <div className="absolute top-1 right-1 w-2 h-2 bg-blue-600 rounded-full border-2 border-white"></div>}
             </button>
+
+            {/* Filter Dropdown - Matches design in Image 3 */}
+            {isFilterDropdownOpen && (
+              <div 
+                ref={dropdownRef}
+                className="absolute top-full right-0 mt-2 w-[450px] bg-white rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-gray-200 z-[100] animate-in fade-in zoom-in-95 duration-150 origin-top-right overflow-hidden"
+              >
+                {/* Dropdown Header */}
+                <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
+                  <div className="flex items-center gap-2">
+                    <Filter size={14} className="text-gray-400" />
+                    <span className="text-[13px] font-semibold text-gray-700">Filter</span>
+                  </div>
+                  <button onClick={() => setIsFilterDropdownOpen(false)} className="text-gray-400 hover:text-gray-600">
+                    <X size={16} />
+                  </button>
+                </div>
+
+                {/* Dropdown Content */}
+                <div className="p-4 space-y-4">
+                  {/* Filter Rows - Dynamically map based on Stationery Request fields */}
+                  <div className="space-y-3">
+                    {/* Transaction ID Row */}
+                    <div className="flex items-center gap-2">
+                      <select 
+                        className="flex-1 bg-white border border-gray-200 rounded px-3 py-2 text-[12px] text-gray-600 focus:border-blue-400 outline-none appearance-none"
+                        value="transactionId"
+                      >
+                        <option value="transactionId">Nomor Transaksi</option>
+                        <option value="requester">Requester</option>
+                        <option value="date">Tanggal</option>
+                      </select>
+                      <input 
+                        type="text"
+                        placeholder="Filter value"
+                        className="flex-[1.5] border border-gray-200 rounded px-3 py-2 text-[12px] focus:border-blue-400 outline-none"
+                        value={stationeryFilters?.transactionId}
+                        onChange={(e) => onStationeryFilterChange?.('transactionId', e.target.value)}
+                      />
+                      <button className="p-2 text-yellow-500 border border-yellow-400 rounded hover:bg-yellow-50">
+                        <Plus size={16} />
+                      </button>
+                    </div>
+
+                    {/* Requester Row */}
+                    <div className="flex items-center gap-2">
+                      <select 
+                        className="flex-1 bg-white border border-gray-200 rounded px-3 py-2 text-[12px] text-gray-600 focus:border-blue-400 outline-none appearance-none"
+                        value="requester"
+                      >
+                        <option value="transactionId">Nomor Transaksi</option>
+                        <option value="requester">Requester</option>
+                        <option value="date">Tanggal</option>
+                      </select>
+                      <input 
+                        type="text"
+                        placeholder="Filter value"
+                        className="flex-[1.5] border border-gray-200 rounded px-3 py-2 text-[12px] focus:border-blue-400 outline-none"
+                        value={stationeryFilters?.requester}
+                        onChange={(e) => onStationeryFilterChange?.('requester', e.target.value)}
+                      />
+                      <button className="p-2 text-yellow-500 border border-yellow-400 rounded hover:bg-yellow-50">
+                        <Plus size={16} />
+                      </button>
+                    </div>
+
+                    {/* Date Row */}
+                    <div className="flex items-center gap-2">
+                      <select 
+                        className="flex-1 bg-white border border-gray-200 rounded px-3 py-2 text-[12px] text-gray-600 focus:border-blue-400 outline-none appearance-none"
+                        value="date"
+                      >
+                        <option value="transactionId">Nomor Transaksi</option>
+                        <option value="requester">Requester</option>
+                        <option value="date">Tanggal</option>
+                      </select>
+                      <input 
+                        type="date"
+                        className="flex-[1.5] border border-gray-200 rounded px-3 py-2 text-[12px] focus:border-blue-400 outline-none"
+                        value={stationeryFilters?.date}
+                        onChange={(e) => onStationeryFilterChange?.('date', e.target.value)}
+                      />
+                      <button className="p-2 text-yellow-500 border border-yellow-400 rounded hover:bg-yellow-50">
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Dropdown Footer */}
+                  <div className="pt-2 border-t border-gray-100 flex justify-start">
+                    <button 
+                      onClick={resetStatFilters}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-red-500 border border-red-200 rounded text-[11px] font-semibold hover:bg-red-50 transition-colors"
+                    >
+                      <X size={14} /> Reset
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {!hideAdd && (

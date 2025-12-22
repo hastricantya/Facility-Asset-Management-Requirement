@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 type Language = 'id' | 'en';
@@ -22,7 +21,7 @@ const translations: Record<string, Record<Language, string>> = {
   'Mutasi': { id: 'Mutasi', en: 'Mutation' },
   'Penjualan': { id: 'Penjualan', en: 'Sales' },
   'ATK': { id: 'ATK', en: 'Stationery' },
-  'Daftar ATK': { id: 'Permintaan ATK', en: 'Stationery Request' },
+  'Request ATK': { id: 'Permintaan ATK', en: 'Stationery Request' },
   'Stationery Request Approval': { id: 'Persetujuan ATK', en: 'Stationery Request Approval' },
   'Master ATK': { id: 'Master ATK', en: 'Master Stationery' },
   
@@ -33,9 +32,6 @@ const translations: Record<string, Record<Language, string>> = {
 
   'Log Book': { id: 'Log Book', en: 'Log Book' },
   'Gedung': { id: 'Gedung', en: 'Building' },
-  'Kontrak Gedung': { id: 'Kontrak Gedung', en: 'Building Contract' },
-  'List Reminder Dokumen': { id: 'Reminder Dokumen', en: 'Document Reminder' },
-  'Office Equipment': { id: 'Peralatan Kantor', en: 'Office Equipment' },
   'Contract': { id: 'Kontrak', en: 'Contract' },
   'Timesheet': { id: 'Absensi', en: 'Timesheet' },
   'Vendor': { id: 'Vendor', en: 'Vendor' },
@@ -83,6 +79,7 @@ const translations: Record<string, Record<Language, string>> = {
   'Tidak Aktif': { id: 'Tidak Aktif', en: 'Inactive' },
   'Semua': { id: 'Semua', en: 'All' },
   'Persetujuan': { id: 'Persetujuan', en: 'Approval' },
+  'On Progress': { id: 'Sedang Berjalan', en: 'On Progress' },
   
   // Action Buttons
   'Revise': { id: 'Revisi', en: 'Revise' },
@@ -118,7 +115,6 @@ const translations: Record<string, Record<Language, string>> = {
   'Daftar Aset ATK': { id: 'Permintaan ATK', en: 'Stationery Request' },
   'Header Stationery Request Approval': { id: 'Persetujuan Permintaan ATK', en: 'Stationery Request Approval' },
   'Master Data ATK': { id: 'Master Data ATK', en: 'Master Stationery Data' },
-  'Request ATK': { id: 'Request ATK', en: 'Stationery Request' },
   'Header Household Request Approval': { id: 'Persetujuan Permintaan ARK', en: 'Household Request Approval' },
   'Master Data ARK': { id: 'Master Data ARK', en: 'Master Household Data' },
   'Request ARK': { id: 'Request ARK', en: 'Household Request' },
@@ -177,8 +173,8 @@ const translations: Record<string, Record<Language, string>> = {
   'Jam Datang': { id: 'Jam Datang', en: 'Arrival Time' },
   'Jam Pulang': { id: 'Jam Pulang', en: 'Departure Time' },
   'Wanita': { id: 'Wanita', en: 'Female' },
-  'Laki-Laki': { id: 'Laki-Laki', en: 'Male' },
-  'Anak-Anak': { id: 'Anak-Anak', en: 'Children' },
+  'LakiLaki': { id: 'Laki-Laki', en: 'Male' },
+  'AnakAnak': { id: 'Anak-Anak', en: 'Children' },
   'Note': { id: 'Catatan', en: 'Note' },
   'No data available': { id: 'Tidak ada data', en: 'No data available' },
   'Baru': { id: 'Baru', en: 'New' },
