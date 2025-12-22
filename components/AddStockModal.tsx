@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
-import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA } from '../constants';
+import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_DELIVERY_LOCATIONS } from '../constants';
 
 interface Props {
   isOpen: boolean;
@@ -82,7 +82,7 @@ export const AddStockModal: React.FC<Props> = ({
   const [masterForm, setMasterForm] = useState<Partial<GeneralMasterItem>>({});
   const [stationeryRequestForm, setStationeryRequestForm] = useState<Partial<StationeryRequestRecord>>({
       type: 'DAILY REQUEST',
-      deliveryType: 'Dikirim',
+      deliveryType: 'DELIVERY',
       location: 'MODENA Head Office',
       date: new Date().toISOString().split('T')[0]
   });
@@ -121,7 +121,7 @@ export const AddStockModal: React.FC<Props> = ({
                    type: 'DAILY REQUEST',
                    date: formattedDate,
                    remarks: initialAssetData.itemDescription || '',
-                   deliveryType: 'Dikirim',
+                   deliveryType: 'DELIVERY',
                    location: 'MODENA Head Office'
                });
 
@@ -139,7 +139,7 @@ export const AddStockModal: React.FC<Props> = ({
             // Reset form for create mode
             setStationeryRequestForm({ 
                 type: 'DAILY REQUEST', 
-                deliveryType: 'Dikirim', 
+                deliveryType: 'DELIVERY', 
                 location: 'MODENA Head Office', 
                 date: new Date().toISOString().split('T')[0],
                 remarks: `Permintaan rutin ${isArkModule ? 'ARK' : 'ATK'} untuk operasional kantor.`
@@ -156,7 +156,19 @@ export const AddStockModal: React.FC<Props> = ({
   }
 
   const handleLogBookChange = (field: keyof LogBookRecord, value: any) => setLogBookForm(prev => ({ ...prev, [field]: value }));
-  const handleStationeryRequestChange = (field: keyof StationeryRequestRecord, value: any) => setStationeryRequestForm(prev => ({ ...prev, [field]: value }));
+  const handleStationeryRequestChange = (field: keyof StationeryRequestRecord, value: any) => {
+    // Custom logic for location/delivery dependencies
+    if (field === 'location') {
+        const isHO = value === 'MODENA Head Office';
+        setStationeryRequestForm(prev => ({ 
+            ...prev, 
+            [field]: value,
+            deliveryType: isHO ? 'PICKUP HO' : (prev.deliveryType === 'PICKUP HO' ? 'DELIVERY' : prev.deliveryType)
+        }));
+    } else {
+        setStationeryRequestForm(prev => ({ ...prev, [field]: value }));
+    }
+  };
 
   const handleRequestItemChange = (index: number, field: keyof StationeryRequestItem, value: string) => {
       const newItems = [...requestItems];
@@ -318,9 +330,20 @@ export const AddStockModal: React.FC<Props> = ({
                               value={stationeryRequestForm.location} 
                               onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
                             >
-                                <option value="MODENA Head Office">MODENA Head Office</option>
-                                <option value="MODENA Kemang">MODENA Kemang</option>
-                                <option value="Warehouse Cakung">Warehouse Cakung</option>
+                                {MOCK_DELIVERY_LOCATIONS.map(loc => (
+                                    <option key={loc.id} value={loc.name}>{loc.name}</option>
+                                ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Delivery Method</label>
+                            <select 
+                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-black bg-white uppercase shadow-sm" 
+                              value={stationeryRequestForm.deliveryType} 
+                              onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
+                            >
+                                {stationeryRequestForm.location !== 'MODENA Head Office' && <option value="DELIVERY">DELIVERY</option>}
+                                <option value="PICKUP HO">PICKUP HO</option>
                             </select>
                           </div>
                           <div>
@@ -480,6 +503,46 @@ export const AddStockModal: React.FC<Props> = ({
                      </div>
                  </div>
 
+                 {/* DELIVERY STATUS Section - Added as requested */}
+                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <SectionHeader icon={MapPin} title="DELIVERY STATUS" />
+                    <div className="grid grid-cols-2 gap-8">
+                        <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">LOCATION</label>
+                            <div className="relative">
+                                <select 
+                                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[12px] font-black bg-white uppercase appearance-none shadow-sm focus:border-black outline-none transition-all" 
+                                    value={stationeryRequestForm.location} 
+                                    onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
+                                >
+                                    {MOCK_DELIVERY_LOCATIONS.map(loc => (
+                                        <option key={loc.id} value={loc.name}>{loc.name}</option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">DELIVERY METHOD</label>
+                            <div className="relative">
+                                <select 
+                                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[12px] font-black bg-white uppercase appearance-none shadow-sm focus:border-black outline-none transition-all" 
+                                    value={stationeryRequestForm.deliveryType} 
+                                    onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
+                                >
+                                    {stationeryRequestForm.location !== 'MODENA Head Office' && <option value="DELIVERY">DELIVERY</option>}
+                                    <option value="PICKUP HO">PICKUP HO</option>
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+
                  {/* ITEMS LIST Section */}
                  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative">
                     <div className="flex justify-between items-center mb-6">
@@ -500,7 +563,7 @@ export const AddStockModal: React.FC<Props> = ({
                                      <th className="p-4 w-48">CATEGORY</th>
                                      <th className="p-4">PRODUCT NAME</th>
                                      <th className="p-4 w-28 text-center">IN STOCK</th>
-                                     <th className="p-4 w-24 text-center">UOM</th>
+                                     <th className="p-4 w-36 text-center">UOM</th>
                                      <th className="p-4 w-24 text-center">QTY</th>
                                      <th className="p-4 w-12 text-center"></th>
                                  </tr>
@@ -550,8 +613,18 @@ export const AddStockModal: React.FC<Props> = ({
                                              {currentProduct ? <span className={`text-[13px] font-black ${currentProduct.remainingStock < 5 ? 'text-red-500' : 'text-gray-400'}`}>{currentProduct.remainingStock}</span> : <span className="text-gray-300 font-bold">-</span>}
                                          </td>
                                          <td className="p-4 text-center">
-                                             <div className="bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-[10px] font-black text-black inline-block min-w-[60px] shadow-sm uppercase">
-                                                 {item.uom || 'UOM'}
+                                             <div className="relative">
+                                                <select 
+                                                    className="w-full border border-gray-200 rounded-full px-4 py-2 text-[11px] font-bold bg-white shadow-sm appearance-none focus:border-black outline-none uppercase" 
+                                                    value={item.uom} 
+                                                    onChange={(e) => handleRequestItemChange(idx, 'uom', e.target.value)}
+                                                >
+                                                    <option value="">UOM</option>
+                                                    {MOCK_UOM_DATA.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
+                                                </select>
+                                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                    <svg className="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+                                                </div>
                                              </div>
                                          </td>
                                          <td className="p-4 text-center">
