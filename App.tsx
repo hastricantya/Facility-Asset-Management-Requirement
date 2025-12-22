@@ -13,11 +13,11 @@ import { ReminderTable } from './components/ReminderTable';
 import { GeneralMasterTable } from './components/GeneralMasterTable';
 import { StationeryRequestTable } from './components/StationeryRequestTable';
 import { MasterAtkTable } from './components/MasterAtkTable';
+import { MasterDeliveryLocationTable } from './components/MasterDeliveryLocationTable';
 import { LogBookTable } from './components/LogBookTable';
 import { VehicleModal } from './components/VehicleModal';
 import { BuildingModal } from './components/BuildingModal';
 import { GeneralMasterModal } from './components/GeneralMasterModal';
-import { MasterVendorModal } from './components/MasterVendorModal';
 import { AddStockModal } from './components/AddStockModal';
 import { 
   MOCK_VEHICLE_DATA, 
@@ -32,7 +32,11 @@ import {
   MOCK_ARK_DATA,
   MOCK_MASTER_DATA as MOCK_ATK_MASTER,
   MOCK_MASTER_ARK_DATA,
-  MOCK_LOGBOOK_DATA
+  MOCK_LOGBOOK_DATA,
+  MOCK_UOM_DATA,
+  MOCK_ATK_CATEGORY,
+  MOCK_ARK_CATEGORY,
+  MOCK_DELIVERY_LOCATIONS
 } from './constants';
 import { 
   VehicleRecord, 
@@ -45,17 +49,28 @@ import {
   AssetRecord,
   LogBookRecord,
   MasterItem,
-  MasterVendorRecord
+  DeliveryLocationRecord
 } from './types';
 import { useLanguage } from './contexts/LanguageContext';
 
 const App: React.FC = () => {
   const { t } = useLanguage();
-  const [activeModule, setActiveModule] = useState('Daftar ATK'); 
-  const [activeTab, setActiveTab] = useState('Semua');
+  const [activeModule, setActiveModule] = useState('Log Book'); 
+  const [activeTab, setActiveTab] = useState('');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
+  // Log Book Filters State
+  const [logBookFilters, setLogBookFilters] = useState({
+    location: '',
+    category: '',
+    date: ''
+  });
+
+  const handleLogBookFilterChange = (field: string, value: string) => {
+    setLogBookFilters(prev => ({ ...prev, [field]: value }));
+  };
+
   // Data States
   const [vehicleData] = useState<VehicleRecord[]>(MOCK_VEHICLE_DATA);
   const [buildingData] = useState<BuildingRecord[]>(MOCK_BUILDING_DATA);
@@ -63,14 +78,20 @@ const App: React.FC = () => {
   const [vehicleContractData] = useState<VehicleContractRecord[]>(MOCK_VEHICLE_CONTRACT_DATA);
   const [serviceData] = useState<ServiceRecord[]>(MOCK_SERVICE_DATA);
   const [taxKirData] = useState<TaxKirRecord[]>(MOCK_TAX_KIR_DATA);
-  const [vendorData, setVendorData] = useState<MasterVendorRecord[]>(MOCK_MASTER_VENDOR_DATA);
+  const [masterVendors] = useState(MOCK_MASTER_VENDOR_DATA);
   const [atkData] = useState<AssetRecord[]>(MOCK_ATK_DATA);
   const [arkData] = useState<AssetRecord[]>(MOCK_ARK_DATA);
   const [atkMaster] = useState<MasterItem[]>(MOCK_ATK_MASTER);
   const [arkMaster] = useState<MasterItem[]>(MOCK_MASTER_ARK_DATA);
   const [logBookData] = useState<LogBookRecord[]>(MOCK_LOGBOOK_DATA);
+  
+  // Master Lists (UOM, Category, Loc)
+  const [uomList] = useState<GeneralMasterItem[]>(MOCK_UOM_DATA);
+  const [atkCategories] = useState<GeneralMasterItem[]>(MOCK_ATK_CATEGORY);
+  const [arkCategories] = useState<GeneralMasterItem[]>(MOCK_ARK_CATEGORY);
+  const [delivLocations] = useState<DeliveryLocationRecord[]>(MOCK_DELIVERY_LOCATIONS);
 
-  // Master Data States
+  // Master Data States (Generic)
   const [masterLists, setMasterLists] = useState<Record<string, GeneralMasterItem[]>>({
     'Jenis Pajak': MOCK_GENERAL_MASTER_DATA.jenisPajak,
     'Jenis Pembayaran': MOCK_GENERAL_MASTER_DATA.jenisPembayaran,
@@ -87,14 +108,12 @@ const App: React.FC = () => {
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isBuildingModalOpen, setIsBuildingModalOpen] = useState(false);
   const [isMasterModalOpen, setIsMasterModalOpen] = useState(false);
-  const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
   const [isStockModalOpen, setIsStockModalOpen] = useState(false);
   
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleRecord | null>(null);
   const [selectedBuilding, setSelectedBuilding] = useState<BuildingRecord | null>(null);
   const [selectedMasterItem, setSelectedMasterItem] = useState<GeneralMasterItem | null>(null);
-  const [selectedVendor, setSelectedVendor] = useState<MasterVendorRecord | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<AssetRecord | null>(null);
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -106,6 +125,10 @@ const App: React.FC = () => {
         setActiveTab('Milik Sendiri');
     } else if (module === 'Daftar Aset') {
         setActiveTab('Aktif');
+    } else if (module.includes('Master')) {
+        setActiveTab('Items');
+    } else if (module === 'Log Book') {
+        setActiveTab(''); // No active tab for logbook
     } else {
         setActiveTab('Semua');
     }
@@ -120,61 +143,12 @@ const App: React.FC = () => {
     } else if (activeModule === 'Kontrak Gedung') {
         setSelectedBuilding(null);
         setIsBuildingModalOpen(true);
-    } else if (activeModule === 'Master Vendor') {
-        setSelectedVendor(null);
-        setIsVendorModalOpen(true);
     } else if (activeModule.includes('ATK') || activeModule.includes('ARK') || activeModule === 'Log Book' || activeModule === 'Servis') {
         setSelectedAsset(null);
         setIsStockModalOpen(true);
     } else if (masterLists[activeModule]) {
         setSelectedMasterItem(null);
         setIsMasterModalOpen(true);
-    }
-  };
-
-  const handleEditMaster = (item: GeneralMasterItem) => {
-    setSelectedMasterItem(item);
-    setModalMode('edit');
-    setIsMasterModalOpen(true);
-  };
-
-  const handleSaveMaster = (name: string) => {
-    if (modalMode === 'create') {
-        const newList = masterLists[activeModule] || [];
-        const newId = newList.length > 0 ? Math.max(...newList.map(i => i.id)) + 1 : 1;
-        const newItem: GeneralMasterItem = { id: newId, name };
-        setMasterLists(prev => ({ ...prev, [activeModule]: [newItem, ...newList] }));
-    } else if (modalMode === 'edit' && selectedMasterItem) {
-        setMasterLists(prev => ({
-            ...prev,
-            [activeModule]: prev[activeModule].map(i => i.id === selectedMasterItem.id ? { ...i, name } : i)
-        }));
-    }
-    setIsMasterModalOpen(false);
-  };
-
-  const handleDeleteMaster = (id: number) => {
-    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-        setMasterLists(prev => ({
-            ...prev,
-            [activeModule]: prev[activeModule].filter(i => i.id !== id)
-        }));
-    }
-  };
-
-  const handleSaveVendor = (data: Partial<MasterVendorRecord>) => {
-    if (modalMode === 'create') {
-        const newId = vendorData.length > 0 ? Math.max(...vendorData.map(v => v.id)) + 1 : 1;
-        setVendorData([{ ...data, id: newId } as MasterVendorRecord, ...vendorData]);
-    } else if (modalMode === 'edit' && selectedVendor) {
-        setVendorData(prev => prev.map(v => v.id === selectedVendor.id ? { ...v, ...data } : v));
-    }
-    setIsVendorModalOpen(false);
-  };
-
-  const handleDeleteVendor = (id: number) => {
-    if (confirm('Hapus vendor ini?')) {
-        setVendorData(prev => prev.filter(v => v.id !== id));
     }
   };
 
@@ -187,19 +161,39 @@ const App: React.FC = () => {
   }, [activeModule, activeTab, buildingData]);
 
   const getFilteredAssetData = (data: AssetRecord[]) => {
-    if (activeTab === 'Semua') return data;
+    if (activeTab === 'Semua' || activeTab === '') return data;
     return data.filter(item => item.status === activeTab);
   };
+
+  const filteredLogBookData = useMemo(() => {
+    return logBookData.filter(item => {
+      const matchLocation = !logBookFilters.location || item.lokasiModena === logBookFilters.location;
+      const matchCategory = !logBookFilters.category || item.kategoriTamu === logBookFilters.category;
+      const matchDate = !logBookFilters.date || item.tanggalKunjungan === logBookFilters.date;
+      return matchLocation && matchCategory && matchDate;
+    });
+  }, [logBookData, logBookFilters]);
 
   const renderContent = () => {
      if (masterLists[activeModule]) {
          return (
             <GeneralMasterTable 
                 data={masterLists[activeModule]} 
-                onEdit={handleEditMaster}
-                onDelete={handleDeleteMaster}
+                onEdit={(item) => { setSelectedMasterItem(item); setModalMode('edit'); setIsMasterModalOpen(true); }}
+                onDelete={(id) => { if(confirm('Hapus?')) setMasterLists(prev => ({...prev, [activeModule]: prev[activeModule].filter(i => i.id !== id)})); }}
             />
          );
+     }
+
+     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
+        const isArk = activeModule === 'Master ARK';
+        switch(activeTab) {
+            case 'Items': return <MasterAtkTable data={isArk ? arkMaster : atkMaster} />;
+            case 'UOM': return <GeneralMasterTable data={uomList} onEdit={()=>{}} onDelete={()=>{}} />;
+            case 'Category': return <GeneralMasterTable data={isArk ? arkCategories : atkCategories} onEdit={()=>{}} onDelete={()=>{}} />;
+            case 'Delivery Location': return <MasterDeliveryLocationTable data={delivLocations} onEdit={()=>{}} onDelete={()=>{}} />;
+            default: return <MasterAtkTable data={isArk ? arkMaster : atkMaster} />;
+        }
      }
 
      switch(activeModule) {
@@ -221,26 +215,15 @@ const App: React.FC = () => {
          case 'Kontrak Kendaraan': return <VehicleContractTable data={vehicleContractData} />;
          case 'Servis': return <ServiceLogTable data={serviceData} />;
          case 'Pajak & KIR': return <TaxKirTable data={taxKirData} />;
-         case 'Master Vendor': return (
-            <MasterVendorTable 
-                data={vendorData} 
-                onEdit={(v) => { setSelectedVendor(v); setModalMode('edit'); setIsVendorModalOpen(true); }}
-                onView={(v) => { setSelectedVendor(v); setModalMode('view'); setIsVendorModalOpen(true); }}
-                onDelete={handleDeleteVendor}
-            />
-         );
+         case 'Master Vendor': return <MasterVendorTable data={masterVendors} />;
          case 'Daftar ATK':
          case 'Stationery Request Approval':
             return <StationeryRequestTable data={getFilteredAssetData(atkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Daftar ARK':
          case 'Household Request Approval':
             return <StationeryRequestTable data={getFilteredAssetData(arkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
-         case 'Master ATK':
-            return <MasterAtkTable data={atkMaster} />;
-         case 'Master ARK':
-            return <MasterAtkTable data={arkMaster} />;
          case 'Log Book':
-            return <LogBookTable data={logBookData} onView={(item) => { setSelectedAsset(null); setModalMode('view'); setIsStockModalOpen(true); }} />;
+            return <LogBookTable data={filteredLogBookData} onView={(item) => { setSelectedAsset(null); setModalMode('view'); setIsStockModalOpen(true); }} />;
          default: return <div className="p-8 text-center text-gray-500">Konten Modul {activeModule}</div>;
      }
   };
@@ -249,12 +232,14 @@ const App: React.FC = () => {
   const mainTabs = useMemo(() => {
     if (activeModule === 'Kontrak Gedung') return ['Milik Sendiri', 'Sewa'];
     if (activeModule === 'Daftar Aset') return ['Aktif', 'Tidak Aktif'];
-    if (activeModule.includes('Daftar') || activeModule.includes('Approval')) return ['Semua', 'Approved', 'Pending', 'Rejected', 'Closed', 'Draft'];
+    if (activeModule === 'Master ATK' || activeModule === 'Master ARK') return ['Items', 'UOM', 'Category', 'Delivery Location'];
+    if (activeModule.includes('Daftar') || activeModule.includes('Approval')) return ['Semua', 'Draft', 'Approved', 'Pending', 'Rejected', 'Closed'];
+    if (activeModule === 'Log Book') return []; 
     return ['Semua'];
   }, [activeModule]);
 
   return (
-    <div className="flex bg-[#fbfbfb] min-h-screen font-sans relative overflow-x-hidden">
+    <div className="flex bg-[#fbfbfb] min-h-screen font-sans relative overflow-x-hidden text-black">
       {isMobileMenuOpen && (
         <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={toggleMobileMenu} />
       )}
@@ -284,8 +269,10 @@ const App: React.FC = () => {
                     onTabChange={setActiveTab} 
                     onAddClick={handleAddClick}
                     moduleName={activeModule}
-                    searchPlaceholder={activeModule === 'Kontrak Gedung' ? "Cari berdasarkan Karyawan, Barang..." : undefined}
-                    hideAdd={['List Reminder Dokumen', 'Master ATK', 'Master ARK'].includes(activeModule) && modalMode === 'view'}
+                    searchPlaceholder={activeModule === 'Log Book' ? "Cari berdasarkan Nama Tamu..." : activeModule === 'Kontrak Gedung' ? "Cari berdasarkan Karyawan, Barang..." : undefined}
+                    hideAdd={['List Reminder Dokumen'].includes(activeModule)}
+                    logBookFilters={activeModule === 'Log Book' ? logBookFilters : undefined}
+                    onLogBookFilterChange={handleLogBookFilterChange}
                 />
             )}
             
@@ -297,17 +284,9 @@ const App: React.FC = () => {
       <GeneralMasterModal 
         isOpen={isMasterModalOpen}
         onClose={() => setIsMasterModalOpen(false)}
-        onSave={handleSaveMaster}
+        onSave={(name) => { /* Handle Master Save */ setIsMasterModalOpen(false); }}
         initialData={selectedMasterItem}
         title={activeModule}
-      />
-
-      <MasterVendorModal 
-        isOpen={isVendorModalOpen}
-        onClose={() => setIsVendorModalOpen(false)}
-        onSave={handleSaveVendor}
-        initialData={selectedVendor}
-        mode={modalMode}
       />
 
       <BuildingModal 

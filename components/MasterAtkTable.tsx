@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { MasterItem } from '../types';
-import { ChevronsUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronsUpDown, ChevronLeft, ChevronRight, Edit3, Trash2 } from 'lucide-react';
 
 interface Props {
   data: MasterItem[];
@@ -9,95 +9,79 @@ interface Props {
 
 export const MasterAtkTable: React.FC<Props> = ({ data }) => {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto">
+    <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+      <div className="overflow-x-auto custom-scrollbar">
         <table className="w-full min-w-[1600px] text-left border-collapse">
           <thead>
-            <tr className="bg-gray-100 border-b border-gray-200 text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-              <th className="p-4 w-12 text-center pl-6">No</th>
-              <th className="p-4 w-40 group cursor-pointer hover:bg-gray-200 transition-colors">
+            <tr className="bg-[#FAFAFA] border-b border-gray-100">
+              <th className="p-5 w-14 text-center pl-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">#</th>
+              <th className="p-5 w-44 group cursor-pointer hover:bg-gray-100 transition-colors">
                 <div className="flex items-center justify-between">
-                  Category
-                  <ChevronsUpDown size={14} className="text-gray-400 group-hover:text-gray-700"/>
+                  <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Category</span>
+                  <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-4 w-56 group cursor-pointer hover:bg-gray-200 transition-colors">
+              <th className="p-5 w-64 group cursor-pointer hover:bg-gray-100 transition-colors">
                 <div className="flex items-center justify-between">
-                  Item Name
-                  <ChevronsUpDown size={14} className="text-gray-400 group-hover:text-gray-700"/>
+                  <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Item Name</span>
+                  <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
+              <th className="p-5 w-40 group cursor-pointer hover:bg-gray-100 transition-colors">
                 <div className="flex items-center justify-between">
-                  Item Code
-                  <ChevronsUpDown size={14} className="text-gray-400 group-hover:text-gray-700"/>
+                  <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Part Code</span>
+                  <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-               <th className="p-4 w-24 group cursor-pointer hover:bg-gray-200 transition-colors">
-                <div className="flex items-center justify-between">
-                  UoM
-                  <ChevronsUpDown size={14} className="text-gray-400 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors text-center">
-                <div className="flex items-center justify-between">
-                  Remaining Stock
-                  <ChevronsUpDown size={14} className="text-gray-400 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors text-center">
-                <div className="flex items-center justify-between">
-                  Min Stock
-                  <ChevronsUpDown size={14} className="text-gray-400 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors text-center">
-                <div className="flex items-center justify-between">
-                  Max Stock
-                  <ChevronsUpDown size={14} className="text-gray-400 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors text-center">
-                <div className="flex items-center justify-between">
-                  Requested
-                  <ChevronsUpDown size={14} className="text-gray-400 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-200 transition-colors">
-                <div className="flex items-center justify-between">
-                  Purchase Date
-                  <ChevronsUpDown size={14} className="text-gray-400 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 w-40 group cursor-pointer hover:bg-gray-200 transition-colors text-right">
-                <div className="flex items-center justify-between">
-                  Last Price
-                  <ChevronsUpDown size={14} className="text-gray-400 group-hover:text-gray-700"/>
-                </div>
-              </th>
-              <th className="p-4 w-40 group cursor-pointer hover:bg-gray-200 transition-colors text-right pr-8">
-                <div className="flex items-center justify-between">
-                  Average Price
-                  <ChevronsUpDown size={14} className="text-gray-400 group-hover:text-gray-700"/>
-                </div>
-              </th>
+               <th className="p-5 w-24 text-[10px] font-black text-black uppercase tracking-[0.15em]">UoM</th>
+              <th className="p-5 w-32 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Stock</th>
+              <th className="p-5 w-28 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Min</th>
+              <th className="p-5 w-28 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Max</th>
+              <th className="p-5 w-32 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Requested</th>
+              <th className="p-5 w-40 text-[10px] font-black text-black uppercase tracking-[0.15em]">Last Buy</th>
+              <th className="p-5 w-44 text-right text-[10px] font-black text-black uppercase tracking-[0.15em]">Unit Price</th>
+              <th className="p-5 w-44 text-right pr-8 text-[10px] font-black text-black uppercase tracking-[0.15em]">Avg Price</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 text-[12px] text-gray-700">
+          <tbody className="divide-y divide-gray-50">
             {data.map((item, index) => (
-              <tr key={item.id} className="bg-white hover:bg-gray-50/50 transition-colors cursor-pointer group">
-                <td className="p-4 text-center font-bold text-gray-400 pl-6">{index + 1}</td>
-                <td className="p-4 font-bold text-gray-600 uppercase tracking-tighter">{item.category}</td>
-                <td className="p-4 font-black text-black uppercase">{item.itemName}</td>
-                <td className="p-4 font-mono text-[10px] text-gray-400 font-bold">{item.itemCode}</td>
-                <td className="p-4 font-black text-black uppercase">{item.uom}</td>
-                <td className="p-4 text-center font-mono font-black text-black">{item.remainingStock}</td>
-                <td className="p-4 text-center font-mono font-bold text-gray-400">{item.minimumStock}</td>
-                <td className="p-4 text-center font-mono font-bold text-gray-400">{item.maximumStock}</td>
-                <td className="p-4 text-center font-mono font-bold text-orange-500">{item.requestedStock}</td>
-                <td className="p-4 text-gray-500 font-bold">{item.purchaseDate}</td>
-                <td className="p-4 font-mono font-black text-black text-right">{item.lastPurchasePrice}</td>
-                <td className="p-4 font-mono font-black text-black text-right pr-8">{item.averagePrice}</td>
+              <tr key={item.id} className="bg-white hover:bg-[#FDFDFD] transition-all cursor-pointer group">
+                <td className="p-5 text-center font-bold text-gray-300 text-[11px] pl-8">{index + 1}</td>
+                <td className="p-5">
+                    <span className="text-[11px] font-black text-gray-500 uppercase tracking-tighter border border-gray-100 px-2 py-1 rounded">
+                        {item.category}
+                    </span>
+                </td>
+                <td className="p-5">
+                    <span className="font-black text-black text-[13px] uppercase tracking-tight group-hover:text-blue-600 transition-colors">{item.itemName}</span>
+                </td>
+                <td className="p-5">
+                    <span className="font-mono text-[11px] text-gray-400 font-black">{item.itemCode}</span>
+                </td>
+                <td className="p-5">
+                    <span className="text-[11px] font-black text-black uppercase">{item.uom}</span>
+                </td>
+                <td className="p-5 text-center">
+                    <div className={`font-mono text-[14px] font-black ${item.remainingStock <= item.minimumStock ? 'text-red-500' : 'text-black'}`}>
+                        {item.remainingStock}
+                    </div>
+                </td>
+                <td className="p-5 text-center text-gray-400 font-mono text-[11px] font-bold">{item.minimumStock}</td>
+                <td className="p-5 text-center text-gray-400 font-mono text-[11px] font-bold">{item.maximumStock}</td>
+                <td className="p-5 text-center">
+                    <div className={`font-mono text-[12px] font-black ${item.requestedStock > 0 ? 'text-orange-500' : 'text-gray-300'}`}>
+                        {item.requestedStock}
+                    </div>
+                </td>
+                <td className="p-5">
+                    <span className="text-[11px] font-black text-gray-400 uppercase tracking-tight">{item.purchaseDate}</span>
+                </td>
+                <td className="p-5 text-right font-mono font-black text-black text-[13px]">
+                    {item.lastPurchasePrice}
+                </td>
+                <td className="p-5 text-right font-mono font-black text-black text-[13px] pr-8">
+                    {item.averagePrice}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -105,17 +89,17 @@ export const MasterAtkTable: React.FC<Props> = ({ data }) => {
       </div>
       
       {/* Pagination Footer */}
-      <div className="px-6 py-4 border-t border-gray-100 bg-white flex items-center justify-between">
-            <div className="text-[11px] font-black text-gray-400 uppercase tracking-widest">
-                Showing 1 - {data.length} of <span className="text-black">{data.length}</span> Row(s)
+      <div className="px-8 py-6 bg-[#FAFAFA] border-t border-gray-100 flex items-center justify-between">
+            <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                Displaying <span className="text-black ml-1">{data.length} master items</span>
             </div>
             
-            <div className="flex items-center gap-1">
-                 <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-100 hover:bg-gray-50 text-gray-300 hover:text-black transition-all">
+            <div className="flex items-center gap-2">
+                 <button className="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 hover:border-black text-gray-300 hover:text-black transition-all bg-white">
                     <ChevronLeft size={16} />
                  </button>
-                 <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-black text-white font-black text-[10px] shadow-lg shadow-black/10">1</button>
-                 <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-100 hover:bg-gray-50 text-gray-300 hover:text-black transition-all">
+                 <div className="bg-black text-white w-10 h-10 flex items-center justify-center rounded-xl font-black text-[11px] shadow-xl shadow-black/20">1</div>
+                 <button className="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 hover:border-black text-gray-300 hover:text-black transition-all bg-white">
                     <ChevronRight size={16} />
                  </button>
             </div>
