@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { LogBookRecord } from '../types';
+// Added missing ChevronLeft and ChevronRight icons to the imports
 import { ChevronsUpDown, Eye, Pencil, User, Users, Baby, MapPin, Clock, Calendar, MessageSquare, MoreHorizontal, ChevronLeft, ChevronRight, Activity } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -17,27 +19,27 @@ export const LogBookTable: React.FC<Props> = ({ data, onEdit, onView }) => {
       <div className="overflow-x-auto custom-scrollbar">
         <table className="w-full min-w-[1400px] text-left border-collapse">
           <thead>
-            <tr className="bg-[#F2F2F2] border-b border-gray-200">
+            <tr className="bg-[#FAFAFA] border-b border-gray-100">
               <th className="p-5 w-14 text-center pl-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">#</th>
-              <th className="p-5 w-56 group cursor-pointer hover:bg-gray-100/50 transition-colors">
+              <th className="p-5 w-56 group cursor-pointer hover:bg-gray-100 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">{t('Lokasi MODENA')}</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-44 group cursor-pointer hover:bg-gray-100/50 transition-colors">
+              <th className="p-5 w-44 group cursor-pointer hover:bg-gray-100 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">{t('Kategori Tamu')}</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-64 group cursor-pointer hover:bg-gray-100/50 transition-colors">
+              <th className="p-5 w-64 group cursor-pointer hover:bg-gray-100 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">{t('Nama Tamu')}</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-36 group cursor-pointer hover:bg-gray-100/50 transition-colors">
+              <th className="p-5 w-36 group cursor-pointer hover:bg-gray-100 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">{t('Tanggal')}</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>

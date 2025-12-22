@@ -14,16 +14,6 @@ export interface SparePart {
   price: string;
 }
 
-export interface PurchaseRecord {
-  id: string;
-  date: string;
-  vendorName: string;
-  qty: number;
-  unitPrice: string;
-  totalPrice: string;
-  status: 'Completed' | 'Pending' | 'Cancelled';
-}
-
 export interface AssetRecord {
   id: number;
   transactionNumber?: string;
@@ -35,7 +25,7 @@ export interface AssetRecord {
   date: string;
   remainingStock: number;
   itemCode: string;
-  status: 'Approved' | 'Pending' | 'Rejected' | 'Closed' | 'Draft' | 'On Progress';
+  status: 'Approved' | 'Pending' | 'Rejected' | 'Closed' | 'Draft';
 }
 
 export interface BuildingRecord {
@@ -212,14 +202,11 @@ export interface MasterItem {
   purchaseDate: string;
   lastPurchasePrice: string;
   averagePrice: string;
-  purchaseHistory?: PurchaseRecord[];
 }
 
 export interface StationeryRequestItem {
   itemId: string;
   qty: string;
-  categoryId?: string;
-  uom?: string;
 }
 
 export interface StationeryRequestRecord {
@@ -231,6 +218,10 @@ export interface StationeryRequestRecord {
   items: StationeryRequestItem[];
 }
 
+/**
+ * ContractRecord interface representing common contract fields.
+ * Includes optional ownership and department fields used in AddStockModal.
+ */
 export interface ContractRecord {
   id: number;
   assetCategory: string;
@@ -269,9 +260,29 @@ export interface GeneralMasterItem {
   name: string;
 }
 
+export interface RoleMasterItem {
+  id: number;
+  name: string;
+  description: string;
+}
+
 export interface DeliveryLocationRecord {
   id: number;
   name: string;
   address: string;
   type: string;
+}
+
+export interface OfficeAssetRecord {
+  id: string;
+  category: string;
+  assetNumber: string;
+  brand: string;
+  model: string;
+  location: string;
+  channel: string;
+  subLocation: string;
+  purchaseDate: string;
+  price: string;
+  status: 'Active' | 'Inactive';
 }

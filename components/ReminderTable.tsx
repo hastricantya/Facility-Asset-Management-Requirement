@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ReminderRecord } from '../types';
 import { ChevronsUpDown, Eye, Bell, Clock, Building } from 'lucide-react';
@@ -13,26 +14,26 @@ export const ReminderTable: React.FC<Props> = ({ data, onView }) => {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1000px] text-left border-separate border-spacing-0">
           <thead>
-            <tr className="bg-[#F2F2F2] border-b border-gray-200">
-              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-200 transition-colors">
+            <tr className="bg-gray-50 border-b border-gray-200">
+              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-100 transition-colors">
                 <div className="flex items-center justify-between">
                   Document Name
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-200 transition-colors">
+              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-100 transition-colors">
                 <div className="flex items-center justify-between">
                   Building / Asset No
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-200 transition-colors">
+              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-100 transition-colors">
                 <div className="flex items-center justify-between">
                   Expiry Date
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-200 transition-colors text-center">
+              <th className="p-4 border-b border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest group cursor-pointer hover:bg-gray-100 transition-colors text-center">
                 <div className="flex items-center justify-center gap-2">
                   Remaining Days
                   <ChevronsUpDown size={14} className="text-gray-300" />

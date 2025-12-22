@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { VehicleRecord } from '../types';
 import { ChevronsUpDown, Eye, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from 'lucide-react';
@@ -14,38 +15,38 @@ export const VehicleTable: React.FC<Props> = ({ data, onEdit, onView }) => {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1200px] text-left border-collapse">
           <thead>
-            <tr className="bg-[#F2F2F2] border-b border-gray-200 text-[11px] font-bold text-gray-500 uppercase tracking-tight">
-              <th className="p-4 w-36 group cursor-pointer hover:bg-gray-300/30 transition-colors">
+            <tr className="bg-white border-b border-gray-200 text-[11px] font-bold text-gray-500 uppercase tracking-tight">
+              <th className="p-4 w-36 group cursor-pointer hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-2">
                   No Registrasi
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 group cursor-pointer hover:bg-gray-300/30 transition-colors">
+              <th className="p-4 group cursor-pointer hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-2">
                   Nama
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 w-40 group cursor-pointer hover:bg-gray-300/30 transition-colors">
+              <th className="p-4 w-40 group cursor-pointer hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-2">
                   No Polisi
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 w-48 group cursor-pointer hover:bg-gray-300/30 transition-colors">
+              <th className="p-4 w-48 group cursor-pointer hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-2">
                   Channel
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 w-36 group cursor-pointer hover:bg-gray-300/30 transition-colors">
+              <th className="p-4 w-36 group cursor-pointer hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-2">
                   Cabang
                   <ChevronsUpDown size={14} className="text-gray-300" />
                 </div>
               </th>
-              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-300/30 transition-colors">
+              <th className="p-4 w-32 group cursor-pointer hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-2">
                   Status
                   <ChevronsUpDown size={14} className="text-gray-300" />

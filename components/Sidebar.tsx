@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, 
@@ -24,7 +25,8 @@ import {
   Settings,
   UserCheck,
   Box,
-  House
+  House,
+  Monitor
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -85,7 +87,7 @@ export const Sidebar: React.FC<Props> = ({
         label: 'ATK', 
         icon: <Box size={20} />,
         subItems: [
-            { label: 'Request ATK', icon: <Database size={18} /> },
+            { label: 'Daftar ATK', icon: <Database size={18} /> },
             { label: 'Stationery Request Approval', icon: <UserCheck size={18} /> },
             { label: 'Master ATK', icon: <Settings size={18} /> },
         ]
@@ -106,6 +108,7 @@ export const Sidebar: React.FC<Props> = ({
         subItems: [
              { label: 'Kontrak Gedung', icon: <FileText size={18} /> },
              { label: 'List Reminder Dokumen', icon: <Bell size={18} /> },
+             { label: 'Office Equipment', icon: <Monitor size={18} /> },
         ]
     },
     { label: 'Timesheet', icon: <Clock size={20} /> },

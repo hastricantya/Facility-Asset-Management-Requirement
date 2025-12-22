@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TaxKirRecord } from '../types';
 import { ChevronsUpDown, Eye, Pencil, Trash2, Search, Filter, Plus } from 'lucide-react';
@@ -14,7 +15,7 @@ export const TaxKirTable: React.FC<Props> = ({ data, onEdit, onView, onDelete })
   const { t } = useLanguage();
 
   const TableHeader = ({ label }: { label: string }) => (
-    <th className="p-4 group cursor-pointer hover:bg-gray-300/30 transition-colors border-b border-gray-200">
+    <th className="p-4 group cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-200">
       <div className="flex items-center justify-between gap-2">
         <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tight">{label}</span>
         <ChevronsUpDown size={14} className="text-gray-300 group-hover:text-gray-500" />
@@ -27,7 +28,7 @@ export const TaxKirTable: React.FC<Props> = ({ data, onEdit, onView, onDelete })
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-[#F2F2F2]">
+            <tr className="bg-white">
               <TableHeader label="No Request" />
               <TableHeader label="No Polisi" />
               <TableHeader label="Tgl Request" />
@@ -63,7 +64,7 @@ export const TaxKirTable: React.FC<Props> = ({ data, onEdit, onView, onDelete })
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1200px] text-left border-collapse">
           <thead>
-            <tr className="bg-[#F2F2F2]">
+            <tr className="bg-white">
               <TableHeader label="No Request" />
               <TableHeader label="No Polisi" />
               <TableHeader label="Tgl Request" />

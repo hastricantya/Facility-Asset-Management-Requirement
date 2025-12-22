@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
@@ -10,16 +11,17 @@ import { VehicleContractTable } from './components/VehicleContractTable';
 import { BuildingTable } from './components/BuildingTable';
 import { ReminderTable } from './components/ReminderTable';
 import { GeneralMasterTable } from './components/GeneralMasterTable';
+import { RoleMasterTable } from './components/RoleMasterTable';
 import { StationeryRequestTable } from './components/StationeryRequestTable';
 import { MasterAtkTable } from './components/MasterAtkTable';
 import { MasterDeliveryLocationTable } from './components/MasterDeliveryLocationTable';
 import { LogBookTable } from './components/LogBookTable';
+import { OfficeEquipmentTable } from './components/OfficeEquipmentTable';
 import { VehicleModal } from './components/VehicleModal';
 import { BuildingModal } from './components/BuildingModal';
 import { GeneralMasterModal } from './components/GeneralMasterModal';
 import { AddStockModal } from './components/AddStockModal';
-import { MasterItemModal } from './components/MasterItemModal';
-import { Users, User, Baby, Activity } from 'lucide-react';
+import { OfficeEquipmentModal } from './components/OfficeEquipmentModal';
 import { 
   MOCK_VEHICLE_DATA, 
   MOCK_SERVICE_DATA, 
@@ -37,7 +39,8 @@ import {
   MOCK_UOM_DATA,
   MOCK_ATK_CATEGORY,
   MOCK_ARK_CATEGORY,
-  MOCK_DELIVERY_LOCATIONS
+  MOCK_DELIVERY_LOCATIONS,
+  MOCK_ROLES
 } from './constants';
 import { 
   VehicleRecord, 
@@ -50,50 +53,41 @@ import {
   AssetRecord,
   LogBookRecord,
   MasterItem,
-  DeliveryLocationRecord
+  DeliveryLocationRecord,
+  RoleMasterItem,
+  OfficeAssetRecord
 } from './types';
 import { useLanguage } from './contexts/LanguageContext';
 
+const INITIAL_OFFICE_ASSETS: OfficeAssetRecord[] = [
+  { id: '1', category: 'Office Equipment', assetNumber: '501-02826', brand: 'LED - Lampu', model: 'VL-300', location: 'Pusat', channel: 'Creative', subLocation: 'Head Office', purchaseDate: '2023-05-31', price: 'Rp 7.751.000', status: 'Active' },
+  { id: '2', category: 'Office Equipment', assetNumber: '501-02827', brand: 'Sisal - karpet', model: 'Karpet Showroom', location: 'Surabaya', channel: 'MEC (Showroom)', subLocation: 'MEC Surabaya', purchaseDate: '2023-05-31', price: 'Rp 28.972.973', status: 'Active' },
+  { id: '3', category: 'Office Equipment', assetNumber: '501-02828', brand: 'Modenaa - Wine Chiller', model: 'WC 2154 S', location: 'Pusat', channel: 'Warehouse & Distribution', subLocation: 'MEC Kemang', purchaseDate: '2023-05-31', price: 'Rp 12.286.001', status: 'Active' },
+  { id: '4', category: 'Office Equipment', assetNumber: '501-02829', brand: 'Modena - Kulkas', model: 'RF 2930 W', location: 'Pusat', channel: 'Warehouse & Distribution', subLocation: 'MEC Kemang', purchaseDate: '2023-05-31', price: 'Rp 5.335.595', status: 'Active' },
+  { id: '5', category: 'Office Equipment', assetNumber: '501-02830', brand: 'Modenaa - Wine Chiller', model: 'BW 6435', location: 'Pusat', channel: 'Warehouse & Distribution', subLocation: 'MEC Kemang', purchaseDate: '2023-05-31', price: 'Rp 5.379.787', status: 'Active' },
+  { id: '6', category: 'Office Equipment', assetNumber: '501-02831', brand: 'Sisal - karpet', model: 'Karpet Showroom', location: 'Pusat', channel: 'HR', subLocation: 'MEC Suryo', purchaseDate: '2023-05-31', price: 'Rp 57.600.000', status: 'Active' },
+];
+
 const App: React.FC = () => {
   const { t } = useLanguage();
-  const [activeModule, setActiveModule] = useState('Log Book'); 
-  const [activeTab, setActiveTab] = useState('');
+  const [activeModule, setActiveModule] = useState('Office Equipment'); 
+  const [activeTab, setActiveTab] = useState('Semua');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
-  // Log Book Filters State
-  const [logBookFilters, setLogBookFilters] = useState({
-    location: '',
-    category: '',
-    date: ''
-  });
+  const [logBookFilters, setLogBookFilters] = useState({ location: '', category: '', date: '' });
+  const handleLogBookFilterChange = (field: string, value: string) => setLogBookFilters(prev => ({ ...prev, [field]: value }));
 
-  const handleLogBookFilterChange = (field: string, value: string) => {
-    setLogBookFilters(prev => ({ ...prev, [field]: value }));
-  };
-
-  // Data States
   const [vehicleData] = useState<VehicleRecord[]>(MOCK_VEHICLE_DATA);
   const [buildingData] = useState<BuildingRecord[]>(MOCK_BUILDING_DATA);
   const [reminderData] = useState<ReminderRecord[]>(MOCK_REMINDER_DATA);
   const [vehicleContractData] = useState<VehicleContractRecord[]>(MOCK_VEHICLE_CONTRACT_DATA);
-  const [serviceData] = useState<ServiceRecord[]>(MOCK_SERVICE_DATA);
+  const [serviceData, setServiceData] = useState<ServiceRecord[]>(MOCK_SERVICE_DATA);
   const [taxKirData] = useState<TaxKirRecord[]>(MOCK_TAX_KIR_DATA);
-  const [masterVendors] = useState(MOCK_MASTER_VENDOR_DATA);
-  const [atkData, setAtkData] = useState<AssetRecord[]>(MOCK_ATK_DATA);
-  const [arkData, setArkData] = useState<AssetRecord[]>(MOCK_ARK_DATA);
-  const [atkMaster, setAtkMaster] = useState<MasterItem[]>(MOCK_ATK_MASTER);
-  const [arkMaster, setArkMaster] = useState<MasterItem[]>(MOCK_MASTER_ARK_DATA);
   const [logBookData, setLogBookData] = useState<LogBookRecord[]>(MOCK_LOGBOOK_DATA);
+  const [officeAssetData, setOfficeAssetData] = useState<OfficeAssetRecord[]>(INITIAL_OFFICE_ASSETS);
   
-  // Master Lists (UOM, Category, Loc)
-  const [uomList] = useState<GeneralMasterItem[]>(MOCK_UOM_DATA);
-  const [atkCategories] = useState<GeneralMasterItem[]>(MOCK_ATK_CATEGORY);
-  const [arkCategories] = useState<GeneralMasterItem[]>(MOCK_ARK_CATEGORY);
-  const [delivLocations] = useState<DeliveryLocationRecord[]>(MOCK_DELIVERY_LOCATIONS);
-
-  // Master Data States (Generic)
-  const [masterLists, setMasterLists] = useState<Record<string, GeneralMasterItem[]>>({
+  const [masterLists, setMasterLists] = useState<Record<string, any>>({
     'Jenis Pajak': MOCK_GENERAL_MASTER_DATA.jenisPajak,
     'Jenis Pembayaran': MOCK_GENERAL_MASTER_DATA.jenisPembayaran,
     'Jenis Servis': MOCK_GENERAL_MASTER_DATA.jenisServis,
@@ -102,132 +96,103 @@ const App: React.FC = () => {
     'Status Request': MOCK_GENERAL_MASTER_DATA.statusRequest,
     'Tipe Mutasi': MOCK_GENERAL_MASTER_DATA.tipeMutasi,
     'Tipe Vendor': MOCK_GENERAL_MASTER_DATA.tipeVendor,
-    'Peran': MOCK_GENERAL_MASTER_DATA.peran,
+    'Peran': MOCK_ROLES,
   });
   
-  // Selection & Modal States
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isBuildingModalOpen, setIsBuildingModalOpen] = useState(false);
   const [isMasterModalOpen, setIsMasterModalOpen] = useState(false);
   const [isStockModalOpen, setIsStockModalOpen] = useState(false);
-  const [isMasterItemModalOpen, setIsMasterItemModalOpen] = useState(false);
+  const [isOfficeModalOpen, setIsOfficeModalOpen] = useState(false);
   
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleRecord | null>(null);
   const [selectedBuilding, setSelectedBuilding] = useState<BuildingRecord | null>(null);
-  const [selectedMasterItem, setSelectedMasterItem] = useState<GeneralMasterItem | null>(null);
-  const [selectedAsset, setSelectedAsset] = useState<AssetRecord | null>(null);
+  const [selectedMasterItem, setSelectedMasterItem] = useState<any | null>(null);
   const [selectedLogBook, setSelectedLogBook] = useState<LogBookRecord | null>(null);
-  const [selectedMasterProduct, setSelectedMasterProduct] = useState<MasterItem | null>(null);
+  const [selectedService, setSelectedService] = useState<ServiceRecord | null>(null);
+  const [selectedOfficeAsset, setSelectedOfficeAsset] = useState<OfficeAssetRecord | null>(null);
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const handleModuleNavigate = (module: string) => {
     setActiveModule(module);
-    if (module === 'Kontrak Gedung') {
-        setActiveTab('Milik Sendiri');
-    } else if (module === 'Daftar Aset') {
-        setActiveTab('Aktif');
-    } else if (module.includes('Master')) {
-        setActiveTab('Items');
-    } else if (module === 'Log Book') {
-        setActiveTab(''); // No active tab for logbook
-    } else {
-        setActiveTab('Semua');
-    }
+    setActiveTab(module === 'Kontrak Gedung' ? 'Milik Sendiri' : 'Semua');
     setIsMobileMenuOpen(false); 
   };
 
   const handleAddClick = () => {
     setModalMode('create');
-    setSelectedLogBook(null);
-    setSelectedAsset(null);
-    setSelectedMasterProduct(null);
-
-    if (activeModule === 'Daftar Aset') {
-        setSelectedVehicle(null);
-        setIsVehicleModalOpen(true);
-    } else if (activeModule === 'Kontrak Gedung') {
-        setSelectedBuilding(null);
-        setIsBuildingModalOpen(true);
-    } else if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
-        setIsMasterItemModalOpen(true);
-    } else if (activeModule.includes('ATK') || activeModule.includes('ARK') || activeModule === 'Log Book' || activeModule === 'Servis') {
-        setIsStockModalOpen(true);
-    } else if (masterLists[activeModule]) {
-        setSelectedMasterItem(null);
-        setIsMasterModalOpen(true);
-    }
+    if (activeModule === 'Daftar Aset') { setSelectedVehicle(null); setIsVehicleModalOpen(true); }
+    else if (activeModule === 'Kontrak Gedung') { setSelectedBuilding(null); setIsBuildingModalOpen(true); }
+    else if (activeModule === 'Office Equipment') { setSelectedOfficeAsset(null); setIsOfficeModalOpen(true); }
+    else if (activeModule === 'Servis' || activeModule === 'Log Book') { setIsStockModalOpen(true); }
+    else if (masterLists[activeModule]) { setSelectedMasterItem(null); setIsMasterModalOpen(true); }
   };
 
-  const handleSaveMasterItem = (data: Partial<MasterItem>) => {
-    const isArk = activeModule === 'Master ARK';
+  const handleSaveService = (data: Partial<ServiceRecord>) => {
     if (modalMode === 'create') {
-        const newItem: MasterItem = {
-            id: Date.now(),
-            itemName: data.itemName || 'New Item',
-            category: data.category || 'General',
-            itemCode: data.itemCode || 'CODE-001',
-            uom: data.uom || 'PCS',
-            remainingStock: 0,
-            minimumStock: data.minimumStock || 0,
-            maximumStock: data.maximumStock || 0,
-            requestedStock: 0,
-            purchaseDate: data.purchaseDate || '',
-            lastPurchasePrice: data.lastPurchasePrice || 'Rp 0',
-            averagePrice: data.lastPurchasePrice || 'Rp 0'
-        };
-        if (isArk) setArkMaster([newItem, ...arkMaster]);
-        else setAtkMaster([newItem, ...atkMaster]);
+        const newRecord: ServiceRecord = {
+            ...data,
+            id: `SRV/${new Date().getFullYear()}/${(serviceData.length + 1).toString().padStart(3, '0')}`,
+            status: 'Proses',
+            statusApproval: '0'
+        } as ServiceRecord;
+        setServiceData([newRecord, ...serviceData]);
     } else {
-        if (isArk) setArkMaster(arkMaster.map(i => i.id === data.id ? { ...i, ...data } : i));
-        else setAtkMaster(atkMaster.map(i => i.id === data.id ? { ...i, ...data } : i));
-    }
-    setIsMasterItemModalOpen(false);
-  };
-
-  const handleSaveLogBook = (data: Partial<LogBookRecord>) => {
-    if (modalMode === 'create') {
-        const newRecord: LogBookRecord = {
-            id: Date.now(),
-            lokasiModena: data.lokasiModena || 'MODENA Head Office',
-            kategoriTamu: data.kategoriTamu || 'Customer',
-            namaTamu: data.namaTamu || 'New Guest',
-            tanggalKunjungan: data.tanggalKunjungan || new Date().toISOString().split('T')[0],
-            jamDatang: data.jamDatang || '00:00',
-            jamPulang: data.jamPulang || '',
-            wanita: data.wanita || 0,
-            lakiLaki: data.lakiLaki || 0,
-            anakAnak: data.anakAnak || 0,
-            note: data.note || ''
-        };
-        setLogBookData([newRecord, ...logBookData]);
-    } else {
-        setLogBookData(logBookData.map(item => item.id === data.id ? { ...item, ...data } : item));
+        setServiceData(serviceData.map(item => item.id === data.id ? { ...item, ...data } : item));
     }
     setIsStockModalOpen(false);
   };
 
-  const handleApproveAsset = () => {
-    if (selectedAsset) {
-      if (activeModule.includes('ATK')) {
-        setAtkData(atkData.map(item => item.id === selectedAsset.id ? { ...item, status: 'Approved' } : item));
-      } else {
-        setArkData(arkData.map(item => item.id === selectedAsset.id ? { ...item, status: 'Approved' } : item));
-      }
-      setIsStockModalOpen(false);
+  const handleSaveOfficeAsset = (data: Partial<OfficeAssetRecord>) => {
+    if (modalMode === 'create') {
+      const newRecord: OfficeAssetRecord = {
+        ...data,
+        id: Math.random().toString(36).substr(2, 9),
+      } as OfficeAssetRecord;
+      setOfficeAssetData([newRecord, ...officeAssetData]);
+    } else if (selectedOfficeAsset) {
+      setOfficeAssetData(officeAssetData.map(item => item.id === selectedOfficeAsset.id ? { ...item, ...data } : item));
+    }
+    setIsOfficeModalOpen(false);
+  };
+
+  const handleDeleteOfficeAsset = (id: string) => {
+    if (confirm('Apakah Anda yakin ingin menghapus data peralatan kantor ini?')) {
+      setOfficeAssetData(prev => prev.filter(item => item.id !== id));
     }
   };
 
-  const handleRejectAsset = () => {
-    if (selectedAsset) {
-      if (activeModule.includes('ATK')) {
-        setAtkData(atkData.map(item => item.id === selectedAsset.id ? { ...item, status: 'Rejected' } : item));
-      } else {
-        setArkData(arkData.map(item => item.id === selectedAsset.id ? { ...item, status: 'Rejected' } : item));
-      }
-      setIsStockModalOpen(false);
+  const handleSaveMaster = (data: { name: string, description?: string }) => {
+    const list = masterLists[activeModule];
+    if (modalMode === 'create') {
+        const newItem = {
+            id: list.length > 0 ? Math.max(...list.map((i: any) => i.id)) + 1 : 1,
+            name: data.name,
+            ...(data.description !== undefined && { description: data.description })
+        };
+        setMasterLists(prev => ({ ...prev, [activeModule]: [...prev[activeModule], newItem] }));
+    } else if (selectedMasterItem) {
+        setMasterLists(prev => ({
+            ...prev,
+            [activeModule]: prev[activeModule].map((item: any) => 
+                item.id === selectedMasterItem.id 
+                ? { ...item, name: data.name, ...(data.description !== undefined && { description: data.description }) } 
+                : item
+            )
+        }));
+    }
+    setIsMasterModalOpen(false);
+  };
+
+  const handleDeleteMaster = (id: number) => {
+    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+        setMasterLists(prev => ({
+            ...prev,
+            [activeModule]: prev[activeModule].filter((item: any) => item.id !== id)
+        }));
     }
   };
 
@@ -239,215 +204,79 @@ const App: React.FC = () => {
     return buildingData;
   }, [activeModule, activeTab, buildingData]);
 
-  const getFilteredAssetData = (data: AssetRecord[]) => {
-    if (activeTab === 'Semua' || activeTab === '') return data;
-    return data.filter(item => item.status === activeTab);
-  };
-
-  const filteredLogBookData = useMemo(() => {
-    return logBookData.filter(item => {
-      const matchLocation = !logBookFilters.location || item.lokasiModena === logBookFilters.location;
-      const matchCategory = !logBookFilters.category || item.kategoriTamu === logBookFilters.category;
-      const matchDate = !logBookFilters.date || item.tanggalKunjungan === logBookFilters.date;
-      return matchLocation && matchCategory && matchDate;
-    });
-  }, [logBookData, logBookFilters]);
-
-  // Log Book stats calculation
-  const logBookStats = useMemo(() => {
-    return filteredLogBookData.reduce((acc, curr) => ({
-      wanita: acc.wanita + curr.wanita,
-      lakiLaki: acc.lakiLaki + curr.lakiLaki,
-      anakAnak: acc.anakAnak + curr.anakAnak,
-      total: acc.total + curr.wanita + curr.lakiLaki + curr.anakAnak
-    }), { wanita: 0, lakiLaki: 0, anakAnak: 0, total: 0 });
-  }, [filteredLogBookData]);
-
   const renderContent = () => {
+     if (activeModule === 'Peran') {
+        return <RoleMasterTable 
+            data={masterLists['Peran']} 
+            onEdit={(item) => { setSelectedMasterItem(item); setModalMode('edit'); setIsMasterModalOpen(true); }} 
+            onDelete={handleDeleteMaster} 
+        />;
+     }
+     
      if (masterLists[activeModule]) {
-         return (
-            <GeneralMasterTable 
-                data={masterLists[activeModule]} 
-                onEdit={(item) => { setSelectedMasterItem(item); setModalMode('edit'); setIsMasterModalOpen(true); }}
-                onDelete={(id) => { if(confirm('Hapus?')) setMasterLists(prev => ({...prev, [activeModule]: prev[activeModule].filter(i => i.id !== id)})); }}
-            />
-         );
+         return <GeneralMasterTable 
+            data={masterLists[activeModule]} 
+            onEdit={(item) => { setSelectedMasterItem(item); setModalMode('edit'); setIsMasterModalOpen(true); }} 
+            onDelete={handleDeleteMaster} 
+         />;
      }
-
-     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
-        const isArk = activeModule === 'Master ARK';
-        switch(activeTab) {
-            case 'Items': return <MasterAtkTable data={isArk ? arkMaster : atkMaster} onEdit={(item) => { setSelectedMasterProduct(item); setModalMode('edit'); setIsMasterItemModalOpen(true); }} />;
-            case 'UOM': return <GeneralMasterTable data={uomList} onEdit={()=>{}} onDelete={()=>{}} />;
-            case 'Category': return <GeneralMasterTable data={isArk ? arkCategories : atkCategories} onEdit={()=>{}} onDelete={()=>{}} />;
-            case 'Delivery Location': return <MasterDeliveryLocationTable data={delivLocations} onEdit={()=>{}} onDelete={()=>{}} />;
-            default: return <MasterAtkTable data={isArk ? arkMaster : atkMaster} onEdit={(item) => { setSelectedMasterProduct(item); setModalMode('edit'); setIsMasterItemModalOpen(true); }} />;
-        }
-     }
-
      switch(activeModule) {
-         case 'Daftar Aset': return (
-            <VehicleTable 
-                data={vehicleData.filter(v => v.status === activeTab)} 
-                onEdit={(v) => { setSelectedVehicle(v); setModalMode('edit'); setIsVehicleModalOpen(true); }} 
-                onView={(v) => { setSelectedVehicle(v); setModalMode('view'); setIsVehicleModalOpen(true); }}
-            />
-         );
-         case 'Kontrak Gedung': return (
-            <BuildingTable 
-                data={filteredBuildingData}
-                onEdit={(b) => { setSelectedBuilding(b); setModalMode('edit'); setIsBuildingModalOpen(true); }}
-                onView={(b) => { setSelectedBuilding(b); setModalMode('view'); setIsBuildingModalOpen(true); }}
-            />
-         );
+         case 'Daftar Aset': return <VehicleTable data={vehicleData.filter(v => v.status === activeTab)} onEdit={(v) => { setSelectedVehicle(v); setModalMode('edit'); setIsVehicleModalOpen(true); }} onView={(v) => { setSelectedVehicle(v); setModalMode('view'); setIsVehicleModalOpen(true); }} />;
+         case 'Kontrak Gedung': return <BuildingTable data={filteredBuildingData} onEdit={(b) => { setSelectedBuilding(b); setModalMode('edit'); setIsBuildingModalOpen(true); }} onView={(b) => { setSelectedBuilding(b); setModalMode('view'); setIsBuildingModalOpen(true); }} />;
+         case 'Servis': return <ServiceLogTable data={serviceData} onEdit={(s) => { setSelectedService(s); setModalMode('edit'); setIsStockModalOpen(true); }} onView={(s) => { setSelectedService(s); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'List Reminder Dokumen': return <ReminderTable data={reminderData} />;
-         case 'Kontrak Kendaraan': return <VehicleContractTable data={vehicleContractData} />;
-         case 'Servis': return <ServiceLogTable data={serviceData} />;
-         case 'Pajak & KIR': return <TaxKirTable data={taxKirData} />;
-         case 'Master Vendor': return <MasterVendorTable data={masterVendors} />;
-         case 'Request ATK':
-         case 'Stationery Request Approval':
-            return <StationeryRequestTable data={getFilteredAssetData(atkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
-         case 'Daftar ARK':
-         case 'Household Request Approval':
-            return <StationeryRequestTable data={getFilteredAssetData(arkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
-         case 'Log Book':
-            return <LogBookTable 
-                data={filteredLogBookData} 
-                onView={(item) => { setSelectedLogBook(item); setModalMode('view'); setIsStockModalOpen(true); }} 
-                onEdit={(item) => { setSelectedLogBook(item); setModalMode('edit'); setIsStockModalOpen(true); }}
-            />;
-         default: return <div className="p-8 text-center text-gray-500">Konten Modul {activeModule}</div>;
+         case 'Office Equipment': return <OfficeEquipmentTable 
+            data={officeAssetData} 
+            onAddClick={handleAddClick} 
+            onEdit={(item) => { setSelectedOfficeAsset(item); setModalMode('edit'); setIsOfficeModalOpen(true); }} 
+            onView={(item) => { setSelectedOfficeAsset(item); setModalMode('view'); setIsOfficeModalOpen(true); }} 
+            onDelete={handleDeleteOfficeAsset}
+         />;
+         case 'Log Book': return <LogBookTable data={logBookData} onView={(item) => { setSelectedLogBook(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedLogBook(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
+         default: return <div className="p-8 text-center text-gray-400">Modul {activeModule}</div>;
      }
   };
 
-  const showFilterBar = !['Dashboard', 'Timesheet'].includes(activeModule);
+  const showFilterBar = !['Dashboard', 'Timesheet', 'Office Equipment'].includes(activeModule);
   const mainTabs = useMemo(() => {
     if (activeModule === 'Kontrak Gedung') return ['Milik Sendiri', 'Sewa'];
     if (activeModule === 'Daftar Aset') return ['Aktif', 'Tidak Aktif'];
-    if (activeModule === 'Master ATK' || activeModule === 'Master ARK') return ['Items', 'UOM', 'Category', 'Delivery Location'];
-    if (activeModule.includes('Daftar') || activeModule.includes('Approval') || activeModule.includes('Request')) return ['Semua', 'Draft', 'On Progress', 'Pending', 'Approved', 'Rejected', 'Closed'];
-    if (activeModule === 'Log Book') return []; 
+    if (activeModule === 'Servis') return ['Semua', 'Proses', 'Selesai'];
     return ['Semua'];
   }, [activeModule]);
 
   return (
     <div className="flex bg-[#fbfbfb] min-h-screen font-sans relative overflow-x-hidden text-black">
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={toggleMobileMenu} />
-      )}
-
-      <Sidebar 
-        activeItem={activeModule} 
-        onNavigate={handleModuleNavigate} 
-        isCollapsed={isSidebarCollapsed} 
-        onToggle={toggleSidebar}
-        isMobileOpen={isMobileMenuOpen}
-        onCloseMobile={toggleMobileMenu}
-      />
-      
+      <Sidebar activeItem={activeModule} onNavigate={handleModuleNavigate} isCollapsed={isSidebarCollapsed} onToggle={toggleSidebar} isMobileOpen={isMobileMenuOpen} onCloseMobile={toggleMobileMenu} />
       <div className={`flex-1 flex flex-col transition-all duration-300 w-full ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
-        <TopBar breadcrumbs={['Beranda', t(activeModule)]} onMenuClick={toggleMobileMenu} />
-        
+        <TopBar breadcrumbs={['Beranda', activeModule]} onMenuClick={toggleMobileMenu} />
         <main className="flex-1 p-8 overflow-y-auto">
           <div className="max-w-[1600px] mx-auto">
-            <div className="flex items-center justify-between mb-8">
-                <h1 className="text-[20px] font-bold text-black tracking-tight">
-                    {activeModule === 'Kontrak Gedung' ? 'Daftar Gedung' : t(activeModule)}
-                </h1>
-                
-                {activeModule === 'Log Book' && (
-                    <div className="flex items-center gap-6 bg-white border border-gray-100 rounded-2xl px-6 py-3 shadow-sm">
-                        <div className="flex items-center gap-2">
-                            <Activity size={14} className="text-gray-400" />
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Today Summary</span>
-                        </div>
-                        <div className="h-6 w-[1px] bg-gray-100"></div>
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2">
-                                <Users size={14} className="text-pink-500" />
-                                <span className="text-[12px] font-black">{logBookStats.wanita}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <User size={14} className="text-blue-500" />
-                                <span className="text-[12px] font-black">{logBookStats.lakiLaki}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Baby size={14} className="text-orange-500" />
-                                <span className="text-[12px] font-black">{logBookStats.anakAnak}</span>
-                            </div>
-                        </div>
-                        <div className="h-6 w-[1px] bg-gray-100"></div>
-                        <div className="bg-black text-white px-3 py-1 rounded-lg text-[10px] font-black">
-                            {logBookStats.total} TOTAL
-                        </div>
-                    </div>
-                )}
-            </div>
-            
+            <h1 className="text-[20px] font-bold text-black tracking-tight mb-8">{t(activeModule)}</h1>
             {showFilterBar && (
-                <FilterBar 
-                    tabs={mainTabs} 
-                    activeTab={activeTab} 
-                    onTabChange={setActiveTab} 
-                    onAddClick={handleAddClick}
-                    moduleName={activeModule}
-                    searchPlaceholder={activeModule === 'Log Book' ? "Cari berdasarkan Nama Tamu..." : activeModule === 'Kontrak Gedung' ? "Cari berdasarkan Karyawan, Barang..." : undefined}
-                    hideAdd={['List Reminder Dokumen'].includes(activeModule)}
-                    logBookFilters={activeModule === 'Log Book' ? logBookFilters : undefined}
-                    onLogBookFilterChange={handleLogBookFilterChange}
-                />
+                <FilterBar tabs={mainTabs} activeTab={activeTab} onTabChange={setActiveTab} onAddClick={handleAddClick} moduleName={activeModule} logBookFilters={activeModule === 'Log Book' ? logBookFilters : undefined} onLogBookFilterChange={handleLogBookFilterChange} />
             )}
-            
             {renderContent()}
           </div>
         </main>
       </div>
 
+      <AddStockModal isOpen={isStockModalOpen} onClose={() => setIsStockModalOpen(false)} moduleName={activeModule} mode={modalMode} initialServiceData={selectedService || undefined} onSaveService={handleSaveService} vehicleList={vehicleData} />
+      <BuildingModal isOpen={isBuildingModalOpen} onClose={() => setIsBuildingModalOpen(false)} onSave={() => setIsBuildingModalOpen(false)} initialData={selectedBuilding || undefined} mode={modalMode} />
+      <VehicleModal isOpen={isVehicleModalOpen} onClose={() => setIsVehicleModalOpen(false)} onSave={() => setIsVehicleModalOpen(false)} initialData={selectedVehicle || undefined} mode={modalMode} />
       <GeneralMasterModal 
-        isOpen={isMasterModalOpen}
-        onClose={() => setIsMasterModalOpen(false)}
-        onSave={(name) => { /* Handle Master Save */ setIsMasterModalOpen(false); }}
-        initialData={selectedMasterItem}
-        title={activeModule}
+        isOpen={isMasterModalOpen} 
+        onClose={() => setIsMasterModalOpen(false)} 
+        onSave={handleSaveMaster} 
+        initialData={selectedMasterItem} 
+        title={activeModule} 
       />
-
-      <BuildingModal 
-        isOpen={isBuildingModalOpen}
-        onClose={() => setIsBuildingModalOpen(false)}
-        onSave={() => setIsBuildingModalOpen(false)}
-        initialData={selectedBuilding || undefined}
-        mode={modalMode}
-      />
-
-      <VehicleModal 
-        isOpen={isVehicleModalOpen}
-        onClose={() => setIsVehicleModalOpen(false)}
-        onSave={() => setIsVehicleModalOpen(false)}
-        initialData={selectedVehicle || undefined}
-        mode={modalMode}
-      />
-
-      <AddStockModal 
-        isOpen={isStockModalOpen}
-        onClose={() => setIsStockModalOpen(false)}
-        moduleName={activeModule}
-        mode={modalMode}
-        initialAssetData={selectedAsset || undefined}
-        initialLogBookData={selectedLogBook || undefined}
-        onSaveLogBook={handleSaveLogBook}
-        onApprove={handleApproveAsset}
-        onReject={handleRejectAsset}
-        vehicleList={vehicleData}
-      />
-
-      <MasterItemModal 
-        isOpen={isMasterItemModalOpen}
-        onClose={() => setIsMasterItemModalOpen(false)}
-        onSave={handleSaveMasterItem}
-        initialData={selectedMasterProduct}
-        moduleName={activeModule}
-        mode={modalMode}
+      <OfficeEquipmentModal 
+        isOpen={isOfficeModalOpen} 
+        onClose={() => setIsOfficeModalOpen(false)} 
+        onSave={handleSaveOfficeAsset} 
+        initialData={selectedOfficeAsset} 
+        mode={modalMode} 
       />
     </div>
   );

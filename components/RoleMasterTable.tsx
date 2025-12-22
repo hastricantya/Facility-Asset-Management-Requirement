@@ -1,16 +1,16 @@
 
 import React from 'react';
-import { GeneralMasterItem } from '../types';
+import { RoleMasterItem } from '../types';
 import { Pencil, Trash2, ChevronLeft, ChevronRight, ChevronsUpDown, MoreHorizontal } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props {
-  data: GeneralMasterItem[];
-  onEdit: (item: GeneralMasterItem) => void;
+  data: RoleMasterItem[];
+  onEdit: (item: RoleMasterItem) => void;
   onDelete: (id: number) => void;
 }
 
-export const GeneralMasterTable: React.FC<Props> = ({ data, onEdit, onDelete }) => {
+export const RoleMasterTable: React.FC<Props> = ({ data, onEdit, onDelete }) => {
   const { t } = useLanguage();
 
   return (
@@ -25,9 +25,15 @@ export const GeneralMasterTable: React.FC<Props> = ({ data, onEdit, onDelete }) 
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors" />
                 </div>
               </th>
+              <th className="p-5 w-1/3 border-b border-gray-100 group cursor-pointer hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Role</span>
+                  <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors" />
+                </div>
+              </th>
               <th className="p-5 border-b border-gray-100 group cursor-pointer hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Nama</span>
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Deskripsi</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors" />
                 </div>
               </th>
@@ -43,8 +49,11 @@ export const GeneralMasterTable: React.FC<Props> = ({ data, onEdit, onDelete }) 
                         <td className="p-5 text-center font-bold text-gray-400 border-r border-gray-50/50">
                             {item.id}
                         </td>
-                        <td className="p-5 font-bold text-black group-hover:pl-7 transition-all duration-300 uppercase tracking-tight">
+                        <td className="p-5 font-bold text-black uppercase tracking-tight">
                             {item.name}
+                        </td>
+                        <td className="p-5 font-medium text-gray-500">
+                            {item.description}
                         </td>
                         <td className="p-5 text-center">
                             <div className="flex items-center justify-center gap-2">
@@ -68,7 +77,7 @@ export const GeneralMasterTable: React.FC<Props> = ({ data, onEdit, onDelete }) 
                 ))
             ) : (
                 <tr>
-                    <td colSpan={3} className="p-24 text-center">
+                    <td colSpan={4} className="p-24 text-center">
                         <div className="flex flex-col items-center justify-center opacity-20">
                             <MoreHorizontal size={48} className="text-gray-400 mb-4" />
                             <p className="text-[11px] font-black uppercase tracking-widest">Tidak ada data tersedia</p>
@@ -83,7 +92,7 @@ export const GeneralMasterTable: React.FC<Props> = ({ data, onEdit, onDelete }) 
        {/* Pagination Footer */}
        <div className="px-6 py-5 border-t border-gray-100 bg-white flex items-center justify-between">
             <div className="text-[11px] font-black text-gray-400 uppercase tracking-widest">
-                Menampilkan {data.length > 0 ? 1 : 0} - {data.length} dari <span className="text-black">{data.length}</span> item
+                Menampilkan {data.length} item peran
             </div>
             
             <div className="flex items-center gap-1">
