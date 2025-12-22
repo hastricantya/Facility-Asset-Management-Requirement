@@ -19,7 +19,7 @@ import { VehicleModal } from './components/VehicleModal';
 import { BuildingModal } from './components/BuildingModal';
 import { GeneralMasterModal } from './components/GeneralMasterModal';
 import { AddStockModal } from './components/AddStockModal';
-import { Users, User, Baby, Activity } from 'lucide-react';
+import { Users, User, Baby, Activity, Monitor } from 'lucide-react';
 import { 
   MOCK_VEHICLE_DATA, 
   MOCK_SERVICE_DATA, 
@@ -56,8 +56,8 @@ import { useLanguage } from './contexts/LanguageContext';
 
 const App: React.FC = () => {
   const { t } = useLanguage();
-  const [activeModule, setActiveModule] = useState('Log Book'); 
-  const [activeTab, setActiveTab] = useState('');
+  const [activeModule, setActiveModule] = useState('Servis'); 
+  const [activeTab, setActiveTab] = useState('Semua');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
@@ -77,7 +77,7 @@ const App: React.FC = () => {
   const [buildingData] = useState<BuildingRecord[]>(MOCK_BUILDING_DATA);
   const [reminderData] = useState<ReminderRecord[]>(MOCK_REMINDER_DATA);
   const [vehicleContractData] = useState<VehicleContractRecord[]>(MOCK_VEHICLE_CONTRACT_DATA);
-  const [serviceData] = useState<ServiceRecord[]>(MOCK_SERVICE_DATA);
+  const [serviceData, setServiceData] = useState<ServiceRecord[]>(MOCK_SERVICE_DATA);
   const [taxKirData] = useState<TaxKirRecord[]>(MOCK_TAX_KIR_DATA);
   const [masterVendors] = useState(MOCK_MASTER_VENDOR_DATA);
   const [atkData] = useState<AssetRecord[]>(MOCK_ATK_DATA);
@@ -117,6 +117,7 @@ const App: React.FC = () => {
   const [selectedMasterItem, setSelectedMasterItem] = useState<GeneralMasterItem | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<AssetRecord | null>(null);
   const [selectedLogBook, setSelectedLogBook] = useState<LogBookRecord | null>(null);
+  const [selectedService, setSelectedService] = useState<ServiceRecord | null>(null);
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -130,7 +131,7 @@ const App: React.FC = () => {
     } else if (module.includes('Master')) {
         setActiveTab('Items');
     } else if (module === 'Log Book') {
-        setActiveTab(''); // No active tab for logbook
+        setActiveTab(''); 
     } else {
         setActiveTab('Semua');
     }
@@ -141,6 +142,7 @@ const App: React.FC = () => {
     setModalMode('create');
     setSelectedLogBook(null);
     setSelectedAsset(null);
+    setSelectedService(null);
     if (activeModule === 'Daftar Aset') {
         setSelectedVehicle(null);
         setIsVehicleModalOpen(true);
@@ -153,6 +155,24 @@ const App: React.FC = () => {
         setSelectedMasterItem(null);
         setIsMasterModalOpen(true);
     }
+  };
+
+  const handleSaveService = (data: Partial<ServiceRecord>) => {
+    if (modalMode === 'create') {
+        const newRecord: ServiceRecord = {
+            ...data,
+            id: `SRV/${new Date().getFullYear()}/${(serviceData.length + 1).toString().padStart(3, '0')}`,
+            tglRequest: data.tglRequest || new Date().toISOString().split('T')[0],
+            status: 'Proses',
+            statusApproval: '0',
+            channel: data.channel || 'HCO',
+            cabang: data.cabang || 'Jakarta'
+        } as ServiceRecord;
+        setServiceData([newRecord, ...serviceData]);
+    } else {
+        setServiceData(serviceData.map(item => item.id === data.id ? { ...item, ...data } : item));
+    }
+    setIsStockModalOpen(false);
   };
 
   const handleSaveLogBook = (data: Partial<LogBookRecord>) => {
@@ -199,16 +219,6 @@ const App: React.FC = () => {
     });
   }, [logBookData, logBookFilters]);
 
-  // Log Book stats calculation
-  const logBookStats = useMemo(() => {
-    return filteredLogBookData.reduce((acc, curr) => ({
-      wanita: acc.wanita + curr.wanita,
-      lakiLaki: acc.lakiLaki + curr.lakiLaki,
-      anakAnak: acc.anakAnak + curr.anakAnak,
-      total: acc.total + curr.wanita + curr.lakiLaki + curr.anakAnak
-    }), { wanita: 0, lakiLaki: 0, anakAnak: 0, total: 0 });
-  }, [filteredLogBookData]);
-
   const renderContent = () => {
      if (masterLists[activeModule]) {
          return (
@@ -218,17 +228,6 @@ const App: React.FC = () => {
                 onDelete={(id) => { if(confirm('Hapus?')) setMasterLists(prev => ({...prev, [activeModule]: prev[activeModule].filter(i => i.id !== id)})); }}
             />
          );
-     }
-
-     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
-        const isArk = activeModule === 'Master ARK';
-        switch(activeTab) {
-            case 'Items': return <MasterAtkTable data={isArk ? arkMaster : atkMaster} />;
-            case 'UOM': return <GeneralMasterTable data={uomList} onEdit={()=>{}} onDelete={()=>{}} />;
-            case 'Category': return <GeneralMasterTable data={isArk ? arkCategories : atkCategories} onEdit={()=>{}} onDelete={()=>{}} />;
-            case 'Delivery Location': return <MasterDeliveryLocationTable data={delivLocations} onEdit={()=>{}} onDelete={()=>{}} />;
-            default: return <MasterAtkTable data={isArk ? arkMaster : atkMaster} />;
-        }
      }
 
      switch(activeModule) {
@@ -248,41 +247,52 @@ const App: React.FC = () => {
          );
          case 'List Reminder Dokumen': return <ReminderTable data={reminderData} />;
          case 'Kontrak Kendaraan': return <VehicleContractTable data={vehicleContractData} />;
-         case 'Servis': return <ServiceLogTable data={serviceData} />;
+         case 'Servis': return <ServiceLogTable 
+                data={serviceData} 
+                onEdit={(s) => { setSelectedService(s); setModalMode('edit'); setIsStockModalOpen(true); }}
+                onView={(s) => { setSelectedService(s); setModalMode('view'); setIsStockModalOpen(true); }}
+            />;
          case 'Pajak & KIR': return <TaxKirTable data={taxKirData} />;
-         case 'Master Vendor': return <MasterVendorTable data={masterVendors} />;
-         case 'Daftar ATK':
-         case 'Stationery Request Approval':
-            return <StationeryRequestTable data={getFilteredAssetData(atkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
-         case 'Daftar ARK':
-         case 'Household Request Approval':
-            return <StationeryRequestTable data={getFilteredAssetData(arkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Log Book':
             return <LogBookTable 
                 data={filteredLogBookData} 
                 onView={(item) => { setSelectedLogBook(item); setModalMode('view'); setIsStockModalOpen(true); }} 
                 onEdit={(item) => { setSelectedLogBook(item); setModalMode('edit'); setIsStockModalOpen(true); }}
             />;
+         case 'Office Equipment':
+            return (
+              <div className="bg-white rounded-2xl p-20 text-center border-2 border-dashed border-gray-100">
+                <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Monitor className="text-gray-300" size={40} />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{t('Office Equipment')}</h3>
+                <p className="text-gray-400 text-sm max-w-xs mx-auto leading-relaxed">
+                  Modul ini digunakan untuk mendata seluruh peralatan kantor seperti Monitor, Printer, AC, dan lainnya.
+                </p>
+                <div className="mt-8">
+                  <button className="bg-black text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-800 transition-all">
+                    Tambah Peralatan
+                  </button>
+                </div>
+              </div>
+            );
          default: return <div className="p-8 text-center text-gray-500">Konten Modul {activeModule}</div>;
      }
   };
 
-  const showFilterBar = !['Dashboard', 'Timesheet'].includes(activeModule);
+  const showFilterBar = !['Dashboard', 'Timesheet', 'Office Equipment'].includes(activeModule);
   const mainTabs = useMemo(() => {
     if (activeModule === 'Kontrak Gedung') return ['Milik Sendiri', 'Sewa'];
     if (activeModule === 'Daftar Aset') return ['Aktif', 'Tidak Aktif'];
     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') return ['Items', 'UOM', 'Category', 'Delivery Location'];
     if (activeModule.includes('Daftar') || activeModule.includes('Approval')) return ['Semua', 'Draft', 'Approved', 'Pending', 'Rejected', 'Closed'];
     if (activeModule === 'Log Book') return []; 
+    if (activeModule === 'Servis') return ['Semua', 'Proses', 'Selesai'];
     return ['Semua'];
   }, [activeModule]);
 
   return (
     <div className="flex bg-[#fbfbfb] min-h-screen font-sans relative overflow-x-hidden text-black">
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={toggleMobileMenu} />
-      )}
-
       <Sidebar 
         activeItem={activeModule} 
         onNavigate={handleModuleNavigate} 
@@ -294,43 +304,11 @@ const App: React.FC = () => {
       
       <div className={`flex-1 flex flex-col transition-all duration-300 w-full ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
         <TopBar breadcrumbs={['Beranda', activeModule]} onMenuClick={toggleMobileMenu} />
-        
         <main className="flex-1 p-8 overflow-y-auto">
           <div className="max-w-[1600px] mx-auto">
-            <div className="flex items-center justify-between mb-8">
-                <h1 className="text-[20px] font-bold text-black tracking-tight">
-                    {activeModule === 'Kontrak Gedung' ? 'Daftar Gedung' : t(activeModule)}
-                </h1>
-                
-                {activeModule === 'Log Book' && (
-                    <div className="flex items-center gap-6 bg-white border border-gray-100 rounded-2xl px-6 py-3 shadow-sm">
-                        <div className="flex items-center gap-2">
-                            <Activity size={14} className="text-gray-400" />
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Today Summary</span>
-                        </div>
-                        <div className="h-6 w-[1px] bg-gray-100"></div>
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2">
-                                <Users size={14} className="text-pink-500" />
-                                <span className="text-[12px] font-black">{logBookStats.wanita}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <User size={14} className="text-blue-500" />
-                                <span className="text-[12px] font-black">{logBookStats.lakiLaki}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Baby size={14} className="text-orange-500" />
-                                <span className="text-[12px] font-black">{logBookStats.anakAnak}</span>
-                            </div>
-                        </div>
-                        <div className="h-6 w-[1px] bg-gray-100"></div>
-                        <div className="bg-black text-white px-3 py-1 rounded-lg text-[10px] font-black">
-                            {logBookStats.total} TOTAL
-                        </div>
-                    </div>
-                )}
-            </div>
-            
+            <h1 className="text-[20px] font-bold text-black tracking-tight mb-8">
+                {activeModule === 'Kontrak Gedung' ? 'Daftar Gedung' : t(activeModule)}
+            </h1>
             {showFilterBar && (
                 <FilterBar 
                     tabs={mainTabs} 
@@ -338,41 +316,15 @@ const App: React.FC = () => {
                     onTabChange={setActiveTab} 
                     onAddClick={handleAddClick}
                     moduleName={activeModule}
-                    searchPlaceholder={activeModule === 'Log Book' ? "Cari berdasarkan Nama Tamu..." : activeModule === 'Kontrak Gedung' ? "Cari berdasarkan Karyawan, Barang..." : undefined}
                     hideAdd={['List Reminder Dokumen'].includes(activeModule)}
                     logBookFilters={activeModule === 'Log Book' ? logBookFilters : undefined}
                     onLogBookFilterChange={handleLogBookFilterChange}
                 />
             )}
-            
             {renderContent()}
           </div>
         </main>
       </div>
-
-      <GeneralMasterModal 
-        isOpen={isMasterModalOpen}
-        onClose={() => setIsMasterModalOpen(false)}
-        onSave={(name) => { /* Handle Master Save */ setIsMasterModalOpen(false); }}
-        initialData={selectedMasterItem}
-        title={activeModule}
-      />
-
-      <BuildingModal 
-        isOpen={isBuildingModalOpen}
-        onClose={() => setIsBuildingModalOpen(false)}
-        onSave={() => setIsBuildingModalOpen(false)}
-        initialData={selectedBuilding || undefined}
-        mode={modalMode}
-      />
-
-      <VehicleModal 
-        isOpen={isVehicleModalOpen}
-        onClose={() => setIsVehicleModalOpen(false)}
-        onSave={() => setIsVehicleModalOpen(false)}
-        initialData={selectedVehicle || undefined}
-        mode={modalMode}
-      />
 
       <AddStockModal 
         isOpen={isStockModalOpen}
@@ -381,9 +333,12 @@ const App: React.FC = () => {
         mode={modalMode}
         initialAssetData={selectedAsset || undefined}
         initialLogBookData={selectedLogBook || undefined}
+        initialServiceData={selectedService || undefined}
         onSaveLogBook={handleSaveLogBook}
+        onSaveService={handleSaveService}
         vehicleList={vehicleData}
       />
+      {/* Modals lainnya */}
     </div>
   );
 };

@@ -1,466 +1,307 @@
 
-import React, { useState, useEffect } from 'react';
-import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare } from 'lucide-react';
-import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord } from '../types';
+import React, { useState, useEffect, useMemo } from 'react';
+import { X, ChevronDown, Wrench, Plus, Image as ImageIcon, Trash2, Clock, List, AlertCircle, Calendar as CalendarIcon, Save } from 'lucide-react';
+import { VehicleRecord, ServiceRecord, AssetRecord, SparePart, LogBookRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
-import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY } from '../constants';
+import { MOCK_SERVICE_DATA } from '../constants';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   moduleName?: string;
-  onSaveVehicle?: (vehicle: Partial<VehicleRecord>) => void;
   onSaveService?: (service: Partial<ServiceRecord>) => void;
-  onSaveTaxKir?: (tax: Partial<TaxKirRecord>) => void;
-  onSaveMutation?: (mutation: Partial<MutationRecord>) => void;
-  onSaveSales?: (sales: Partial<SalesRecord>) => void;
-  onSaveContract?: (contract: Partial<ContractRecord>) => void;
-  onSaveMaster?: (master: Partial<GeneralMasterItem>) => void;
-  onSaveMasterVendor?: (masterVendor: Partial<MasterVendorRecord>) => void;
-  onSaveStationeryRequest?: (request: Partial<StationeryRequestRecord>) => void;
-  onSaveDeliveryLocation?: (location: Partial<DeliveryLocationRecord>) => void;
-  onSaveLogBook?: (logbook: Partial<LogBookRecord>) => void;
-  onRevise?: () => void;
-  
-  initialVehicleData?: VehicleRecord;
+  onSaveLogBook?: (log: Partial<LogBookRecord>) => void;
   initialServiceData?: ServiceRecord;
-  initialTaxKirData?: TaxKirRecord;
-  initialMutationData?: MutationRecord;
-  initialSalesData?: SalesRecord;
-  initialContractData?: ContractRecord;
-  initialMasterData?: GeneralMasterItem;
-  initialMasterVendorData?: MasterVendorRecord;
-  initialDeliveryLocationData?: DeliveryLocationRecord;
   initialAssetData?: AssetRecord;
   initialLogBookData?: LogBookRecord;
-  
   mode?: 'create' | 'edit' | 'view';
   vehicleList?: VehicleRecord[];
-  masterData?: Record<string, GeneralMasterItem[]>;
 }
 
 export const AddStockModal: React.FC<Props> = ({ 
     isOpen, 
     onClose, 
-    moduleName = 'ATK', 
-    onSaveVehicle,
+    moduleName = 'Servis', 
     onSaveService,
-    onSaveTaxKir,
-    onSaveMutation,
-    onSaveSales,
-    onSaveContract,
-    onSaveMaster,
-    onSaveMasterVendor,
-    onSaveStationeryRequest,
-    onSaveDeliveryLocation,
-    onSaveLogBook,
-    onRevise,
-    initialVehicleData,
     initialServiceData,
-    initialTaxKirData,
-    initialMutationData,
-    initialSalesData,
-    initialContractData,
-    initialMasterData,
-    initialMasterVendorData,
-    initialDeliveryLocationData,
-    initialAssetData,
-    initialLogBookData,
     mode = 'create',
-    vehicleList = [],
-    masterData = {}
+    vehicleList = []
 }) => {
   const { t } = useLanguage();
-  
-  const [contractForm, setContractForm] = useState<Partial<ContractRecord>>({});
-  const [vehicleForm, setVehicleForm] = useState<Partial<VehicleRecord>>({});
-  const [serviceForm, setServiceForm] = useState<Partial<ServiceRecord>>({});
-  const [taxKirForm, setTaxKirForm] = useState<Partial<TaxKirRecord>>({});
-  const [masterForm, setMasterForm] = useState<Partial<GeneralMasterItem>>({});
-  const [stationeryRequestForm, setStationeryRequestForm] = useState<Partial<StationeryRequestRecord>>({
-      type: 'Permintaan Bulanan',
-      deliveryType: 'Dikirim',
-      location: 'MODENA Head Office',
-      date: new Date().toISOString().split('T')[0]
+  const [serviceForm, setServiceForm] = useState<Partial<ServiceRecord>>({
+      jenisServis: 'Servis Rutin',
+      jenisPembayaran: 'Kasbon',
+      tglRequest: new Date().toISOString().split('T')[0],
+      spareParts: []
   });
-  const [logBookForm, setLogBookForm] = useState<Partial<LogBookRecord>>({});
-  const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '', categoryId: '' }]);
-  const [showApprovalHistory, setShowApprovalHistory] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
         if (mode === 'edit' || mode === 'view') {
-           if (initialContractData) setContractForm(initialContractData);
-           if (initialVehicleData) setVehicleForm(initialVehicleData);
-           if (initialServiceData) setServiceForm(initialServiceData);
-           if (initialTaxKirData) setTaxKirForm(initialTaxKirData);
-           if (initialMasterData) setMasterForm(initialMasterData);
-           if (initialLogBookData) setLogBookForm(initialLogBookData);
-           
-           if (initialAssetData) {
-               const isArk = moduleName?.includes('ARK') || false;
-               const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
-               const matchedMaster = masterList.find(m => m.itemName === initialAssetData.itemName);
-               
-               let formattedDate = new Date().toISOString().split('T')[0];
-               if (initialAssetData.date) {
-                   const parts = initialAssetData.date.split('/');
-                   if (parts.length === 3) formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-               }
-
-               setStationeryRequestForm({
-                   type: 'Permintaan Bulanan',
-                   date: formattedDate,
-                   remarks: initialAssetData.itemDescription || '',
-                   deliveryType: 'Dikirim',
-                   location: 'MODENA Head Office'
-               });
-
-               setRequestItems([{ 
-                   itemId: matchedMaster ? matchedMaster.id.toString() : '', 
-                   qty: initialAssetData.qty ? initialAssetData.qty.toString() : '0',
-                   categoryId: matchedMaster ? matchedMaster.category : ''
-               }]);
+           if (initialServiceData) {
+               setServiceForm(initialServiceData);
            }
         } else {
-            setStationeryRequestForm({ type: 'Permintaan Bulanan', deliveryType: 'Dikirim', location: 'MODENA Head Office', date: new Date().toISOString().split('T')[0] });
-            setRequestItems([{ itemId: '', qty: '', categoryId: '' }]);
+            setServiceForm({ 
+                jenisServis: 'Servis Rutin', 
+                jenisPembayaran: 'Kasbon',
+                tglRequest: new Date().toISOString().split('T')[0],
+                spareParts: []
+            });
         }
     }
-  }, [isOpen, initialAssetData, mode, moduleName]);
+  }, [isOpen, initialServiceData, mode]);
 
-  const handleSave = () => {
-      if (moduleName === 'Log Book' && onSaveLogBook) onSaveLogBook(logBookForm);
-      if ((moduleName === 'Daftar ATK' || moduleName === 'Daftar ARK') && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
-      onClose();
-  }
-
-  const handleLogBookChange = (field: keyof LogBookRecord, value: any) => setLogBookForm(prev => ({ ...prev, [field]: value }));
-  const handleStationeryRequestChange = (field: keyof StationeryRequestRecord, value: any) => setStationeryRequestForm(prev => ({ ...prev, [field]: value }));
-
-  const handleRequestItemChange = (index: number, field: keyof StationeryRequestItem, value: string) => {
-      const newItems = [...requestItems];
-      if (field === 'categoryId') {
-          // If category changes, reset itemId for that row to ensure validation
-          newItems[index] = { ...newItems[index], [field]: value, itemId: '' };
-      } else {
-          newItems[index] = { ...newItems[index], [field]: value };
-      }
-      setRequestItems(newItems);
-  }
-
-  const addRequestItemRow = () => setRequestItems([...requestItems, { itemId: '', qty: '', categoryId: '' }]);
-  const removeRequestItemRow = (index: number) => { if (requestItems.length > 1) setRequestItems(requestItems.filter((_, i) => i !== index)); }
-
-  const SectionHeader = ({ icon: Icon, title }: { icon: any, title: string }) => (
-    <div className="flex items-center gap-3 mb-6 pb-2 border-b border-gray-100">
-        <Icon size={18} className="text-black" />
-        <h3 className="text-[10px] font-black text-black uppercase tracking-[0.2em]">{title}</h3>
-    </div>
-  );
-
-  const isStationeryRequest = moduleName === 'Daftar ATK' || moduleName === 'Daftar ARK' || moduleName === 'Stationery Request Approval' || moduleName === 'Household Request Approval';
-  const isViewMode = mode === 'view';
-  const isLogBook = moduleName === 'Log Book';
-  const Required = () => <span className="text-red-600 font-bold ml-0.5">*</span>;
-
-  const renderApprovalHistory = () => {
-    if (!showApprovalHistory) return null;
-    return (
-        <div className="fixed inset-0 bg-black/40 z-[70] flex items-center justify-center backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="bg-white w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
-                {/* Header */}
-                <div className="px-8 py-6 border-b border-gray-100 flex items-start justify-between">
-                    <div>
-                        <h2 className="text-[18px] font-bold text-[#111827]">Approval History</h2>
-                        <p className="text-[14px] text-[#6B7280] mt-1">Document Number: {initialAssetData?.transactionNumber || 'PR/085/BOK/12.25'}</p>
-                    </div>
-                    <button onClick={() => setShowApprovalHistory(false)} className="text-gray-400 hover:text-gray-600 transition-colors p-1">
-                        <X size={24} />
-                    </button>
-                </div>
-                
-                {/* Body */}
-                <div className="p-10 bg-white">
-                    <div className="relative flex gap-8">
-                        {/* Timeline Indicator */}
-                        <div className="flex flex-col items-center">
-                            <div className="w-12 h-12 rounded-full bg-[#22C55E] flex items-center justify-center shadow-sm border-[4px] border-white">
-                                <CheckCircle className="text-white" size={24} />
-                            </div>
-                            <div className="w-[2px] flex-1 bg-gray-100 mt-2"></div>
-                        </div>
-                        
-                        {/* Content Card */}
-                        <div className="flex-1 bg-white rounded-xl border border-[#E5E7EB] p-6 shadow-sm">
-                            <div className="flex justify-between items-start mb-4">
-                                <h4 className="font-bold text-[#111827] text-[16px]">Approved by Ibnu Faisal Abbas</h4>
-                                <span className="px-4 py-1.5 bg-[#E8FDF5] text-[#059669] text-[12px] font-medium rounded-lg">Completed</span>
-                            </div>
-                            
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-6 text-[14px] text-[#4B5563]">
-                                    <div className="flex items-center gap-2">
-                                        <User size={16} className="text-gray-400" />
-                                        <span>Ibnu Faisal Abbas</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Calendar size={16} className="text-gray-400" />
-                                        <span>2025-12-18 10:37:09</span>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <p className="text-[14px] font-bold text-[#111827]">Remarks: <span className="font-normal text-[#374151]">tes</span></p>
-                                </div>
-                                
-                                <div className="text-[13px] text-[#9CA3AF]">
-                                    Email: <span className="text-[#6B7280]">ibnu.faisal@modena.com</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                {/* Footer */}
-                <div className="px-8 py-5 border-t border-gray-50 flex justify-end">
-                    <button 
-                        onClick={() => setShowApprovalHistory(false)} 
-                        className="px-6 py-2 bg-gray-50 hover:bg-gray-100 text-[12px] font-bold text-[#374151] rounded-lg transition-all border border-gray-200"
-                    >
-                        Tutup
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
-  }
+  const historyData = useMemo(() => {
+    const assetName = serviceForm.aset || '';
+    if (!assetName) return [];
+    return MOCK_SERVICE_DATA.filter(s => s.aset === assetName);
+  }, [serviceForm.aset]);
 
   if (!isOpen) return null;
 
+  const handleServiceChange = (field: keyof ServiceRecord, value: any) => setServiceForm(prev => ({ ...prev, [field]: value }));
+
+  const isViewMode = mode === 'view';
+
+  const FormLabel = ({ children, required }: { children?: React.ReactNode, required?: boolean }) => (
+      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">
+          {children} {required && <span className="text-red-500">*</span>}
+      </label>
+  );
+
+  const InputField = ({ label, value, field, type = "text", placeholder = "", required = false }: any) => (
+      <div>
+          <FormLabel required={required}>{label}</FormLabel>
+          <input 
+              type={type} 
+              placeholder={placeholder}
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm font-bold text-gray-900 focus:outline-none focus:border-black bg-white shadow-sm transition-all disabled:bg-gray-50"
+              value={value || ''}
+              onChange={(e) => handleServiceChange(field, e.target.value)}
+              disabled={isViewMode}
+          />
+      </div>
+  );
+
+  const isServiceModule = moduleName === 'Servis';
+
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-[2px] p-4 transition-opacity duration-300">
-      <div className={`bg-white w-full ${isLogBook || (isStationeryRequest && !isViewMode) ? 'max-w-5xl' : 'max-w-7xl'} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transform transition-all scale-100`}>
-        {/* Header */}
-        <div className="px-8 py-5 bg-white border-b border-gray-100 flex items-center justify-between shrink-0">
-          <div>
-              <h2 className="text-lg font-bold tracking-tight text-gray-900 uppercase tracking-tighter">
-                {isStationeryRequest ? (isViewMode ? 'Stationery Request Details' : 'Create Stationery Request') : isLogBook ? 'Guest Log Detail' : moduleName}
+    <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className={`bg-white w-full ${isServiceModule ? 'max-w-7xl' : 'max-w-2xl'} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]`}>
+        
+        {/* Modal Header */}
+        <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 bg-white">
+           <div className="flex items-center gap-3">
+              <div className="text-gray-900">
+                <Wrench size={20} />
+              </div>
+              <h2 className="text-[13px] font-black tracking-tight text-gray-900 uppercase">
+                 {isViewMode ? 'DETAIL CATATAN SERVIS' : 'INPUT CATATAN PEMELIHARAAN'}
               </h2>
-              {isViewMode && initialAssetData?.transactionNumber && (
-                <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase">ID: {initialAssetData.transactionNumber}</span>
-              )}
-          </div>
-          <div className="flex items-center gap-3">
-            {isViewMode && isStationeryRequest && (
-              <button onClick={() => setShowApprovalHistory(true)} className="flex items-center gap-2 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-black bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all"><History size={14} /> History</button>
-            )}
-            <button className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-100" onClick={onClose}>
-              <X size={20} className="cursor-pointer"/>
-            </button>
-          </div>
+           </div>
+           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-300 hover:text-red-500 transition-all">
+              <X size={20} />
+           </button>
         </div>
         
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-[#F8F9FA]">
-          {isStationeryRequest && isViewMode ? (
-            /* --- POPUP CONTENT FOR VIEW MODE STATIONERY --- */
-            <div className="space-y-8">
-               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                   <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden">
-                      <SectionHeader icon={User} title="Requester Info" />
-                      <div className="space-y-4">
-                          <div className="flex items-center gap-4">
-                              <img src={initialAssetData?.employee.avatar} className="w-12 h-12 rounded-full border border-gray-100" />
-                              <div>
-                                  <div className="text-[14px] font-black text-black uppercase">{initialAssetData?.employee.name}</div>
-                                  <div className="text-[10px] font-bold text-gray-400 uppercase">{initialAssetData?.employee.role}</div>
-                              </div>
-                          </div>
-                          <div><label className="text-[9px] font-black text-gray-400 uppercase block">Phone</label><div className="text-[12px] font-mono text-gray-600">{initialAssetData?.employee.phone}</div></div>
-                      </div>
-                   </div>
-                   <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                      <SectionHeader icon={Package} title="Request Type" />
-                      <div className="space-y-4">
-                          <div><label className="text-[9px] font-black text-gray-400 uppercase block">Category</label><div className="text-[14px] font-black text-black uppercase">{stationeryRequestForm.type}</div></div>
-                          <div><label className="text-[9px] font-black text-gray-400 uppercase block">Submit Date</label><div className="text-[12px] font-bold text-gray-600">{initialAssetData?.date}</div></div>
-                      </div>
-                   </div>
-                   <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                      <SectionHeader icon={MapPin} title="Delivery Address" />
-                      <div className="space-y-4">
-                          <div><label className="text-[9px] font-black text-gray-400 uppercase block">Location</label><div className="text-[14px] font-black text-black uppercase">{stationeryRequestForm.location}</div></div>
-                          <div><label className="text-[9px] font-black text-gray-400 uppercase block">Status</label>
-                            <span className="inline-block mt-1 px-2 py-0.5 bg-green-500 text-white text-[9px] font-black rounded uppercase">{initialAssetData?.status}</span>
-                          </div>
-                      </div>
-                   </div>
-               </div>
+        <div className="flex-1 overflow-y-auto p-6 bg-white custom-scrollbar flex flex-col lg:flex-row gap-6">
+          
+          {/* Main Content Area */}
+          <div className="flex-[2] space-y-6">
+            {isServiceModule ? (
+                <>
+                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Baris 1: Aset */}
+                        <div className="md:col-span-2">
+                            <FormLabel required>Aset</FormLabel>
+                            <div className="relative">
+                                <select 
+                                    className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm font-bold text-gray-900 focus:outline-none focus:border-black appearance-none bg-white shadow-sm disabled:bg-gray-50"
+                                    value={serviceForm.aset || ''}
+                                    onChange={(e) => {
+                                        const v = vehicleList.find(x => x.nama === e.target.value);
+                                        setServiceForm(prev => ({...prev, aset: e.target.value, noPolisi: v?.noPolisi}));
+                                    }}
+                                    disabled={isViewMode}
+                                >
+                                    <option value="">(Pilih Kendaraan)</option>
+                                    {vehicleList.map(v => <option key={v.id} value={v.nama}>{v.noPolisi} - {v.nama}</option>)}
+                                </select>
+                                <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
+                            </div>
+                        </div>
 
-               {/* REVERTED INVENTORY ITEMS TABLE */}
-               <div className="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-gray-50 border-b border-gray-200 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                <th className="px-8 py-5 w-16 text-center">#</th>
-                                <th className="px-8 py-5">Item Name / Description</th>
-                                <th className="px-8 py-5 w-40">Category</th>
-                                <th className="px-8 py-5 w-40">Part Code</th>
-                                <th className="px-8 py-5 w-28 text-center">Qty</th>
-                                <th className="px-8 py-5 w-28 text-center">In Stock</th>
-                                <th className="px-8 py-5 w-24 text-center">Unit</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {[...requestItems, { itemId: '2', qty: '5' }].map((item, index) => {
-                                const isArk = moduleName?.includes('ARK');
-                                const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
-                                const masterItem = masterList.find(m => m.id.toString() === item.itemId);
-                                const qtyNum = parseInt(item.qty) || 0;
-                                return (
-                                    <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="px-8 py-6 text-center text-gray-300 font-bold text-[11px]">{index + 1}</td>
-                                        <td className="px-8 py-6">
-                                            <div className="font-black text-black text-[13px] uppercase tracking-tight">{masterItem?.itemName || 'Unknown Item'}</div>
-                                        </td>
-                                        <td className="px-8 py-6">
-                                            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">{masterItem?.category || 'General'}</span>
-                                        </td>
-                                        <td className="px-8 py-6">
-                                            <span className="font-mono text-[11px] font-black text-gray-400 bg-gray-100 px-2 py-1 rounded">{masterItem?.itemCode || 'N/A'}</span>
-                                        </td>
-                                        <td className="px-8 py-6 text-center">
-                                            <div className="text-[16px] font-black text-black">{qtyNum}</div>
-                                        </td>
-                                        <td className="px-8 py-6 text-center">
-                                            <div className={`text-[16px] font-black ${masterItem && masterItem.remainingStock < 10 ? 'text-red-500' : 'text-gray-400'}`}>
-                                                {masterItem?.remainingStock || 0}
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-6 text-center">
-                                            <div className="text-[11px] font-black text-gray-400 uppercase tracking-widest">{masterItem?.uom || 'PCS'}</div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                  </div>
-               </div>
-            </div>
-          ) : isLogBook ? (
-            /* --- LOG BOOK CONTENT --- */
-            <div className="space-y-6">
-                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="md:col-span-2"><SectionHeader icon={List} title="Detail Kunjungan" /></div>
-                    <div><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Lokasi Modena</label><div className="text-[14px] font-black uppercase">{logBookForm.lokasiModena || 'N/A'}</div></div>
-                    <div><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Kategori</label><div className="text-[14px] font-black uppercase text-blue-600">{logBookForm.kategoriTamu || 'N/A'}</div></div>
-                    <div className="md:col-span-2"><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Nama Tamu</label><div className="text-[16px] font-black uppercase">{logBookForm.namaTamu || 'N/A'}</div></div>
-                    <div><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">In</label><div className="text-[14px] font-mono font-bold">{logBookForm.jamDatang || '--:--'}</div></div>
-                    <div><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Out</label><div className="text-[14px] font-mono font-bold text-gray-400">{logBookForm.jamPulang || '--:--'}</div></div>
-                </div>
-                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <SectionHeader icon={Users} title="Breakdown Pengunjung" />
-                    <div className="grid grid-cols-3 gap-4 text-center">
-                        <div><div className="text-[20px] font-black">{logBookForm.wanita || 0}</div><div className="text-[9px] font-black text-pink-500 uppercase">Wanita</div></div>
-                        <div><div className="text-[20px] font-black">{logBookForm.lakiLaki || 0}</div><div className="text-[9px] font-black text-blue-500 uppercase">Laki-Laki</div></div>
-                        <div><div className="text-[20px] font-black">{logBookForm.anakAnak || 0}</div><div className="text-[9px] font-black text-orange-500 uppercase">Anak-Anak</div></div>
+                        {/* Baris 2: Tanggal STNK & Jenis Servis */}
+                        <InputField label="Tanggal STNK" type="date" value={serviceForm.tglStnk} field="tglStnk" required />
+                        <div>
+                            <FormLabel required>Jenis Servis</FormLabel>
+                            <div className="relative">
+                                <select 
+                                    className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm font-bold text-gray-900 focus:outline-none focus:border-black appearance-none bg-white shadow-sm disabled:bg-gray-50"
+                                    value={serviceForm.jenisServis || ''}
+                                    onChange={(e) => handleServiceChange('jenisServis', e.target.value)}
+                                    disabled={isViewMode}
+                                >
+                                    <option value="Servis Rutin">Servis Rutin</option>
+                                    <option value="Perbaikan Besar">Perbaikan Besar</option>
+                                    <option value="Body Repair">Body Repair</option>
+                                </select>
+                                <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
+                            </div>
+                        </div>
+
+                        {/* Baris 3: Vendor */}
+                        <div className="md:col-span-2">
+                            <FormLabel required>Vendor</FormLabel>
+                            <div className="relative">
+                                <input 
+                                    type="text" 
+                                    placeholder="(Pilih Vendor)"
+                                    className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm font-bold text-gray-900 focus:outline-none focus:border-black bg-white shadow-sm disabled:bg-gray-50"
+                                    value={serviceForm.vendor || ''}
+                                    onChange={(e) => handleServiceChange('vendor', e.target.value)}
+                                    disabled={isViewMode}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Baris 4: Target Selesai & KM Kendaraan */}
+                        <InputField label="Target Selesai" type="date" value={serviceForm.targetSelesai} field="targetSelesai" required />
+                        <InputField label="KM Kendaraan" placeholder="Masukkan KM..." value={serviceForm.kmKendaraan} field="kmKendaraan" required />
+
+                        {/* Baris 5: Masalah & Penyebab */}
+                        <div>
+                            <FormLabel>Masalah (maks. 1000 karakter)</FormLabel>
+                            <textarea 
+                                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:border-black resize-none h-24 bg-white shadow-sm placeholder:text-gray-300 disabled:bg-gray-50"
+                                placeholder="Deskripsikan masalah..."
+                                value={serviceForm.masalah || ''}
+                                onChange={(e) => handleServiceChange('masalah', e.target.value)}
+                                disabled={isViewMode}
+                            />
+                        </div>
+                        <div>
+                            <FormLabel>Penyebab (maks. 1000 karakter)</FormLabel>
+                            <textarea 
+                                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:border-black resize-none h-24 bg-white shadow-sm placeholder:text-gray-300 disabled:bg-gray-50"
+                                placeholder="Deskripsikan penyebab..."
+                                value={serviceForm.penyebab || ''}
+                                onChange={(e) => handleServiceChange('penyebab', e.target.value)}
+                                disabled={isViewMode}
+                            />
+                        </div>
+
+                        {/* Baris 6: Estimasi Biaya & Jenis Pembayaran */}
+                        <InputField label="Estimasi Biaya" type="number" value={serviceForm.estimasiBiaya} field="estimasiBiaya" required placeholder="0" />
+                        <div>
+                            <FormLabel required>Jenis Pembayaran</FormLabel>
+                            <div className="relative">
+                                <select 
+                                    className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm font-bold text-gray-900 focus:outline-none focus:border-black appearance-none bg-white shadow-sm disabled:bg-gray-50"
+                                    value={serviceForm.jenisPembayaran || ''}
+                                    onChange={(e) => handleServiceChange('jenisPembayaran', e.target.value)}
+                                    disabled={isViewMode}
+                                >
+                                    <option value="Kasbon">Kasbon</option>
+                                    <option value="Transfer">Transfer</option>
+                                    <option value="Corporate Card">Corporate Card</option>
+                                </select>
+                                <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
+                            </div>
+                        </div>
+
+                        {/* Baris 7: Nama Bank & Nomor Rekening */}
+                        <InputField label="Nama Bank" value={serviceForm.namaBank} field="namaBank" required placeholder="Masukkan Nama Bank..." />
+                        <InputField label="Nomor Rekening" value={serviceForm.nomorRekening} field="nomorRekening" required placeholder="Masukkan No. Rek..." />
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <SectionHeader icon={MessageSquare} title="Notes" />
-                    <p className="text-[13px] text-gray-500 italic">"{logBookForm.note || 'No additional notes.'}"</p>
+
+                {/* Lampiran */}
+                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <FormLabel>BUKTI KWITANSI / FOTO (IMG)</FormLabel>
+                    <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center hover:border-black transition-all cursor-pointer group bg-white shadow-sm">
+                        <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3 transition-transform group-hover:scale-110">
+                            <ImageIcon size={24} className="text-gray-300 group-hover:text-black transition-colors" />
+                        </div>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-black transition-colors">KLIK UNTUK UNGGAH LAMPIRAN</p>
+                    </div>
+                </div>
+                </>
+            ) : (
+                <div className="p-20 text-center opacity-30">
+                    <AlertCircle size={48} className="mx-auto mb-4" />
+                    <p className="text-[11px] font-black uppercase tracking-widest">Modul {moduleName} dalam pengembangan</p>
+                </div>
+            )}
+          </div>
+
+          {/* Sidebar - History Log (Only for Service) */}
+          {isServiceModule && (
+            <div className="flex-1 min-w-[320px] lg:max-w-[380px]">
+                <div className="bg-white p-6 rounded-xl border border-gray-200 h-full flex flex-col shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-2 text-gray-900">
+                            <Clock size={18} />
+                            <h3 className="text-[11px] font-black uppercase tracking-widest">RIWAYAT SEBELUMNYA</h3>
+                        </div>
+                        <span className="bg-black text-white text-[9px] font-black px-2 py-1 rounded uppercase tracking-tighter">{historyData.length} LOG</span>
+                    </div>
+
+                    <div className="space-y-6 overflow-y-auto max-h-[600px] pr-2 custom-scrollbar">
+                        {historyData.length > 0 ? (
+                            historyData.map((log, i) => (
+                                <div key={i} className="relative pl-7 group">
+                                    <div className="absolute left-[3px] top-0 bottom-0 w-[2px] bg-gray-100 group-last:bottom-auto group-last:h-6"></div>
+                                    <div className="absolute left-[-2px] top-3 w-[12px] h-[12px] rounded-full border-[3px] border-white bg-black"></div>
+                                    
+                                    <div className="bg-white border border-gray-100 p-4 rounded-xl hover:border-black transition-all cursor-pointer shadow-sm">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="bg-black text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">{log.id}</span>
+                                            <span className="text-[9px] font-bold text-gray-400 flex items-center gap-1 uppercase">
+                                                <CalendarIcon size={10} className="text-gray-300" /> {log.tglRequest}
+                                            </span>
+                                        </div>
+                                        <h4 className="text-[11px] font-black text-gray-900 mb-1 uppercase">{log.jenisServis || 'Pengecekan Rutin'}</h4>
+                                        
+                                        <div className="flex items-center justify-between pt-3 border-t border-gray-50 mt-2">
+                                            <span className="text-[10px] font-black text-gray-900 uppercase">{log.kmKendaraan || 0} KM</span>
+                                            <span className="text-[11px] font-black text-black">Rp {log.estimasiBiaya ? parseInt(log.estimasiBiaya).toLocaleString('id-ID') : '0'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-24 opacity-20">
+                                <Clock size={48} className="text-gray-400 mb-3" />
+                                <p className="text-[10px] font-black uppercase tracking-widest text-center">Belum ada riwayat<br/>untuk unit ini</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-          ) : isStationeryRequest && !isViewMode ? (
-            /* --- CREATE MODE STATIONERY --- */
-             <div className="space-y-6">
-                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                     <SectionHeader icon={FileText} title="Order Setup" />
-                     <div className="grid grid-cols-2 gap-4">
-                         <div><label className="block text-[10px] font-black text-gray-500 uppercase mb-2">Order Type</label>
-                            <select className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-bold bg-white" value={stationeryRequestForm.type} onChange={(e) => handleStationeryRequestChange('type', e.target.value)}>
-                                <option value="Permintaan Bulanan">Permintaan Bulanan</option>
-                                <option value="Permintaan Khusus">Permintaan Khusus</option>
-                            </select>
-                         </div>
-                         <div><label className="block text-[10px] font-black text-gray-500 uppercase mb-2">Date</label><input type="date" className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-bold bg-white" value={stationeryRequestForm.date} onChange={(e) => handleStationeryRequestChange('date', e.target.value)} /></div>
-                     </div>
-                 </div>
-                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                    <div className="flex justify-between items-center mb-4"><SectionHeader icon={List} title="Items List" /><button onClick={addRequestItemRow} className="text-[10px] font-black uppercase tracking-widest px-4 py-1.5 bg-black text-white rounded-lg">+ Add Row</button></div>
-                    <div className="overflow-hidden border border-gray-100 rounded-lg mb-4">
-                         <table className="w-full text-left">
-                             <thead className="bg-gray-50 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                 <tr><th className="p-3 w-12 text-center">#</th><th className="p-3 w-1/4">Category</th><th className="p-3 w-1/2">Select Product</th><th className="p-3 w-28 text-center">Qty</th><th className="p-3 w-16"></th></tr>
-                             </thead>
-                             <tbody className="divide-y divide-gray-50">
-                                 {requestItems.map((item, idx) => {
-                                     const isArk = moduleName === 'Daftar ARK';
-                                     const categoryList = isArk ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY;
-                                     const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
-                                     // Filter items based on selected category in this row
-                                     const filteredItems = item.categoryId ? masterList.filter(m => m.category === item.categoryId) : [];
-                                     
-                                     return (
-                                     <tr key={idx}>
-                                         <td className="p-3 text-center text-gray-400 font-bold">{idx + 1}</td>
-                                         <td className="p-3">
-                                             <select 
-                                                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-bold" 
-                                                value={item.categoryId} 
-                                                onChange={(e) => handleRequestItemChange(idx, 'categoryId', e.target.value)}
-                                             >
-                                                 <option value="">Select Category...</option>
-                                                 {categoryList.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                                             </select>
-                                         </td>
-                                         <td className="p-3">
-                                             <select 
-                                                disabled={!item.categoryId}
-                                                className={`w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-bold ${!item.categoryId ? 'bg-gray-50' : ''}`} 
-                                                value={item.itemId} 
-                                                onChange={(e) => handleRequestItemChange(idx, 'itemId', e.target.value)}
-                                             >
-                                                 <option value="">{item.categoryId ? 'Search Product...' : 'Select category first'}</option>
-                                                 {filteredItems.map(m => <option key={m.id} value={m.id}>{m.itemName} ({m.itemCode})</option>)}
-                                             </select>
-                                         </td>
-                                         <td className="p-3"><input type="number" className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-black text-center" value={item.qty} onChange={(e) => handleRequestItemChange(idx, 'qty', e.target.value)} /></td>
-                                         <td className="p-3 text-center"><button onClick={() => removeRequestItemRow(idx)} className="text-gray-300 hover:text-red-500 transition-all"><X size={16}/></button></td>
-                                     </tr>
-                                 )})}
-                             </tbody>
-                         </table>
-                    </div>
-                    <textarea rows={2} className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm italic" placeholder="Add remarks..." value={stationeryRequestForm.remarks} onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)} />
-                 </div>
-             </div>
-          ) : (
-            <div className="p-12 text-center text-gray-400 uppercase font-black text-[10px] tracking-widest">Detail View for {moduleName}</div>
           )}
         </div>
 
-        {/* Footer */}
-        <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end gap-3 shrink-0">
-          {isViewMode ? (
-            <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-black bg-gray-100 rounded-lg hover:bg-gray-200 transition-all">Close</button>
-          ) : (
-            <>
-              <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-black transition-all">Cancel</button>
-              {isStationeryRequest && (
-                <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-black transition-all">DRAF</button>
-              )}
-              <button onClick={handleSave} className="px-12 py-2.5 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-lg hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95">Save Data</button>
-            </>
+        {/* Modal Footer */}
+        <div className="px-6 py-4 bg-white border-t border-gray-100 flex justify-end gap-4">
+          <button 
+            onClick={onClose}
+            className="px-8 py-3 text-[11px] font-black text-gray-400 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:text-black transition-all uppercase tracking-widest"
+          >
+            BATAL
+          </button>
+          {!isViewMode && (
+            <button 
+                onClick={() => isServiceModule && onSaveService?.(serviceForm)} 
+                className="px-12 py-3 text-[11px] font-black text-white bg-black rounded-xl hover:bg-gray-900 transition-all flex items-center justify-center gap-2 uppercase tracking-widest active:scale-95 shadow-lg shadow-black/10"
+            >
+                <Save size={16} /> SIMPAN
+            </button>
           )}
         </div>
       </div>
-
-      {/* Approval History Modal */}
-      {renderApprovalHistory()}
     </div>
   );
 };

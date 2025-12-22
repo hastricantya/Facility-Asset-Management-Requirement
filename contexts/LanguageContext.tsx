@@ -33,6 +33,9 @@ const translations: Record<string, Record<Language, string>> = {
 
   'Log Book': { id: 'Log Book', en: 'Log Book' },
   'Gedung': { id: 'Gedung', en: 'Building' },
+  'Kontrak Gedung': { id: 'Kontrak Gedung', en: 'Building Contract' },
+  'List Reminder Dokumen': { id: 'Reminder Dokumen', en: 'Document Reminder' },
+  'Office Equipment': { id: 'Peralatan Kantor', en: 'Office Equipment' },
   'Contract': { id: 'Kontrak', en: 'Contract' },
   'Timesheet': { id: 'Absensi', en: 'Timesheet' },
   'Vendor': { id: 'Vendor', en: 'Vendor' },

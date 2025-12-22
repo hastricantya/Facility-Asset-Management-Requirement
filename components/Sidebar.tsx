@@ -25,7 +25,8 @@ import {
   Settings,
   UserCheck,
   Box,
-  House
+  House,
+  Monitor
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -107,6 +108,7 @@ export const Sidebar: React.FC<Props> = ({
         subItems: [
              { label: 'Kontrak Gedung', icon: <FileText size={18} /> },
              { label: 'List Reminder Dokumen', icon: <Bell size={18} /> },
+             { label: 'Office Equipment', icon: <Monitor size={18} /> },
         ]
     },
     { label: 'Timesheet', icon: <Clock size={20} /> },
@@ -187,7 +189,7 @@ export const Sidebar: React.FC<Props> = ({
                                             ? 'bg-[#1a1a1a] text-white border-l-4 border-white' 
                                             : 'hover:bg-[#1a1a1a] hover:text-white border-l-4 border-transparent text-gray-500'}`}
                                     >
-                                        {sub.label}
+                                        {t(sub.label)}
                                     </button>
                                   )
                               })}

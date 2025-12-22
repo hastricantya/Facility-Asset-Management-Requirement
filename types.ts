@@ -207,7 +207,6 @@ export interface MasterItem {
 export interface StationeryRequestItem {
   itemId: string;
   qty: string;
-  categoryId?: string;
 }
 
 export interface StationeryRequestRecord {
