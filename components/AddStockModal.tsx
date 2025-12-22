@@ -346,7 +346,7 @@ export const AddStockModal: React.FC<Props> = ({
                                 <th className="px-8 py-4">Item Name / Description</th>
                                 <th className="px-8 py-4 w-28 text-center">Qty</th>
                                 <th className="px-8 py-4 w-28 text-center">In Stock</th>
-                                <th className="px-8 py-4 w-24 text-center">Unit</th>
+                                <th className="px-8 py-4 w-24 text-center">UOM</th>
                                 <th className="px-8 py-4 w-16 text-center"></th>
                             </tr>
                         </thead>
