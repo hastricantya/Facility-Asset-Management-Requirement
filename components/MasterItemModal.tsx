@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { X, Save, Package, Tag, Archive, DollarSign, Calendar, Hash, History, Landmark, ShoppingCart, AlertCircle } from 'lucide-react';
+import { X, Save, Package, Tag, Archive, DollarSign, Calendar, Hash, History, Landmark, ShoppingCart, AlertCircle, Layers } from 'lucide-react';
 import { MasterItem, GeneralMasterItem, PurchaseRecord } from '../types';
 import { MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA } from '../constants';
 
@@ -94,27 +95,32 @@ export const MasterItemModal: React.FC<Props> = ({
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-[#F8F9FA]">
           <div className="space-y-8">
-            {/* Top Grid: Info & Stock */}
+            {/* Main Form Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Basic Info */}
+              
+              {/* Product Information Column */}
               <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
                 <SectionHeader icon={Package} title="Informasi Barang" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Category First as requested */}
+                  
+                  {/* 1. Category First */}
                   <div className="md:col-span-2">
                     <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Kategori</label>
-                    <select 
-                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none appearance-none bg-white transition-all shadow-sm"
-                      value={form.category}
-                      onChange={(e) => setForm({...form, category: e.target.value})}
-                      disabled={isView}
-                    >
-                      <option value="">Pilih Kategori</option>
-                      {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                    </select>
+                    <div className="relative">
+                      <select 
+                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none appearance-none bg-white transition-all shadow-sm"
+                        value={form.category}
+                        onChange={(e) => setForm({...form, category: e.target.value})}
+                        disabled={isView}
+                      >
+                        <option value="">Pilih Kategori</option>
+                        {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                      </select>
+                      <Layers size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
+                    </div>
                   </div>
                   
-                  {/* Item Name Second as requested */}
+                  {/* 2. Item Name Second */}
                   <div className="md:col-span-2">
                     <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Nama Barang</label>
                     <input 
@@ -127,7 +133,7 @@ export const MasterItemModal: React.FC<Props> = ({
                     />
                   </div>
 
-                  {/* Part Code - Disabled until category is selected */}
+                  {/* 3. Part Code - Logic: Category first then Part Code */}
                   <div>
                     <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">
                       Kode Part {!form.category && <span className="text-red-400 normal-case font-medium ml-1">(Pilih kategori dulu)</span>}
@@ -139,27 +145,30 @@ export const MasterItemModal: React.FC<Props> = ({
                         className={`w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono font-bold outline-none transition-all shadow-sm ${(!form.category || isView) ? 'bg-gray-50 text-gray-300 cursor-not-allowed' : 'bg-white text-black focus:border-black'}`}
                         value={form.itemCode || ''}
                         onChange={(e) => setForm({...form, itemCode: e.target.value})}
-                        placeholder={form.category ? "TP-001" : "Select Category..."}
+                        placeholder={form.category ? "CON: TP-001" : "Select Category..."}
                       />
                       {!form.category && !isView && <AlertCircle size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300" />}
                     </div>
                   </div>
 
-                  {/* UOM */}
+                  {/* 4. UOM */}
                   <div>
                     <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Satuan (UOM)</label>
-                    <select 
-                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none appearance-none bg-white shadow-sm transition-all"
-                      value={form.uom}
-                      onChange={(e) => setForm({...form, uom: e.target.value})}
-                      disabled={isView}
-                    >
-                      <option value="">Pilih Satuan</option>
-                      {MOCK_UOM_DATA.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
-                    </select>
+                    <div className="relative">
+                      <select 
+                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none appearance-none bg-white shadow-sm transition-all"
+                        value={form.uom}
+                        onChange={(e) => setForm({...form, uom: e.target.value})}
+                        disabled={isView}
+                      >
+                        <option value="">Pilih Satuan</option>
+                        {MOCK_UOM_DATA.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
+                      </select>
+                      <Tag size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
+                    </div>
                   </div>
 
-                  {/* Harga Beli */}
+                  {/* 5. Harga Beli */}
                   <div>
                     <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Harga Beli</label>
                     <div className="relative">
@@ -175,31 +184,34 @@ export const MasterItemModal: React.FC<Props> = ({
                     </div>
                   </div>
 
-                  {/* Qty */}
+                  {/* 6. Qty */}
                   <div>
                     <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Qty (Stok Saat Ini)</label>
-                    <input 
-                      type="number" 
-                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-black focus:border-black outline-none transition-all shadow-sm"
-                      value={form.remainingStock}
-                      onChange={(e) => setForm({...form, remainingStock: parseInt(e.target.value) || 0})}
-                      placeholder="0"
-                      disabled={isView}
-                    />
+                    <div className="relative">
+                      <input 
+                        type="number" 
+                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-black focus:border-black outline-none transition-all shadow-sm"
+                        value={form.remainingStock}
+                        onChange={(e) => setForm({...form, remainingStock: parseInt(e.target.value) || 0})}
+                        placeholder="0"
+                        disabled={isView}
+                      />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-300 uppercase">{form.uom || 'Unit'}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Inventory Info (Limits) */}
+              {/* Inventory Management Column (Limits & Peringatan) */}
               <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
-                <SectionHeader icon={Hash} title="Stok Limit" />
+                <SectionHeader icon={Hash} title="Stock Settings" />
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Min Stock</label>
                       <input 
                         type="number" 
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-center disabled:bg-gray-50"
+                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-center disabled:bg-gray-50 bg-white"
                         value={form.minimumStock}
                         onChange={(e) => setForm({...form, minimumStock: parseInt(e.target.value) || 0})}
                         disabled={isView}
@@ -209,7 +221,7 @@ export const MasterItemModal: React.FC<Props> = ({
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Max Stock</label>
                       <input 
                         type="number" 
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-center disabled:bg-gray-50"
+                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-center disabled:bg-gray-50 bg-white"
                         value={form.maximumStock}
                         onChange={(e) => setForm({...form, maximumStock: parseInt(e.target.value) || 0})}
                         disabled={isView}
@@ -219,7 +231,7 @@ export const MasterItemModal: React.FC<Props> = ({
                   
                   <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-4">
                     <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">Avg Price</span>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">Average Price</span>
                         <span className="text-sm font-black text-black">{form.averagePrice || 'Rp 0'}</span>
                     </div>
                     <div className="flex justify-between items-center">
@@ -231,19 +243,19 @@ export const MasterItemModal: React.FC<Props> = ({
                   <div className="flex items-start gap-3 p-4 bg-orange-50 rounded-xl border border-orange-100">
                       <AlertCircle size={16} className="text-orange-500 shrink-0 mt-0.5" />
                       <p className="text-[9px] font-bold text-orange-700 uppercase leading-relaxed">
-                          Peringatan otomatis aktif jika stok dibawah {form.minimumStock}.
+                          Sistem akan memicu peringatan otomatis jika stok berada di bawah batas minimum ({form.minimumStock}).
                       </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Purchase History Section: Now integrated in the same form below information */}
+            {/* Integrated Purchase History - Below information section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                   <SectionHeader icon={History} title="History Pembelian" />
                   <div className="flex items-center gap-2 px-3 py-1 bg-black text-white rounded-lg text-[9px] font-black uppercase tracking-widest mb-4">
-                    <ShoppingCart size={12} /> {MOCK_PURCHASE_HISTORY.length} Transactions
+                    <ShoppingCart size={12} /> {MOCK_PURCHASE_HISTORY.length} Transaksi Tercatat
                   </div>
               </div>
 
@@ -285,7 +297,7 @@ export const MasterItemModal: React.FC<Props> = ({
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer Actions */}
         <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end gap-3 shrink-0">
           <button onClick={onClose} className="px-10 py-2.5 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-black transition-all">Cancel</button>
           {!isView && (
