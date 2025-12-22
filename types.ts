@@ -217,6 +217,20 @@ export interface MasterItem {
   purchaseHistory?: PurchaseRecord[];
 }
 
+export interface StockOpnameRecord {
+  id: number;
+  opnameNumber: string;
+  itemCode: string;
+  itemName: string;
+  category: string;
+  systemQty: number;
+  physicalQty: number;
+  difference: number;
+  date: string;
+  performedBy: string;
+  status: 'Matched' | 'Discrepancy' | 'Draft';
+}
+
 export interface StationeryRequestItem {
   itemId: string;
   qty: string;

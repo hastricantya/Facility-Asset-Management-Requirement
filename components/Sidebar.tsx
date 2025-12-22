@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, 
@@ -24,7 +25,8 @@ import {
   Settings,
   UserCheck,
   Box,
-  House
+  House,
+  ClipboardList
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -87,7 +89,7 @@ export const Sidebar: React.FC<Props> = ({
         subItems: [
             { label: 'Request ATK', icon: <Database size={18} /> },
             { label: 'Stationery Request Approval', icon: <UserCheck size={18} /> },
-            { label: 'Master ATK', icon: <Settings size={18} /> },
+            { label: 'Stock Opname', icon: <ClipboardList size={18} /> },
         ]
     },
     { 
@@ -96,7 +98,6 @@ export const Sidebar: React.FC<Props> = ({
         subItems: [
             { label: 'Daftar ARK', icon: <Database size={18} /> },
             { label: 'Household Request Approval', icon: <UserCheck size={18} /> },
-            { label: 'Master ARK', icon: <Settings size={18} /> },
         ]
     },
     { label: 'Log Book', icon: <BookOpen size={20} /> },
@@ -124,6 +125,8 @@ export const Sidebar: React.FC<Props> = ({
         { label: 'Tipe Vendor', icon: <Wrench size={18} /> },
         { label: 'Peran', icon: <Wrench size={18} /> },
         { label: 'Master Vendor', icon: <Users size={18} /> },
+        { label: 'Master ATK', icon: <Settings size={18} /> },
+        { label: 'Master ARK', icon: <Settings size={18} /> },
       ]
     },
   ];

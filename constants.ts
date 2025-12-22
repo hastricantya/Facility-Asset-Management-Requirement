@@ -1,5 +1,5 @@
 
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord } from './types';
 
 // Helper function to generate mock data for ATK/ARK
 const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] => {
@@ -72,6 +72,12 @@ export const MOCK_MASTER_DATA: MasterItem[] = [
 export const MOCK_MASTER_ARK_DATA: MasterItem[] = [
   { id: 1, category: 'Pembersih', itemName: 'Wipol Karbol', itemCode: 'CL-WPL-01', uom: 'Pcs', remainingStock: 10, minimumStock: 5, maximumStock: 20, requestedStock: 0, purchaseDate: '10/03/2024', lastPurchasePrice: 'Rp. 15.000', averagePrice: 'Rp. 14.800' },
   { id: 2, category: 'Tisu', itemName: 'Tisu Nice 250s', itemCode: 'TS-NIC-250', uom: 'Pack', remainingStock: 30, minimumStock: 10, maximumStock: 50, requestedStock: 10, purchaseDate: '12/03/2024', lastPurchasePrice: 'Rp. 8.000', averagePrice: 'Rp. 7.900' }
+];
+
+export const MOCK_STOCK_OPNAME_DATA: StockOpnameRecord[] = [
+  { id: 1, opnameNumber: 'SO/ATK/2024/0001', itemCode: 'TP-HP0048', itemName: 'HP Laserjet 204A Black', category: 'Tinta Printer', systemQty: 5, physicalQty: 5, difference: 0, date: '2024-03-20', performedBy: 'Aan Junaidi', status: 'Matched' },
+  { id: 2, opnameNumber: 'SO/ATK/2024/0002', itemCode: 'KRT-A4-70', itemName: 'Kertas A4 70gr', category: 'Kertas', systemQty: 50, physicalQty: 48, difference: -2, date: '2024-03-20', performedBy: 'Budi Santoso', status: 'Discrepancy' },
+  { id: 3, opnameNumber: 'SO/ATK/2024/0003', itemCode: 'ATK-PEN-01', itemName: 'Pulpen Standard AE7', category: 'Alat Tulis', systemQty: 120, physicalQty: 120, difference: 0, date: '2024-03-20', performedBy: 'Citra Lestari', status: 'Matched' }
 ];
 
 export const MOCK_UOM_DATA: GeneralMasterItem[] = [

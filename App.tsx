@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
@@ -14,6 +15,7 @@ import { StationeryRequestTable } from './components/StationeryRequestTable';
 import { MasterAtkTable } from './components/MasterAtkTable';
 import { MasterDeliveryLocationTable } from './components/MasterDeliveryLocationTable';
 import { LogBookTable } from './components/LogBookTable';
+import { StockOpnameTable } from './components/StockOpnameTable';
 import { VehicleModal } from './components/VehicleModal';
 import { BuildingModal } from './components/BuildingModal';
 import { GeneralMasterModal } from './components/GeneralMasterModal';
@@ -37,6 +39,7 @@ import {
   MOCK_MASTER_DATA as MOCK_ATK_MASTER,
   MOCK_MASTER_ARK_DATA,
   MOCK_LOGBOOK_DATA,
+  MOCK_STOCK_OPNAME_DATA,
   MOCK_UOM_DATA,
   MOCK_ATK_CATEGORY,
   MOCK_ARK_CATEGORY,
@@ -53,7 +56,8 @@ import {
   AssetRecord,
   LogBookRecord,
   MasterItem,
-  DeliveryLocationRecord
+  DeliveryLocationRecord,
+  StockOpnameRecord
 } from './types';
 import { useLanguage } from './contexts/LanguageContext';
 
@@ -109,6 +113,7 @@ const App: React.FC = () => {
   const [atkMaster, setAtkMaster] = useState<MasterItem[]>(MOCK_ATK_MASTER);
   const [arkMaster, setArkMaster] = useState<MasterItem[]>(MOCK_MASTER_ARK_DATA);
   const [logBookData, setLogBookData] = useState<LogBookRecord[]>(MOCK_LOGBOOK_DATA);
+  const [stockOpnameData, setStockOpnameData] = useState<StockOpnameRecord[]>(MOCK_STOCK_OPNAME_DATA);
   
   // Master Lists (UOM, Category, Loc) with setters
   const [uomList, setUomList] = useState<GeneralMasterItem[]>(MOCK_UOM_DATA);
@@ -147,6 +152,7 @@ const App: React.FC = () => {
   const [selectedLogBook, setSelectedLogBook] = useState<LogBookRecord | null>(null);
   const [selectedMasterProduct, setSelectedMasterProduct] = useState<MasterItem | null>(null);
   const [selectedDeliveryLocation, setSelectedDeliveryLocation] = useState<DeliveryLocationRecord | null>(null);
+  const [selectedStockOpname, setSelectedStockOpname] = useState<StockOpnameRecord | null>(null);
   const [assetToClose, setAssetToClose] = useState<AssetRecord | null>(null);
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -166,6 +172,8 @@ const App: React.FC = () => {
         setActiveTab('Items');
     } else if (module === 'Log Book') {
         setActiveTab(''); 
+    } else if (module === 'Stock Opname') {
+        setActiveTab('Semua');
     } else {
         setActiveTab('Semua');
     }
@@ -178,6 +186,7 @@ const App: React.FC = () => {
     setSelectedAsset(null);
     setSelectedMasterProduct(null);
     setSelectedDeliveryLocation(null);
+    setSelectedStockOpname(null);
 
     if (activeModule === 'Daftar Aset') {
         setSelectedVehicle(null);
@@ -195,7 +204,7 @@ const App: React.FC = () => {
         } else {
             setIsMasterItemModalOpen(true);
         }
-    } else if (activeModule.includes('ATK') || activeModule.includes('ARK') || activeModule === 'Log Book' || activeModule === 'Servis') {
+    } else if (activeModule.includes('ATK') || activeModule.includes('ARK') || activeModule === 'Log Book' || activeModule === 'Servis' || activeModule === 'Stock Opname') {
         setIsStockModalOpen(true);
     } else if (masterLists[activeModule]) {
         setSelectedMasterItem(null);
@@ -391,6 +400,13 @@ const App: React.FC = () => {
     });
   }, [logBookData, logBookFilters]);
 
+  const filteredStockOpnameData = useMemo(() => {
+    if (activeTab === 'Matched') return stockOpnameData.filter(d => d.status === 'Matched');
+    if (activeTab === 'Discrepancy') return stockOpnameData.filter(d => d.status === 'Discrepancy');
+    if (activeTab === 'Draft') return stockOpnameData.filter(d => d.status === 'Draft');
+    return stockOpnameData;
+  }, [stockOpnameData, activeTab]);
+
   // Log Book stats calculation
   const logBookStats = useMemo(() => {
     return filteredLogBookData.reduce((acc, curr) => ({
@@ -455,6 +471,11 @@ const App: React.FC = () => {
                 onView={(item) => { setSelectedLogBook(item); setModalMode('view'); setIsStockModalOpen(true); }} 
                 onEdit={(item) => { setSelectedLogBook(item); setModalMode('edit'); setIsStockModalOpen(true); }}
             />;
+         case 'Stock Opname':
+            return <StockOpnameTable 
+                data={filteredStockOpnameData}
+                onView={(item) => { setSelectedStockOpname(item); setModalMode('view'); setIsStockModalOpen(true); }}
+            />;
          default: return <div className="p-8 text-center text-gray-500">Konten Modul {activeModule}</div>;
      }
   };
@@ -466,6 +487,7 @@ const App: React.FC = () => {
     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') return ['Items', 'UOM', 'Category', 'Delivery Location'];
     if (activeModule.includes('Daftar') || activeModule.includes('Approval') || activeModule.includes('Request')) return ['Semua', 'Draft', 'On Progress', 'Pending', 'Approved', 'Rejected', 'Closed'];
     if (activeModule === 'Log Book') return []; 
+    if (activeModule === 'Stock Opname') return ['Semua', 'Matched', 'Discrepancy', 'Draft'];
     return ['Semua'];
   }, [activeModule]);
 
