@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, RefreshCcw, Plus, Trash2, Image as ImageIcon, List, Calendar, PlusCircle, Settings, Clock, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, Download, History, User, Wrench, DollarSign, Edit3, Check, Ban } from 'lucide-react';
+import { X, RefreshCcw, Plus, Trash2, Image as ImageIcon, List, Calendar, PlusCircle, Settings, Clock, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, Download, History, User, Wrench, DollarSign, Edit3, Check, Ban, Package, MapPin } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA } from '../constants';
@@ -311,112 +311,132 @@ export const AddStockModal: React.FC<Props> = ({
       return (
         <>
         <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col">
-             <div className="bg-white border-b border-gray-200 shrink-0 px-8 py-4 flex items-center justify-between z-10">
+             <div className="bg-white border-b border-gray-200 shrink-0 px-8 py-4 flex items-center justify-between z-10 shadow-sm">
                  <div className="flex items-center gap-4">
-                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600" title="Kembali"><ChevronLeft size={24} /></button>
+                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-all text-black hover:rotate-90" title="Kembali"><ChevronLeft size={24} /></button>
                     <div>
-                         <h1 className="text-xl font-bold text-gray-900">{titleLabel}</h1>
+                         <h1 className="text-2xl font-black text-black tracking-tighter uppercase">{titleLabel}</h1>
                          <div className="flex items-center gap-3 mt-1">
-                             <span className="px-2 py-0.5 bg-cyan-50 border border-cyan-100 text-cyan-700 text-xs font-semibold rounded">Transaction No: {trxNumber}</span>
-                             <span className={`px-2 py-0.5 text-xs font-semibold rounded flex items-center gap-1 ${getStatusColor(status)}`}>{getStatusIcon(status)} Status: {status}</span>
+                             <span className="px-2 py-0.5 bg-black text-white text-[9px] font-black tracking-widest rounded uppercase">ID: {trxNumber}</span>
+                             <span className={`px-2 py-0.5 text-[9px] font-black tracking-widest rounded flex items-center gap-1 uppercase border ${getStatusColor(status)}`}>{getStatusIcon(status)} STATUS: {status}</span>
                          </div>
                     </div>
                  </div>
                  <div className="flex items-center gap-3">
-                     <button onClick={() => setShowApprovalHistory(true)} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"><History size={16} /> View Approval History</button>
-                     <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#00A651] rounded hover:bg-[#008f45] transition-colors"><Printer size={16} /> Print</button>
+                     <button onClick={() => setShowApprovalHistory(true)} className="flex items-center gap-2 px-6 py-2.5 text-[11px] font-black uppercase tracking-widest text-black bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all"><History size={16} /> History</button>
+                     <button className="flex items-center gap-2 px-6 py-2.5 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-xl hover:bg-gray-900 transition-all shadow-xl shadow-black/10"><Printer size={16} /> Print</button>
                  </div>
              </div>
              
-             <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                 <div className="max-w-[1600px] mx-auto space-y-6 pb-24">
-                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                     <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                         <h3 className="text-sm font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Information</h3>
-                         <div className="space-y-4">
-                             <div><label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Requester Name</label><div className="text-sm font-semibold text-gray-900">{initialAssetData?.employee.name}</div></div>
-                             <div><label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Role</label><div className="text-sm font-medium text-gray-700">{initialAssetData?.employee.role}</div></div>
-                              <div><label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Phone</label><div className="text-sm font-medium text-gray-700">{initialAssetData?.employee.phone}</div></div>
-                         </div>
-                     </div>
-                     <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                         <h3 className="text-sm font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Delivery Terms</h3>
-                         <div className="space-y-4">
-                             <div><label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Request Date</label><div className="text-sm font-semibold text-gray-900">{initialAssetData?.date}</div></div>
-                              <div><label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Request Type</label><div className="text-sm font-medium text-gray-700">{stationeryRequestForm.type || 'Permintaan Bulanan'}</div></div>
-                             <div className="grid grid-cols-2 gap-4">
-                                 <div><label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Delivery</label><div className="text-sm font-medium text-gray-700">{stationeryRequestForm.deliveryType}</div></div>
-                                  <div><label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Location</label><div className="text-sm font-medium text-gray-700">{stationeryRequestForm.location}</div></div>
-                             </div>
-                         </div>
-                     </div>
-                     <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                         <h3 className="text-sm font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Amount Summary</h3>
-                         <div className="space-y-4">
-                             <div><label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Total Items</label><div className="text-2xl font-bold text-gray-900">{requestItems.length} <span className="text-sm font-normal text-gray-500">Item(s)</span></div></div>
-                         </div>
-                     </div>
-                 </div>
-                 <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-                     <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50"><h3 className="font-bold text-gray-900">Order Items</h3><button className="text-xs font-medium text-gray-600 hover:text-black flex items-center gap-1"><Settings size={14}/> Maximize</button></div>
-                     <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="bg-green-50 text-xs text-gray-700 uppercase font-semibold">
-                                <tr>
-                                    <th className="px-6 py-3 border-r border-green-100 w-12 text-center">No</th>
-                                    <th className="px-6 py-3 border-r border-green-100 w-32">Part Code</th>
-                                    <th className="px-6 py-3 border-r border-green-100">Part Name</th>
-                                    <th className="px-6 py-3 border-r border-green-100">Category</th>
-                                    <th className="px-6 py-3 border-r border-green-100 text-center">QTY</th>
-                                    <th className="px-6 py-3 border-r border-green-100 text-center">Unit</th>
-                                    <th className="px-6 py-3 border-r border-green-100">Comment</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200 text-sm">
-                                {requestItems.map((item, index) => {
-                                    const masterItem = masterList.find(m => m.id.toString() === item.itemId);
-                                    return (
-                                        <tr key={index} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 text-center text-gray-500">{index + 1}</td>
-                                            <td className="px-6 py-4 font-mono text-xs font-medium text-gray-600 bg-gray-50/50">{masterItem?.itemCode || '-'}</td>
-                                            <td className="px-6 py-4 font-bold text-gray-800">{masterItem?.itemName || '-'}</td>
-                                             <td className="px-6 py-4 text-gray-600">{masterItem?.category || '-'}</td>
-                                            <td className="px-6 py-4 text-center font-bold text-gray-900">{item.qty}</td>
-                                            <td className="px-6 py-4 text-center text-gray-500">{masterItem?.uom || 'Pcs'}</td>
-                                            <td className="px-6 py-4 text-gray-600 italic">{stationeryRequestForm.remarks || '-'}</td>
-                                        </tr>
-                                    )
-                                })}
-                            </tbody>
-                        </table>
-                     </div>
-                 </div>
-                 
-                 {isApprovalModule && (
-                    <div className="flex items-center justify-end gap-3 mt-8">
-                        <button 
-                            onClick={() => { if(confirm(t('Reject') + '?')) onClose(); }}
-                            className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-[#E32227] rounded-lg hover:bg-red-700 transition-all shadow-sm"
-                        >
-                            <XCircle size={18} />
-                            {t('Reject')}
-                        </button>
-                        <button 
-                            onClick={() => { onRevise?.(); }}
-                            className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-[#F57C00] rounded-lg hover:bg-orange-600 transition-all shadow-sm"
-                        >
-                            <Edit3 size={18} />
-                            {t('Revise')}
-                        </button>
-                        <button 
-                            onClick={() => { if(confirm(t('Approve') + '?')) onClose(); }}
-                            className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-[#10B981] rounded-lg hover:bg-emerald-600 transition-all shadow-sm"
-                        >
-                            <CheckCircle size={18} />
-                            {t('Approve')}
-                        </button>
+             <div className="flex-1 overflow-y-auto p-12 custom-scrollbar bg-[#FBFBFB]">
+                 <div className="max-w-6xl mx-auto space-y-12 pb-24">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                        {/* Requester Info */}
+                        <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-gray-50 -mr-12 -mt-12 rounded-full opacity-50"></div>
+                            <div className="relative z-10">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-8 h-8 bg-black text-white flex items-center justify-center rounded-lg"><User size={16} /></div>
+                                    <h3 className="text-[10px] font-black text-black uppercase tracking-[0.2em]">Requester Info</h3>
+                                </div>
+                                <div className="space-y-6">
+                                    <div><label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Employee Name</label><div className="text-[14px] font-black text-black uppercase">{initialAssetData?.employee.name}</div></div>
+                                    <div><label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Position / Role</label><div className="text-[12px] font-bold text-gray-600">{initialAssetData?.employee.role}</div></div>
+                                    <div><label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Contact</label><div className="text-[12px] font-mono text-gray-600">{initialAssetData?.employee.phone}</div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Order Details */}
+                        <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-8 h-8 bg-black text-white flex items-center justify-center rounded-lg"><Package size={16} /></div>
+                                <h3 className="text-[10px] font-black text-black uppercase tracking-[0.2em]">Order Details</h3>
+                            </div>
+                            <div className="space-y-6">
+                                <div><label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Submission Date</label><div className="text-[14px] font-black text-black">{initialAssetData?.date}</div></div>
+                                <div><label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Request Type</label><div className="text-[12px] font-bold text-gray-600">{stationeryRequestForm.type}</div></div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div><label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Method</label><div className="text-[12px] font-bold text-gray-600">{stationeryRequestForm.deliveryType}</div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Location */}
+                        <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-8 h-8 bg-black text-white flex items-center justify-center rounded-lg"><MapPin size={16} /></div>
+                                <h3 className="text-[10px] font-black text-black uppercase tracking-[0.2em]">Delivery Point</h3>
+                            </div>
+                            <div className="space-y-6">
+                                <div><label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">MODENA Location</label><div className="text-[14px] font-black text-black uppercase">{stationeryRequestForm.location}</div></div>
+                                <div><label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Comments / Remarks</label><div className="text-[12px] font-medium text-gray-500 italic">"{stationeryRequestForm.remarks || 'No special instructions provided.'}"</div></div>
+                            </div>
+                        </div>
                     </div>
-                 )}
+
+                    {/* Items Table */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-black/5 overflow-hidden">
+                        <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <div className="flex items-center gap-3">
+                                <div className="w-2 h-6 bg-black rounded-full"></div>
+                                <h3 className="font-black text-black text-[11px] uppercase tracking-[0.2em]">Requested Asset Items</h3>
+                            </div>
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-white border border-gray-200 px-3 py-1 rounded-lg">TOTAL: {requestItems.length} ITEM(S)</span>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-white border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                        <th className="px-8 py-5 w-16 text-center">#</th>
+                                        <th className="px-8 py-5 w-40">Part Code</th>
+                                        <th className="px-8 py-5">Nomenclature / Description</th>
+                                        <th className="px-8 py-5 w-40">Category</th>
+                                        <th className="px-8 py-5 w-32 text-center">Quantity</th>
+                                        <th className="px-8 py-5 w-24 text-center">Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {requestItems.map((item, index) => {
+                                        const masterItem = masterList.find(m => m.id.toString() === item.itemId);
+                                        return (
+                                            <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+                                                <td className="px-8 py-6 text-center text-gray-300 font-bold text-[11px]">{index + 1}</td>
+                                                <td className="px-8 py-6"><span className="font-mono text-[11px] font-black text-gray-400 bg-gray-100 px-2 py-1 rounded">{masterItem?.itemCode || 'N/A'}</span></td>
+                                                <td className="px-8 py-6"><div className="font-black text-black text-[13px] uppercase tracking-tight">{masterItem?.itemName || 'Unknown Item'}</div></td>
+                                                <td className="px-8 py-6"><span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">{masterItem?.category || 'General'}</span></td>
+                                                <td className="px-8 py-6 text-center"><div className="text-[16px] font-black text-black">{item.qty}</div></td>
+                                                <td className="px-8 py-6 text-center"><div className="text-[11px] font-black text-gray-400 uppercase tracking-widest">{masterItem?.uom || 'PCS'}</div></td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                 
+                    {isApprovalModule && (
+                        <div className="flex items-center justify-end gap-4 mt-12 bg-white p-6 rounded-2xl border border-gray-100 shadow-xl shadow-black/5">
+                            <button 
+                                onClick={() => { if(confirm(t('Reject') + '?')) onClose(); }}
+                                className="px-10 py-4 text-[11px] font-black uppercase tracking-widest text-white bg-red-600 rounded-xl hover:bg-red-700 transition-all shadow-lg shadow-red-100 active:scale-95"
+                            >
+                                {t('Reject')}
+                            </button>
+                            <button 
+                                onClick={() => { onRevise?.(); }}
+                                className="px-10 py-4 text-[11px] font-black uppercase tracking-widest text-black bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all active:scale-95"
+                            >
+                                {t('Revise')}
+                            </button>
+                            <button 
+                                onClick={() => { if(confirm(t('Approve') + '?')) onClose(); }}
+                                className="px-12 py-4 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-xl hover:bg-gray-900 transition-all shadow-xl shadow-black/20 active:scale-95"
+                            >
+                                {t('Approve')}
+                            </button>
+                        </div>
+                    )}
                  </div>
              </div>
         </div>
@@ -430,7 +450,7 @@ export const AddStockModal: React.FC<Props> = ({
       <div className={`bg-white w-full ${isMaster || isDeliveryLocation ? 'max-w-md' : (moduleName === 'Daftar Aset' || isService || moduleName === 'Mutasi' || moduleName === 'Penjualan' || isContract || isMasterVendor || isLogBook || isStationeryRequest || isMasterATK || isMasterARK ? 'max-w-7xl' : 'max-w-5xl')} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transform transition-all scale-100`}>
         <div className="px-8 py-5 bg-white border-b border-gray-100 flex items-center justify-between">
           <div>
-              <h2 className="text-lg font-bold tracking-tight text-gray-900">
+              <h2 className="text-lg font-bold tracking-tight text-gray-900 uppercase tracking-tighter">
                 {moduleName === 'Servis' ? t('Buat Permintaan') : 
                  moduleName === 'Pajak & KIR' ? 'Tambah Request KIR / Pajak Kendaraan' :
                  isContract ? (mode === 'create' ? t('Add Asset') : 'Asset Data Detail') : 
@@ -449,12 +469,12 @@ export const AddStockModal: React.FC<Props> = ({
         
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-[#F8F9FA]">
           {isLogBook ? (
-             <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60 space-y-6">
+             <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-8">
                  <SectionHeader icon={List} title={t('Log Book Tamu Input')} />
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                      <div>
-                         <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Lokasi MODENA')} <Required/></label>
-                         <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white" value={logBookForm.lokasiModena} onChange={(e) => handleLogBookChange('lokasiModena', e.target.value)} disabled={isViewMode}>
+                         <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('Lokasi MODENA')} <Required/></label>
+                         <select className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black bg-white appearance-none" value={logBookForm.lokasiModena} onChange={(e) => handleLogBookChange('lokasiModena', e.target.value)} disabled={isViewMode}>
                              <option value="">{t('Pilih Tempat')}</option>
                              <option value="MODENA Head Office">{t('MODENA Head Office')}</option>
                              <option value="MODENA Kemang">{t('MODENA Kemang')}</option>
@@ -463,8 +483,8 @@ export const AddStockModal: React.FC<Props> = ({
                          </select>
                      </div>
                       <div>
-                         <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Kategori Tamu')} <Required/></label>
-                         <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-[#FFF9C4]" value={logBookForm.kategoriTamu} onChange={(e) => handleLogBookChange('kategoriTamu', e.target.value)} disabled={isViewMode}>
+                         <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('Kategori Tamu')} <Required/></label>
+                         <select className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black bg-[#FFF9C4]/20 appearance-none" value={logBookForm.kategoriTamu} onChange={(e) => handleLogBookChange('kategoriTamu', e.target.value)} disabled={isViewMode}>
                              <option value="Customer">Customer</option>
                              <option value="Supplier">Supplier</option>
                              <option value="Partner">Partner</option>
@@ -472,121 +492,103 @@ export const AddStockModal: React.FC<Props> = ({
                          </select>
                      </div>
                      <div className="md:col-span-2">
-                          <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Nama Tamu')}</label>
-                          <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.namaTamu} onChange={(e) => handleLogBookChange('namaTamu', e.target.value)} disabled={isViewMode} />
+                          <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('Nama Tamu')}</label>
+                          <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black bg-white" value={logBookForm.namaTamu} onChange={(e) => handleLogBookChange('namaTamu', e.target.value)} disabled={isViewMode} placeholder="Input Full Name..." />
                      </div>
                      <div>
-                          <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Tanggal Kunjungan')}</label>
-                          <input type="date" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white" value={logBookForm.tanggalKunjungan} onChange={(e) => handleLogBookChange('tanggalKunjungan', e.target.value)} disabled={isViewMode} />
+                          <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('Tanggal Kunjungan')}</label>
+                          <input type="date" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black bg-white" value={logBookForm.tanggalKunjungan} onChange={(e) => handleLogBookChange('tanggalKunjungan', e.target.value)} disabled={isViewMode} />
                      </div>
                      <div className="grid grid-cols-2 gap-4">
                          <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Jam Datang')}</label>
-                             <input type="time" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.jamDatang} onChange={(e) => handleLogBookChange('jamDatang', e.target.value)} disabled={isViewMode} />
+                             <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('Jam Datang')}</label>
+                             <input type="time" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black bg-white" value={logBookForm.jamDatang} onChange={(e) => handleLogBookChange('jamDatang', e.target.value)} disabled={isViewMode} />
                          </div>
                          <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Jam Pulang')}</label>
-                             <input type="time" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.jamPulang} onChange={(e) => handleLogBookChange('jamPulang', e.target.value)} disabled={isViewMode} />
+                             <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('Jam Pulang')}</label>
+                             <input type="time" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black bg-white" value={logBookForm.jamPulang} onChange={(e) => handleLogBookChange('jamPulang', e.target.value)} disabled={isViewMode} />
                          </div>
-                     </div>
-                     <div className="md:col-span-2 grid grid-cols-3 gap-6">
-                         <div>
-                              <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Wanita')}</label>
-                              <input type="number" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.wanita} onChange={(e) => handleLogBookChange('wanita', e.target.value)} disabled={isViewMode} />
-                         </div>
-                         <div>
-                              <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Laki-Laki')}</label>
-                              <input type="number" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.lakiLaki} onChange={(e) => handleLogBookChange('lakiLaki', e.target.value)} disabled={isViewMode} />
-                         </div>
-                         <div>
-                              <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Anak-Anak')}</label>
-                              <input type="number" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black" value={logBookForm.anakAnak} onChange={(e) => handleLogBookChange('anakAnak', e.target.value)} disabled={isViewMode} />
-                         </div>
-                     </div>
-                     <div className="md:col-span-2">
-                          <label className="block text-xs font-bold text-gray-700 mb-1.5">{t('Note')}</label>
-                          <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black resize-none" rows={3} value={logBookForm.note} onChange={(e) => handleLogBookChange('note', e.target.value)} disabled={isViewMode}></textarea>
                      </div>
                  </div>
              </div>
           ) : isStationeryRequest && !isViewMode ? (
-             <div className="space-y-6">
-                 <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
+             <div className="space-y-8">
+                 <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
                      <SectionHeader icon={FileText} title={t('Form Request')} />
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                          <div>
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">{t('Pilih Kebutuhan')} <Required/></label>
-                             <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white text-gray-900" value={stationeryRequestForm.type} onChange={(e) => handleStationeryRequestChange('type', e.target.value)}>
+                             <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('Pilih Kebutuhan')} <Required/></label>
+                             <select className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black bg-white appearance-none" value={stationeryRequestForm.type} onChange={(e) => handleStationeryRequestChange('type', e.target.value)}>
                                  <option value="Permintaan Bulanan">{t('Permintaan Bulanan')}</option>
                                  <option value="Permintaan Khusus">{t('Permintaan Khusus')}</option>
                              </select>
                          </div>
                          <div>
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">{t('Tanggal Request')}</label>
-                             <input type="date" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black text-gray-900" value={stationeryRequestForm.date} onChange={(e) => handleStationeryRequestChange('date', e.target.value)} />
+                             <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('Tanggal Request')}</label>
+                             <input type="date" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black bg-white" value={stationeryRequestForm.date} onChange={(e) => handleStationeryRequestChange('date', e.target.value)} />
                          </div>
                      </div>
                  </div>
-                 <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
-                     <div className="flex justify-between items-center mb-5 pb-3 border-b border-gray-100">
-                         <div className="flex items-center gap-2">
-                             <List size={20} className="text-gray-800" strokeWidth={2} />
-                             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">{t('Items')}</h3>
+                 <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+                     <div className="flex justify-between items-center mb-6 pb-2 border-b border-gray-100">
+                         <div className="flex items-center gap-3">
+                             <List size={20} className="text-black" strokeWidth={3} />
+                             <h3 className="text-xs font-black text-black uppercase tracking-widest">{t('Items')}</h3>
                          </div>
-                         <button onClick={addRequestItemRow} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-black rounded-lg hover:bg-gray-800 transition-colors"><PlusCircle size={14} /> {t('Add More')}</button>
+                         <button onClick={addRequestItemRow} className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white bg-black rounded-xl hover:bg-gray-800 transition-all active:scale-95"><Plus size={14} /> {t('Add More')}</button>
                      </div>
-                     <div className="overflow-hidden border border-gray-200 rounded-lg">
+                     <div className="overflow-hidden border border-gray-100 rounded-2xl mb-6">
                          <table className="w-full text-left border-collapse">
-                             <thead className="bg-gray-50 text-xs font-bold text-gray-700 uppercase">
+                             <thead className="bg-[#FAFAFA] text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                  <tr>
-                                     <th className="p-3 w-12 text-center">No</th>
-                                     <th className="p-3">{moduleName === 'Daftar ATK' ? t('Pilih jenis item ATK') : t('Pilih jenis item ARK')}</th>
-                                     <th className="p-3 w-32 text-center">{t('Jumlah')}</th>
-                                     <th className="p-3 w-20 text-center">Action</th>
+                                     <th className="p-4 w-16 text-center">#</th>
+                                     <th className="p-4">{moduleName === 'Daftar ATK' ? t('Pilih jenis item ATK') : t('Pilih jenis item ARK')}</th>
+                                     <th className="p-4 w-40 text-center">{t('Jumlah')}</th>
+                                     <th className="p-4 w-20 text-center">Action</th>
                                  </tr>
                              </thead>
-                             <tbody className="divide-y divide-gray-200 text-sm">
+                             <tbody className="divide-y divide-gray-50">
                                  {requestItems.map((item, index) => {
                                      const isArk = moduleName === 'Daftar ARK' || moduleName === 'Household Request Approval';
                                      const masterList = isArk ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
                                      return (
-                                     <tr key={index} className="hover:bg-gray-50">
-                                         <td className="p-3 text-center text-gray-500 font-medium">{index + 1}</td>
-                                         <td className="p-3">
-                                             <select className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-black" value={item.itemId} onChange={(e) => handleRequestItemChange(index, 'itemId', e.target.value)}>
+                                     <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+                                         <td className="p-4 text-center text-gray-300 font-bold text-[11px]">{index + 1}</td>
+                                         <td className="p-4">
+                                             <select className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[13px] font-bold text-black focus:outline-none focus:border-black bg-white" value={item.itemId} onChange={(e) => handleRequestItemChange(index, 'itemId', e.target.value)}>
                                                  <option value="">{isArk ? t('Search ARK') : t('Search ATK')}...</option>
                                                  {masterList.map(m => ( <option key={m.id} value={m.id}>{m.itemName} ({m.itemCode})</option> ))}
                                              </select>
                                          </td>
-                                         <td className="p-3">
-                                             <input type="number" className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm text-center focus:outline-none focus:border-black" value={item.qty} onChange={(e) => handleRequestItemChange(index, 'qty', e.target.value)} />
+                                         <td className="p-4">
+                                             <input type="number" className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[13px] font-black text-black text-center focus:outline-none focus:border-black bg-white" value={item.qty} onChange={(e) => handleRequestItemChange(index, 'qty', e.target.value)} placeholder="0" />
                                          </td>
-                                         <td className="p-3 text-center">
-                                             <button onClick={() => removeRequestItemRow(index)} className="text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                                         <td className="p-4 text-center">
+                                             <button onClick={() => removeRequestItemRow(index)} className="text-gray-300 hover:text-red-500 transition-all p-2 rounded-lg hover:bg-red-50"><Trash2 size={18} /></button>
                                          </td>
                                      </tr>
                                  )})}
                              </tbody>
                          </table>
                      </div>
-                     <div className="mt-4">
-                         <label className="block text-xs font-bold text-gray-800 mb-1.5">{t('Remarks')}</label>
-                         <textarea rows={2} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black resize-none" value={stationeryRequestForm.remarks} onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)} placeholder={t('Isi Remarks')}></textarea>
+                     <div>
+                         <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('Remarks')}</label>
+                         <textarea rows={3} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:outline-none focus:border-black bg-white resize-none shadow-sm transition-all" value={stationeryRequestForm.remarks} onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)} placeholder={t('Isi Remarks')}></textarea>
                      </div>
                  </div>
-                 <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
+                 <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
                      <SectionHeader icon={Archive} title={t('Alamat Pengiriman')} />
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                          <div>
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">{t('Dikirim')} / {t('Ambil di HO')}</label>
-                             <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white text-gray-900" value={stationeryRequestForm.deliveryType} onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}>
+                             <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('Dikirim')} / {t('Ambil di HO')}</label>
+                             <select className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black bg-white appearance-none" value={stationeryRequestForm.deliveryType} onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}>
                                  <option value="Dikirim">{t('Dikirim')}</option>
                                  <option value="Ambil di HO">{t('Ambil di HO')}</option>
                              </select>
                          </div>
                          <div>
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">{t('Pilih Tempat')}</label>
-                             <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white text-gray-900" value={stationeryRequestForm.location} onChange={(e) => handleStationeryRequestChange('location', e.target.value)} disabled={stationeryRequestForm.deliveryType === 'Ambil di HO'}>
+                             <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('Pilih Tempat')}</label>
+                             <select className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black bg-white appearance-none" value={stationeryRequestForm.location} onChange={(e) => handleStationeryRequestChange('location', e.target.value)} disabled={stationeryRequestForm.deliveryType === 'Ambil di HO'}>
                                  <option value="MODENA Head Office">{t('MODENA Head Office')}</option>
                                  <option value="MODENA Kemang">{t('MODENA Kemang')}</option>
                                  <option value="MODENA Suryo">{t('MODENA Suryo')}</option>
@@ -596,65 +598,21 @@ export const AddStockModal: React.FC<Props> = ({
                      </div>
                  </div>
              </div>
-          ) : isContract ? (
-            <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-xs font-bold text-gray-700 mb-1.5">Asset Number</label>
-                         <input type="text" className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-400 italic focus:outline-none" value={contractForm.assetNumber || '[Auto Generate]'} readOnly />
-                    </div>
-                </div>
-            </div>
-          ) : moduleName === 'Pajak & KIR' ? (
-              <div className="space-y-6">
-                <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
-                    <h3 className="text-orange-400 text-xs font-bold uppercase mb-4 tracking-wide">Request KIR / Pajak</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                         <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">Jenis <Required/></label>
-                             <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white" value={taxKirForm.jenis || 'KIR'} onChange={(e) => handleTaxKirChange('jenis', e.target.value)} disabled={isViewMode}>
-                                 <option value="KIR">KIR</option>
-                                 <option value="Pajak Tahunan">Pajak Tahunan</option>
-                                 <option value="Pajak 5 Tahunan">Pajak 5 Tahunan</option>
-                             </select>
-                         </div>
-                         <div>
-                             <label className="block text-xs font-bold text-gray-700 mb-1.5">Aset <Required/></label>
-                             <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white" value={taxKirForm.aset || ''} onChange={(e) => handleTaxKirChange('aset', e.target.value)} disabled={isViewMode}>
-                                 <option value="">(Pilih Aset)</option>
-                                 {vehicleList.map(v => ( <option key={v.id} value={v.nama}>{v.noPolisi} - {v.nama}</option> ))}
-                             </select>
-                         </div>
-                    </div>
-                </div>
-              </div>
-          ) : moduleName === 'Servis' ? (
-             <div className="space-y-6">
-                 <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/60">
-                     <SectionHeader icon={List} title="DETAIL INFORMASI" />
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                         <div className="col-span-1 md:col-span-2">
-                             <label className="block text-xs font-bold text-gray-800 mb-1.5">Aset / Kendaraan <Required/></label>
-                             <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white text-gray-900" value={serviceForm.aset || ''} onChange={(e) => handleServiceChange('aset', e.target.value)} disabled={isViewMode}>
-                                 <option value="">(Pilih Kendaraan)</option>
-                                 {vehicleList.map(v => ( <option key={v.id} value={v.nama}>{v.noPolisi} - {v.nama}</option> ))}
-                             </select>
-                         </div>
-                     </div>
-                 </div>
-             </div>
           ) : isMasterATK || isMasterARK ? (
             /* --- MASTER ATK/ARK FORM --- */
-            <div className="space-y-6">
-                <div className="bg-blue-50/50 p-6 rounded-lg border border-blue-100">
-                    <h3 className="text-blue-500 font-bold text-sm mb-4">{isMasterARK ? 'Household Master' : 'Stationery Master'}</h3>
-                    <div className="grid grid-cols-1 gap-4">
-                        <div className="grid grid-cols-12 gap-4 items-center">
+            <div className="space-y-8">
+                <div className="bg-black/5 p-8 rounded-2xl border border-black/10">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-8 h-8 bg-black text-white flex items-center justify-center rounded-lg"><Settings size={16} /></div>
+                        <h3 className="text-[10px] font-black text-black uppercase tracking-[0.2em]">{isMasterARK ? 'Household Master' : 'Stationery Master'}</h3>
+                    </div>
+                    <div className="grid grid-cols-1 gap-6">
+                        <div className="grid grid-cols-12 gap-6 items-center">
                             <div className="col-span-3">
-                                <label className="block text-sm font-semibold text-gray-700">Category <Required/></label>
+                                <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">Category <Required/></label>
                             </div>
                             <div className="col-span-9">
-                                <select className="w-full bg-[#FFF9C4] border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
+                                <select className="w-full bg-[#FFF9C4]/40 border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-black focus:outline-none focus:border-black appearance-none">
                                     {currentCategories.map(cat => (
                                         <option key={cat} value={cat}>{cat}</option>
                                     ))}
@@ -662,128 +620,112 @@ export const AddStockModal: React.FC<Props> = ({
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-12 gap-4 items-center">
+                        <div className="grid grid-cols-12 gap-6 items-center">
                             <div className="col-span-3">
-                                <label className="block text-sm font-semibold text-gray-700">Item Name <Required/></label>
+                                <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">Item Name <Required/></label>
                             </div>
                             <div className="col-span-9">
-                                <input type="text" placeholder="e.g. KENKO Joyko K-1 0.5 mm Hitam" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                                <input type="text" placeholder="e.g. KENKO Joyko K-1 0.5 mm Hitam" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black shadow-sm" />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white pt-2 space-y-4 border-t border-gray-100">
-                    <div className="grid grid-cols-12 gap-4 items-center">
+                <div className="bg-white pt-2 space-y-6">
+                    <div className="grid grid-cols-12 gap-6 items-center">
                         <div className="col-span-3">
-                            <label className="block text-sm font-semibold text-gray-700">Remaining Stock <Required/></label>
+                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">Current Stock <Required/></label>
                         </div>
                         <div className="col-span-4">
-                             <input type="number" defaultValue="48" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                             <input type="number" defaultValue="48" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base font-black text-black focus:outline-none focus:border-black shadow-sm" />
                         </div>
                         <div className="col-span-1 text-right">
-                             <label className="block text-sm font-semibold text-gray-700">Unit</label>
+                             <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Unit</label>
                         </div>
                          <div className="col-span-4">
-                             <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
+                             <select className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-black focus:outline-none focus:border-black shadow-sm appearance-none">
                                 <option>PCS</option>
                                 <option>RIM</option>
                                 <option>BOX</option>
+                                <option>PACK</option>
                              </select>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-12 gap-4 items-center">
+                    <div className="grid grid-cols-12 gap-6 items-center">
                         <div className="col-span-3">
-                            <label className="block text-sm font-semibold text-gray-700">Minimum Stock</label>
+                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">Safety Stock</label>
                         </div>
                         <div className="col-span-3">
-                             <input type="number" defaultValue="10" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                             <input type="number" defaultValue="10" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black shadow-sm" />
                         </div>
                          <div className="col-span-3 text-right">
-                            <label className="block text-sm font-semibold text-gray-700">Maximum Stock</label>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Cap Stock</label>
                         </div>
                         <div className="col-span-3">
-                             <input type="number" defaultValue="100" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                             <input type="number" defaultValue="100" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black shadow-sm" />
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-12 gap-4 items-center">
+                    <div className="grid grid-cols-12 gap-6 items-center">
                         <div className="col-span-3">
-                            <label className="block text-sm font-semibold text-gray-700">Requested Stock</label>
-                        </div>
-                        <div className="col-span-9">
-                             <input type="number" defaultValue="0" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
-                        </div>
-                    </div>
-
-                     <div className="grid grid-cols-12 gap-4 items-center">
-                        <div className="col-span-3">
-                            <label className="block text-sm font-semibold text-gray-700">Purchase Date <Required/></label>
+                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">Purchase Date <Required/></label>
                         </div>
                         <div className="col-span-4 relative">
-                             <input type="date" defaultValue="2024-03-16" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                             <input type="date" defaultValue="2024-03-16" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:outline-none focus:border-black shadow-sm" />
                         </div>
                     </div>
 
-                     <div className="grid grid-cols-12 gap-4 items-center">
+                     <div className="grid grid-cols-12 gap-6 items-center">
                         <div className="col-span-3">
-                            <label className="block text-sm font-semibold text-gray-700">Item Price <Required/></label>
+                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">Unit Price <Required/></label>
                         </div>
                         <div className="col-span-2">
-                             <select className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black">
+                             <select className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[10px] font-black text-black focus:outline-none focus:border-black appearance-none shadow-sm">
                                 <option>IDR</option>
                                 <option>USD</option>
                              </select>
                         </div>
                          <div className="col-span-7">
-                             <input type="text" defaultValue="100.000" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black" />
+                             <input type="text" defaultValue="100.000" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-black focus:outline-none focus:border-black shadow-sm" />
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-12 gap-4 items-center">
-                        <div className="col-span-3">
-                            <label className="block text-sm font-semibold text-gray-700">Average Price</label>
+                    <div className="grid grid-cols-12 gap-6 items-start">
+                        <div className="col-span-3 pt-3">
+                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">Description <Required/></label>
                         </div>
                          <div className="col-span-9">
-                             <input type="text" defaultValue="1.000" readOnly className="w-full bg-gray-50 border border-gray-200 rounded px-3 py-2 text-sm text-gray-500 focus:outline-none" />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-12 gap-4 items-start">
-                        <div className="col-span-3 pt-2">
-                            <label className="block text-sm font-semibold text-gray-700">Description <Required/></label>
-                        </div>
-                         <div className="col-span-9">
-                             <textarea rows={3} defaultValue="Pembelian Q2" className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-black resize-none" />
+                             <textarea rows={3} defaultValue="Pembelian Q2" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:outline-none focus:border-black resize-none shadow-sm" />
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-8">
-                    <h3 className="text-blue-500 font-bold text-sm mb-4">{isMasterARK ? 'Household Purchase History' : 'Stationery Purchase History'}</h3>
-                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                        <table className="w-full text-left text-sm">
-                            <thead className="bg-gray-100 border-b border-gray-200 font-semibold text-gray-700">
+                <div className="mt-12">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-2 h-6 bg-black rounded-full"></div>
+                        <h3 className="text-[10px] font-black text-black uppercase tracking-[0.2em]">Transaction History</h3>
+                    </div>
+                    <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-xl shadow-black/5">
+                        <table className="w-full text-left text-[12px] border-collapse">
+                            <thead className="bg-[#FAFAFA] border-b border-gray-100 font-black text-[10px] text-gray-400 uppercase tracking-widest">
                                 <tr>
-                                    <th className="px-4 py-3 w-12">No</th>
-                                    <th className="px-4 py-3">Purchase Date</th>
-                                    <th className="px-4 py-3 text-center">Quantity</th>
-                                    <th className="px-4 py-3">Unit</th>
-                                    <th className="px-4 py-3 text-right">Item Price</th>
-                                    <th className="px-4 py-3 text-right">Average Price</th>
-                                    <th className="px-4 py-3">Description</th>
+                                    <th className="px-6 py-4 w-12">#</th>
+                                    <th className="px-6 py-4">Transaction Date</th>
+                                    <th className="px-6 py-4 text-center">Volume</th>
+                                    <th className="px-6 py-4">UoM</th>
+                                    <th className="px-6 py-4 text-right">Price Point</th>
+                                    <th className="px-6 py-4">Context / Description</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200 text-gray-700">
-                                <tr className="hover:bg-gray-50">
-                                    <td className="px-4 py-3 text-gray-500">1.</td>
-                                    <td className="px-4 py-3 text-blue-600 underline cursor-pointer">10 Jan 2024</td>
-                                    <td className="px-4 py-3 text-center font-medium">1</td>
-                                    <td className="px-4 py-3 font-semibold">PCS</td>
-                                    <td className="px-4 py-3 text-right">IDR 1,231</td>
-                                    <td className="px-4 py-3 text-right">IDR 1,231</td>
-                                    <td className="px-4 py-3 font-medium">Pembelian Q1</td>
+                            <tbody className="divide-y divide-gray-50">
+                                <tr className="hover:bg-gray-50/50 transition-colors">
+                                    <td className="px-6 py-4 text-gray-300 font-bold">01.</td>
+                                    <td className="px-6 py-4 font-black text-black uppercase">10 Jan 2024</td>
+                                    <td className="px-6 py-4 text-center font-black text-[14px]">1</td>
+                                    <td className="px-6 py-4 font-black text-gray-400">PCS</td>
+                                    <td className="px-6 py-4 text-right font-mono font-black text-black">IDR 1,231</td>
+                                    <td className="px-6 py-4 font-medium text-gray-500 italic">Initial replenishment Q1</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -809,11 +751,11 @@ export const AddStockModal: React.FC<Props> = ({
         </div>
 
         {mode !== 'view' && (
-            <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end gap-3 z-10">
+            <div className="px-8 py-6 bg-white border-t border-gray-100 flex justify-end gap-3 z-10 shadow-inner">
                 {!(isMasterATK || isMasterARK || isLogBook) && (
-                    <button onClick={onClose} className="px-6 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">{t('Draf')}</button>
+                    <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:text-black transition-all">DRAF</button>
                 )}
-                <button onClick={handleSave} className="px-6 py-2.5 text-sm font-bold text-white bg-black rounded-lg hover:bg-gray-800 shadow-lg shadow-gray-200 transition-all transform hover:-translate-y-0.5">{t('Simpan')}</button>
+                <button onClick={handleSave} className="px-16 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-xl hover:bg-gray-800 shadow-xl shadow-black/20 transition-all transform hover:-translate-y-1 active:translate-y-0">SIMPAN DATA</button>
             </div>
         )}
       </div>

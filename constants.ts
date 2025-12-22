@@ -1,5 +1,5 @@
 
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem } from './types';
 
 // Helper function to generate mock data for ATK/ARK
 const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] => {
@@ -72,6 +72,35 @@ export const MOCK_MASTER_DATA: MasterItem[] = [
 export const MOCK_MASTER_ARK_DATA: MasterItem[] = [
   { id: 1, category: 'Pembersih', itemName: 'Wipol Karbol', itemCode: 'CL-WPL-01', uom: 'Pcs', remainingStock: 10, minimumStock: 5, maximumStock: 20, requestedStock: 0, purchaseDate: '10/03/2024', lastPurchasePrice: 'Rp. 15.000', averagePrice: 'Rp. 14.800' },
   { id: 2, category: 'Tisu', itemName: 'Tisu Nice 250s', itemCode: 'TS-NIC-250', uom: 'Pack', remainingStock: 30, minimumStock: 10, maximumStock: 50, requestedStock: 10, purchaseDate: '12/03/2024', lastPurchasePrice: 'Rp. 8.000', averagePrice: 'Rp. 7.900' }
+];
+
+export const MOCK_UOM_DATA: GeneralMasterItem[] = [
+    { id: 1, name: 'PCS' },
+    { id: 2, name: 'RIM' },
+    { id: 3, name: 'BOX' },
+    { id: 4, name: 'PACK' },
+    { id: 5, name: 'UNIT' }
+];
+
+export const MOCK_ATK_CATEGORY: GeneralMasterItem[] = [
+    { id: 1, name: 'Tinta Printer' },
+    { id: 2, name: 'Kertas' },
+    { id: 3, name: 'Alat Tulis' },
+    { id: 4, name: 'Filing' },
+    { id: 5, name: 'Elektronik' }
+];
+
+export const MOCK_ARK_CATEGORY: GeneralMasterItem[] = [
+    { id: 1, name: 'Pembersih' },
+    { id: 2, name: 'Tisu' },
+    { id: 3, name: 'Kebersihan' },
+    { id: 4, name: 'Elektronik' }
+];
+
+export const MOCK_DELIVERY_LOCATIONS: DeliveryLocationRecord[] = [
+    { id: 1, name: 'MODENA Head Office', address: 'Jl. Prof. DR. Satrio No. C4', type: 'HO' },
+    { id: 2, name: 'MODENA Kemang', address: 'Jl. Kemang Selatan No. 150', type: 'Showroom' },
+    { id: 3, name: 'Warehouse Cakung', address: 'Kawasan Industri Cakung Blok B', type: 'Warehouse' }
 ];
 
 export const MOCK_BUILDING_DATA: BuildingRecord[] = [
@@ -192,7 +221,6 @@ export const MOCK_TAX_KIR_DATA: TaxKirRecord[] = [
 export const MOCK_MUTATION_DATA: MutationRecord[] = [];
 export const MOCK_SALES_DATA: SalesRecord[] = [];
 export const MOCK_MASTER_VENDOR_DATA: MasterVendorRecord[] = [];
-export const MOCK_DELIVERY_LOCATIONS: DeliveryLocationRecord[] = [];
 
 export const MOCK_LOGBOOK_DATA: LogBookRecord[] = [
   {

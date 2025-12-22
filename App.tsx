@@ -13,6 +13,7 @@ import { ReminderTable } from './components/ReminderTable';
 import { GeneralMasterTable } from './components/GeneralMasterTable';
 import { StationeryRequestTable } from './components/StationeryRequestTable';
 import { MasterAtkTable } from './components/MasterAtkTable';
+import { MasterDeliveryLocationTable } from './components/MasterDeliveryLocationTable';
 import { LogBookTable } from './components/LogBookTable';
 import { VehicleModal } from './components/VehicleModal';
 import { BuildingModal } from './components/BuildingModal';
@@ -31,7 +32,11 @@ import {
   MOCK_ARK_DATA,
   MOCK_MASTER_DATA as MOCK_ATK_MASTER,
   MOCK_MASTER_ARK_DATA,
-  MOCK_LOGBOOK_DATA
+  MOCK_LOGBOOK_DATA,
+  MOCK_UOM_DATA,
+  MOCK_ATK_CATEGORY,
+  MOCK_ARK_CATEGORY,
+  MOCK_DELIVERY_LOCATIONS
 } from './constants';
 import { 
   VehicleRecord, 
@@ -43,7 +48,8 @@ import {
   GeneralMasterItem,
   AssetRecord,
   LogBookRecord,
-  MasterItem
+  MasterItem,
+  DeliveryLocationRecord
 } from './types';
 import { useLanguage } from './contexts/LanguageContext';
 
@@ -67,8 +73,14 @@ const App: React.FC = () => {
   const [atkMaster] = useState<MasterItem[]>(MOCK_ATK_MASTER);
   const [arkMaster] = useState<MasterItem[]>(MOCK_MASTER_ARK_DATA);
   const [logBookData] = useState<LogBookRecord[]>(MOCK_LOGBOOK_DATA);
+  
+  // Master Lists (UOM, Category, Loc)
+  const [uomList] = useState<GeneralMasterItem[]>(MOCK_UOM_DATA);
+  const [atkCategories] = useState<GeneralMasterItem[]>(MOCK_ATK_CATEGORY);
+  const [arkCategories] = useState<GeneralMasterItem[]>(MOCK_ARK_CATEGORY);
+  const [delivLocations] = useState<DeliveryLocationRecord[]>(MOCK_DELIVERY_LOCATIONS);
 
-  // Master Data States
+  // Master Data States (Generic)
   const [masterLists, setMasterLists] = useState<Record<string, GeneralMasterItem[]>>({
     'Jenis Pajak': MOCK_GENERAL_MASTER_DATA.jenisPajak,
     'Jenis Pembayaran': MOCK_GENERAL_MASTER_DATA.jenisPembayaran,
@@ -102,8 +114,8 @@ const App: React.FC = () => {
         setActiveTab('Milik Sendiri');
     } else if (module === 'Daftar Aset') {
         setActiveTab('Aktif');
-    } else if (module === 'Log Book' || module.includes('Master')) {
-        setActiveTab('Semua');
+    } else if (module.includes('Master')) {
+        setActiveTab('Items');
     } else {
         setActiveTab('Semua');
     }
@@ -151,6 +163,17 @@ const App: React.FC = () => {
          );
      }
 
+     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
+        const isArk = activeModule === 'Master ARK';
+        switch(activeTab) {
+            case 'Items': return <MasterAtkTable data={isArk ? arkMaster : atkMaster} />;
+            case 'UOM': return <GeneralMasterTable data={uomList} onEdit={()=>{}} onDelete={()=>{}} />;
+            case 'Category': return <GeneralMasterTable data={isArk ? arkCategories : atkCategories} onEdit={()=>{}} onDelete={()=>{}} />;
+            case 'Delivery Location': return <MasterDeliveryLocationTable data={delivLocations} onEdit={()=>{}} onDelete={()=>{}} />;
+            default: return <MasterAtkTable data={isArk ? arkMaster : atkMaster} />;
+        }
+     }
+
      switch(activeModule) {
          case 'Daftar Aset': return (
             <VehicleTable 
@@ -177,10 +200,6 @@ const App: React.FC = () => {
          case 'Daftar ARK':
          case 'Household Request Approval':
             return <StationeryRequestTable data={getFilteredAssetData(arkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
-         case 'Master ATK':
-            return <MasterAtkTable data={atkMaster} />;
-         case 'Master ARK':
-            return <MasterAtkTable data={arkMaster} />;
          case 'Log Book':
             return <LogBookTable data={logBookData} onView={(item) => { setSelectedAsset(null); setModalMode('view'); setIsStockModalOpen(true); }} />;
          default: return <div className="p-8 text-center text-gray-500">Konten Modul {activeModule}</div>;
@@ -191,6 +210,7 @@ const App: React.FC = () => {
   const mainTabs = useMemo(() => {
     if (activeModule === 'Kontrak Gedung') return ['Milik Sendiri', 'Sewa'];
     if (activeModule === 'Daftar Aset') return ['Aktif', 'Tidak Aktif'];
+    if (activeModule === 'Master ATK' || activeModule === 'Master ARK') return ['Items', 'UOM', 'Category', 'Delivery Location'];
     if (activeModule.includes('Daftar') || activeModule.includes('Approval')) return ['Semua', 'Approved', 'Pending', 'Rejected', 'Closed', 'Draft'];
     return ['Semua'];
   }, [activeModule]);
@@ -227,7 +247,7 @@ const App: React.FC = () => {
                     onAddClick={handleAddClick}
                     moduleName={activeModule}
                     searchPlaceholder={activeModule === 'Kontrak Gedung' ? "Cari berdasarkan Karyawan, Barang..." : undefined}
-                    hideAdd={['List Reminder Dokumen', 'Master ATK', 'Master ARK'].includes(activeModule) && modalMode === 'view'}
+                    hideAdd={['List Reminder Dokumen'].includes(activeModule)}
                 />
             )}
             
