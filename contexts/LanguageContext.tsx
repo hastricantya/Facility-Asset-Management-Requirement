@@ -99,7 +99,12 @@ const translations: Record<string, Record<Language, string>> = {
   'Add Asset': { id: 'Tambah Aset', en: 'Add Asset' },
   'Minimize menu': { id: 'Kecilkan menu', en: 'Minimize menu' },
   'Import Data Vendor': { id: 'Import Data Vendor', en: 'Import Vendor Data' },
+  'Add Data': { id: 'Tambah Data', en: 'Add Data' },
   
+  // Log Book Filters
+  'Semua Lokasi': { id: 'Semua Lokasi', en: 'All Locations' },
+  'Semua Kategori': { id: 'Semua Kategori', en: 'All Categories' },
+
   // Headers
   'Daftar Aset Kendaraan': { id: 'Daftar Aset Kendaraan', en: 'Vehicle Asset List' },
   'Servis Kendaraan': { id: 'Servis Kendaraan', en: 'Vehicle Service' },

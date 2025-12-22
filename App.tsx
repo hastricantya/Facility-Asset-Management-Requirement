@@ -60,6 +60,17 @@ const App: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
+  // Log Book Filters State
+  const [logBookFilters, setLogBookFilters] = useState({
+    location: '',
+    category: '',
+    date: ''
+  });
+
+  const handleLogBookFilterChange = (field: string, value: string) => {
+    setLogBookFilters(prev => ({ ...prev, [field]: value }));
+  };
+
   // Data States
   const [vehicleData] = useState<VehicleRecord[]>(MOCK_VEHICLE_DATA);
   const [buildingData] = useState<BuildingRecord[]>(MOCK_BUILDING_DATA);
@@ -116,6 +127,8 @@ const App: React.FC = () => {
         setActiveTab('Aktif');
     } else if (module.includes('Master')) {
         setActiveTab('Items');
+    } else if (module === 'Log Book') {
+        setActiveTab(''); // No active tab for logbook
     } else {
         setActiveTab('Semua');
     }
@@ -148,9 +161,18 @@ const App: React.FC = () => {
   }, [activeModule, activeTab, buildingData]);
 
   const getFilteredAssetData = (data: AssetRecord[]) => {
-    if (activeTab === 'Semua') return data;
+    if (activeTab === 'Semua' || activeTab === '') return data;
     return data.filter(item => item.status === activeTab);
   };
+
+  const filteredLogBookData = useMemo(() => {
+    return logBookData.filter(item => {
+      const matchLocation = !logBookFilters.location || item.lokasiModena === logBookFilters.location;
+      const matchCategory = !logBookFilters.category || item.kategoriTamu === logBookFilters.category;
+      const matchDate = !logBookFilters.date || item.tanggalKunjungan === logBookFilters.date;
+      return matchLocation && matchCategory && matchDate;
+    });
+  }, [logBookData, logBookFilters]);
 
   const renderContent = () => {
      if (masterLists[activeModule]) {
@@ -201,7 +223,7 @@ const App: React.FC = () => {
          case 'Household Request Approval':
             return <StationeryRequestTable data={getFilteredAssetData(arkData)} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Log Book':
-            return <LogBookTable data={logBookData} onView={(item) => { setSelectedAsset(null); setModalMode('view'); setIsStockModalOpen(true); }} />;
+            return <LogBookTable data={filteredLogBookData} onView={(item) => { setSelectedAsset(null); setModalMode('view'); setIsStockModalOpen(true); }} />;
          default: return <div className="p-8 text-center text-gray-500">Konten Modul {activeModule}</div>;
      }
   };
@@ -211,12 +233,13 @@ const App: React.FC = () => {
     if (activeModule === 'Kontrak Gedung') return ['Milik Sendiri', 'Sewa'];
     if (activeModule === 'Daftar Aset') return ['Aktif', 'Tidak Aktif'];
     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') return ['Items', 'UOM', 'Category', 'Delivery Location'];
-    if (activeModule.includes('Daftar') || activeModule.includes('Approval')) return ['Semua', 'Approved', 'Pending', 'Rejected', 'Closed', 'Draft'];
+    if (activeModule.includes('Daftar') || activeModule.includes('Approval')) return ['Semua', 'Draft', 'Approved', 'Pending', 'Rejected', 'Closed'];
+    if (activeModule === 'Log Book') return []; 
     return ['Semua'];
   }, [activeModule]);
 
   return (
-    <div className="flex bg-[#fbfbfb] min-h-screen font-sans relative overflow-x-hidden">
+    <div className="flex bg-[#fbfbfb] min-h-screen font-sans relative overflow-x-hidden text-black">
       {isMobileMenuOpen && (
         <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={toggleMobileMenu} />
       )}
@@ -248,6 +271,8 @@ const App: React.FC = () => {
                     moduleName={activeModule}
                     searchPlaceholder={activeModule === 'Kontrak Gedung' ? "Cari berdasarkan Karyawan, Barang..." : undefined}
                     hideAdd={['List Reminder Dokumen'].includes(activeModule)}
+                    logBookFilters={activeModule === 'Log Book' ? logBookFilters : undefined}
+                    onLogBookFilterChange={handleLogBookFilterChange}
                 />
             )}
             
