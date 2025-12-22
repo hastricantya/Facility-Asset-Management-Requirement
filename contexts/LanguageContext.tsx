@@ -16,6 +16,7 @@ const translations: Record<string, Record<Language, string>> = {
   'Dashboard': { id: 'Dashboard', en: 'Dashboard' },
   'Kendaraan': { id: 'Kendaraan', en: 'Vehicle' },
   'Daftar Aset': { id: 'Daftar Aset', en: 'Asset List' },
+  'Kontrak Kendaraan': { id: 'Kontrak Kendaraan', en: 'Vehicle Contract' },
   'Servis': { id: 'Servis', en: 'Service' },
   'Pajak & KIR': { id: 'Pajak & KIR', en: 'Tax & KIR' },
   'Mutasi': { id: 'Mutasi', en: 'Mutation' },
@@ -57,9 +58,6 @@ const translations: Record<string, Record<Language, string>> = {
   'Currency': { id: 'Mata Uang', en: 'Currency' },
   'Category': { id: 'Kategori', en: 'Category' },
   'Delivery Location': { id: 'Lokasi Pengiriman', en: 'Delivery Location' },
-  'Master Item': { id: 'Master Item', en: 'Master Item' },
-  'Master UOM': { id: 'Master UOM', en: 'Master UOM' },
-  'Master Category': { id: 'Master Kategori', en: 'Master Category' },
 
   // Tabs & Buttons
   'Pengguna': { id: 'Pengguna', en: 'User' },
@@ -82,8 +80,6 @@ const translations: Record<string, Record<Language, string>> = {
   'Tidak Aktif': { id: 'Tidak Aktif', en: 'Inactive' },
   'Semua': { id: 'Semua', en: 'All' },
   'Persetujuan': { id: 'Persetujuan', en: 'Approval' },
-  'On Process': { id: 'Diproses', en: 'On Process' },
-  'Completed': { id: 'Selesai', en: 'Completed' },
   
   // Action Buttons
   'Revise': { id: 'Revisi', en: 'Revise' },

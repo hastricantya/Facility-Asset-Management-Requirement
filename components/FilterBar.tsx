@@ -1,12 +1,7 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Search, Filter, Plus, LayoutGrid, List, ChevronsRight, Filter as FilterIcon, Calendar, Upload, Download, FileText, X, Trash2 } from 'lucide-react';
+import React from 'react';
+import { Search, Filter, Plus, Download } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-
-export interface FilterItem {
-  field: string;
-  value: string;
-}
 
 interface Props {
   tabs: string[];
@@ -15,11 +10,7 @@ interface Props {
   onAddClick: () => void;
   searchPlaceholder?: string;
   moduleName?: string;
-  activeFilters?: FilterItem[];
-  onFilterChange?: (filters: FilterItem[]) => void;
-  // New props for Import/Export
-  onExport?: () => void;
-  onImport?: (file: File) => void;
+  hideAdd?: boolean;
 }
 
 export const FilterBar: React.FC<Props> = ({ 
@@ -29,326 +20,62 @@ export const FilterBar: React.FC<Props> = ({
   onAddClick, 
   searchPlaceholder, 
   moduleName,
-  activeFilters = [],
-  onFilterChange,
-  onExport,
-  onImport
+  hideAdd = false
 }) => {
   const { t } = useLanguage();
-  const defaultSearch = `${t('Search')}...`;
-  const actualSearchPlaceholder = searchPlaceholder || defaultSearch;
-  
-  // Ref for hidden file input
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isGedung = moduleName === 'Gedung';
 
-  // State for Filter Popover
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [tempField, setTempField] = useState('Category');
-  const [tempValue, setTempValue] = useState('');
-  const filterRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
-        setIsFilterOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (moduleName === 'Daftar ATK' || moduleName === 'Stationery Request Approval' || moduleName === 'Daftar ARK' || moduleName === 'Household Request Approval') {
-        setTempField('Employee Name');
-    } else {
-        setTempField('Category');
-    }
-  }, [moduleName]);
-
-  const handleAddFilter = () => {
-    if (tempValue.trim() === '' || !onFilterChange) return;
-    const newFilter = { field: tempField, value: tempValue };
-    onFilterChange([...activeFilters, newFilter]);
-    setTempValue('');
-  };
-
-  const handleRemoveFilter = (index: number) => {
-    if (!onFilterChange) return;
-    const newFilters = activeFilters.filter((_, i) => i !== index);
-    onFilterChange(newFilters);
-  };
-
-  const handleResetFilter = () => {
-    if (!onFilterChange) return;
-    onFilterChange([]);
-    setTempValue('');
-  };
-
-  const handleDateFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!onFilterChange) return;
-      const val = e.target.value;
-      const others = activeFilters.filter(f => f.field !== 'Date');
-      
-      if (val) {
-          onFilterChange([...others, { field: 'Date', value: val }]);
-      } else {
-          onFilterChange(others);
-      }
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (file && onImport) {
-          onImport(file);
-      }
-      // Reset input so the same file can be selected again if needed
-      if (event.target) {
-          event.target.value = '';
-      }
-  };
-
-  const triggerFileUpload = () => {
-      fileInputRef.current?.click();
-  };
-  
-  // Specific layout for Modules that need Import/Export
-  const showImportExport = moduleName === 'Daftar Aset' || moduleName === 'Servis' || moduleName === 'Pajak & KIR' || moduleName === 'Mutasi' || moduleName === 'Penjualan' || moduleName === 'Contract' || moduleName === 'Master Vendor';
-
-  if (showImportExport) {
-    return (
-        <div className="mb-6">
-            <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept=".csv" 
-                onChange={handleFileChange} 
-            />
-            
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                {tabs.length > 0 && (
-                    <div className="flex items-center border border-gray-300 rounded-md overflow-hidden bg-white">
-                        {tabs.map((tab) => {
-                            const isActive = activeTab === tab;
-                            const isApproval = tab.includes('Persetujuan');
-                            return (
-                                <button
-                                    key={tab}
-                                    onClick={() => onTabChange(tab)}
-                                    className={`px-8 py-2 text-sm font-semibold transition-colors flex items-center gap-2 ${
-                                        isActive 
-                                        ? 'bg-black text-white' 
-                                        : 'bg-white text-gray-700 hover:bg-gray-50'
-                                    }`}
-                                >
-                                    {t(tab)}
-                                    {isApproval && (
-                                        <span className={`text-xs font-bold px-1.5 rounded-full ${isActive ? 'bg-white text-black' : 'bg-gray-200 text-gray-600'}`}>0</span>
-                                    )}
-                                </button>
-                            )
-                        })}
-                    </div>
-                )}
-                
-                <div className={`flex items-center gap-3 w-full md:w-auto ${tabs.length === 0 ? 'flex-1' : ''}`}>
-                    <div className={`relative ${tabs.length === 0 ? 'w-64' : 'flex-1 md:w-80'}`}>
-                        <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
-                        <input 
-                            type="text" 
-                            placeholder={actualSearchPlaceholder} 
-                            className="w-full bg-white pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-200 focus:border-gray-400 outline-none transition-all"
-                        />
-                    </div>
-
-                    {showImportExport && (
-                        <>
-                            <button 
-                                onClick={triggerFileUpload}
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap"
-                            >
-                                <Upload size={16} />
-                                {t('Import')}
-                            </button>
-                            <button 
-                                onClick={onExport}
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap"
-                            >
-                                <Download size={16} />
-                                {t('Export')}
-                            </button>
-                        </>
-                    )}
-
-                    <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap">
-                        <Filter size={16} />
-                        {t('Filter')}
-                    </button>
-                    <button 
-                        onClick={onAddClick}
-                        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-md transition-colors shadow-sm whitespace-nowrap bg-black hover:bg-gray-800`}
-                    >
-                        <Plus size={16} />
-                        {(moduleName === 'Servis' || moduleName === 'Pajak & KIR' || moduleName === 'Mutasi' || moduleName === 'Penjualan') ? t('Create Request') : 
-                         moduleName === 'Contract' ? t('Add Asset') : 
-                         moduleName === 'Master Vendor' ? t('Add Vendor') : t('Add')}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-  }
-
-  // Specific layout for Timesheet module
-  if (moduleName === 'Timesheet') {
-    return (
-        <div className="mb-6">
-            <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                <div className="flex flex-col md:flex-row gap-4 items-end">
-                    
-                    <div className="flex-1 min-w-[300px]">
-                        <div className="flex items-center gap-2 mb-2">
-                             <div className="bg-black rounded-full p-1"><ChevronsRight size={12} className="text-white"/></div>
-                             <span className="text-xs font-medium text-gray-500">{t('Employment Status')}</span>
-                        </div>
-                        <div className="flex border border-gray-300 rounded-lg overflow-hidden h-[38px]">
-                            {tabs.map((tab) => {
-                                const isActive = activeTab === tab;
-                                return (
-                                    <button
-                                        key={tab}
-                                        onClick={() => onTabChange(tab)}
-                                        className={`flex-1 text-sm font-medium transition-colors ${
-                                            isActive ? 'bg-white text-black font-bold' : 'bg-white text-gray-400 hover:bg-gray-50'
-                                        } ${isActive ? '' : 'border-r last:border-r-0 border-gray-200'}`}
-                                    >
-                                        {t(tab)}
-                                    </button>
-                                )
-                            })}
-                        </div>
-                    </div>
-
-                    <div className="flex-1">
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('Select Employee')}</label>
-                        <div className="relative">
-                            <input 
-                                type="text" 
-                                placeholder={t('Select Employee')} 
-                                defaultValue="Alam Anugrah Akbar x + 13 ..."
-                                className="w-full bg-white pl-4 pr-10 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none text-gray-700 h-[38px]"
-                            />
-                            <div className="absolute right-3 top-2 text-gray-400">
-                                <FilterIcon size={16} />
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className="flex-1">
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('Select Date')}</label>
-                        <div className="relative">
-                            <input 
-                                type="text" 
-                                defaultValue="14/03/2024     →     15/03/2024"
-                                className="w-full bg-white pl-4 pr-10 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none text-gray-700 h-[38px]"
-                            />
-                            <Calendar className="absolute right-3 top-2.5 text-gray-400" size={16} />
-                        </div>
-                    </div>
-
-                    <div className="flex-1">
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('Attendance Status')}</label>
-                         <div className="relative">
-                            <input 
-                                type="text" 
-                                defaultValue="Present x"
-                                className="w-full bg-white pl-4 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none text-gray-700 h-[38px]"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-  }
-
-  const isSimpleView = activeTab === 'Master Category' || activeTab === 'Master UOM';
-
-  // Standard layout for others
   return (
-    <div className="mb-6 relative">
-      <div className="flex items-center gap-1 px-1">
-        {tabs.map((tab) => {
+    <div className="mb-6 space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        {/* Tabs - Pill style as in Image 1 */}
+        <div className="flex bg-white rounded border border-gray-200 p-0.5 shadow-sm overflow-hidden">
+          {tabs.map((tab) => {
             const isActive = activeTab === tab;
             return (
-                <button
-                    key={tab}
-                    onClick={() => onTabChange(tab)}
-                    className={`px-6 py-2 text-sm font-medium rounded-t-lg transition-colors relative 
-                    ${isActive 
-                        ? 'text-gray-900 bg-white shadow-sm z-10 border-t border-l border-r border-gray-200' 
-                        : 'text-gray-500 hover:text-gray-700 hover:bg-white/50 border-t border-l border-r border-transparent'
-                    }`}
-                >
-                    {t(tab)}
-                </button>
+              <button
+                key={tab}
+                onClick={() => onTabChange(tab)}
+                className={`px-8 py-2 text-[11px] font-bold transition-all rounded 
+                ${isActive 
+                  ? 'bg-black text-white shadow-sm' 
+                  : 'text-black hover:bg-gray-50'
+                }`}
+              >
+                {tab}
+              </button>
             )
-        })}
-      </div>
+          })}
+        </div>
 
-      <div className="bg-white p-5 rounded-b-lg rounded-tr-lg shadow-sm border border-gray-200 -mt-[1px] relative z-0">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-            <div className={`${isSimpleView ? 'md:col-span-10' : 'md:col-span-3'}`}>
-                <label className="block text-xs font-medium text-gray-500 mb-1">{t('Search')}</label>
-                <div className="relative">
-                    <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
-                    <input 
+        {/* Action Controls */}
+        <div className="flex items-center gap-3">
+            <div className="relative w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" size={16} />
+                <input 
                     type="text" 
-                    placeholder={actualSearchPlaceholder} 
-                    className="w-full bg-white pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none transition-all"
-                    />
-                </div>
+                    placeholder={searchPlaceholder || "Cari berdasarkan Karyawan, Barang..."} 
+                    className="w-full bg-white pl-10 pr-4 py-2 text-[12px] border border-gray-200 rounded focus:border-black outline-none transition-all placeholder:text-gray-400"
+                />
             </div>
+            
+            <button className="flex items-center gap-2 px-4 py-2 text-[12px] font-bold text-black bg-white border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+                Unduh <Download size={14} className="text-gray-600" />
+            </button>
+            
+            <button className="flex items-center gap-2 px-4 py-2 text-[12px] font-bold text-black bg-white border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+                <Filter size={14} className="text-gray-600" />
+                Saring
+            </button>
 
-            {!isSimpleView && (
-                <div className="md:col-span-3">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">{t('Date Range')}</label>
-                    <input 
-                        type="date" 
-                        className="w-full bg-white px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 text-gray-600 outline-none"
-                    />
-                </div>
-            )}
-
-            {!isSimpleView && (
-                <div className="md:col-span-3">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">{t('Category')}</label>
-                    <select className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 text-gray-600 outline-none bg-white">
-                        <option>{t('Select Category...')}</option>
-                        <option>Tinta Printer</option>
-                        <option>Kertas</option>
-                        <option>Amplop</option>
-                    </select>
-                </div>
-            )}
-
-            <div className={`${isSimpleView ? 'md:col-span-2' : 'md:col-span-3'} flex items-center justify-end gap-2`}>
-                {!isSimpleView && (
-                    <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                        <Filter size={16} />
-                        {t('Filter')}
-                    </button>
-                )}
+            {!hideAdd && (
                 <button 
-                  onClick={onAddClick}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
+                    onClick={onAddClick}
+                    className="bg-black text-white px-5 py-2 rounded font-bold text-[12px] flex items-center gap-2 hover:bg-gray-800 transition-all active:scale-95 shadow-md shadow-black/10"
                 >
-                    <Plus size={16} />
-                    {t('Add')}
+                    <Plus size={18} /> {isGedung ? 'Tambah Aset' : 'Add Data'}
                 </button>
-            </div>
+            )}
         </div>
       </div>
     </div>

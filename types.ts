@@ -8,6 +8,12 @@ export interface Employee {
   avatar: string;
 }
 
+export interface SparePart {
+  name: string;
+  qty: number;
+  price: string;
+}
+
 export interface AssetRecord {
   id: number;
   transactionNumber?: string;
@@ -22,8 +28,164 @@ export interface AssetRecord {
   status: 'Approved' | 'Pending' | 'Rejected' | 'Closed' | 'Draft';
 }
 
-export interface MasterItem {
+export interface BuildingRecord {
+  id: string;
+  name: string;
+  assetNo: string;
+  type: string;
+  ownership: 'Own' | 'Rent';
+  location: string;
+  address: string;
+  status: 'Open' | 'Close' | 'Draft';
+  
+  // Rental specifics
+  landlordName?: string;
+  rentalCost?: string;
+  bankAccount?: string;
+  startDate?: string;
+  endDate?: string;
+  
+  // Ownership specifics
+  certificateNo?: string;
+  acquisitionValue?: string;
+}
+
+export interface ReminderRecord {
+  id: string;
+  documentName: string;
+  buildingName: string;
+  assetNo: string;
+  expiryDate: string;
+  daysRemaining: number;
+  status: 'Urgent' | 'Warning' | 'Safe';
+}
+
+export interface VehicleRecord {
   id: number;
+  noRegistrasi: string;
+  nama: string;
+  noPolisi: string;
+  channel: string;
+  cabang: string;
+  status: 'Aktif' | 'Tidak Aktif';
+  merek?: string;
+  tipeKendaraan?: string;
+  jenis?: string;
+  model?: string;
+  tahunPembuatan?: string;
+  warna?: string;
+  isiSilinder?: string;
+  noRangka?: string;
+  noMesin?: string;
+  pengguna?: string;
+  noBpkb?: string;
+  keteranganBpkb?: string;
+  masaBerlaku1?: string;
+  masaBerlaku5?: string;
+  masaBerlakuKir?: string;
+  tglBeli?: string;
+  hargaBeli?: string;
+  noPolisAsuransi?: string;
+  jangkaPertanggungan?: string;
+}
+
+export interface VehicleContractRecord {
+  id: string;
+  noPolisi: string;
+  aset: string;
+  noKontrak: string;
+  vendor: string;
+  tglMulai: string;
+  tglBerakhir: string;
+  biayaSewa: string;
+  status: 'Aktif' | 'Selesai';
+  keterangan?: string;
+}
+
+export interface ServiceRecord {
+  id: string;
+  noPolisi: string;
+  tglRequest: string;
+  channel: string;
+  cabang: string;
+  status: string;
+  statusApproval: string;
+  aset?: string;
+  tglStnk?: string;
+  jenisServis?: string;
+  vendor?: string;
+  targetSelesai?: string;
+  kmKendaraan?: string;
+  masalah?: string;
+  penyebab?: string;
+  estimasiBiaya?: string;
+  jenisPembayaran?: string;
+  namaBank?: string;
+  nomorRekening?: string;
+  spareParts?: SparePart[];
+}
+
+export interface TaxKirRecord {
+  id: string;
+  noPolisi: string;
+  tglRequest: string;
+  jenis: string;
+  channel: string;
+  cabang: string;
+  status: string;
+  statusApproval: string;
+}
+
+export interface MutationRecord {
+  id: string;
+  noPolisi: string;
+  cabangAset: string;
+  tipeMutasi: string;
+  tglPermintaan: string;
+  lokasiAsal: string;
+  lokasiTujuan: string;
+  status: string;
+  statusApproval: string;
+}
+
+export interface SalesRecord {
+  id: string;
+  noPolisi: string;
+  tglRequest: string;
+  channel: string;
+  cabang: string;
+  hargaTertinggi: string;
+  status: string;
+  statusApproval: string;
+}
+
+export interface MasterVendorRecord {
+  id: number;
+  nama: string;
+  merek: string;
+  alamat: string;
+  noTelp: string;
+  tipe: string;
+  cabang: string;
+  aktif: boolean;
+}
+
+export interface LogBookRecord {
+  id: number;
+  lokasiModena: string;
+  kategoriTamu: string;
+  namaTamu: string;
+  tanggalKunjungan: string;
+  jamDatang: string;
+  jamPulang: string;
+  wanita: number;
+  lakiLaki: number;
+  anakAnak: number;
+  note: string;
+}
+
+export interface MasterItem {
+  id: string | number;
   category: string;
   itemName: string;
   itemCode: string;
@@ -39,182 +201,33 @@ export interface MasterItem {
 
 export interface ContractRecord {
   id: number;
+  assetCategory: string;
   assetNumber: string;
-  status: 'Active' | 'Inactive' | 'Draft';
-  
-  assetCategory?: string;
-  ownership?: string; // 'Owner' | 'Rent'
-  type?: string; 
-  location?: string;
-  channel?: string;
-  subLocation?: string;
-  department?: string;
-  address?: string;
+  address: string;
+  type: string;
+  location: string;
+  channel: string;
+  subLocation: string;
+  status: string;
 }
 
 export interface TimesheetRecord {
-  id: number;
+  id: string | number;
   employee: Employee;
   date: string;
   dayType: string;
   task: string;
   clockIn: string;
   clockOut: string;
-  status: 'Tepat Waktu' | 'Tidak Tepat Waktu' | 'Absen';
+  status: string;
   photos: string[];
 }
 
 export interface VendorRecord {
-  id: number;
+  id: string | number;
   vendorName: string;
   vendorCode: string;
-  status: 'Active' | 'Inactive';
-}
-
-export interface VendorProjectHistory {
-  id: number;
-  projectNumber: string;
-  startDate: string;
-  endDate: string;
-  period: string;
-  totalCost: string;
   status: string;
-}
-
-export interface SidebarItem {
-  label: string;
-  icon: React.ReactNode;
-  active?: boolean;
-}
-
-export interface VehicleRecord {
-  id: number;
-  noRegistrasi: string;
-  nama: string;
-  noPolisi: string;
-  channel: string;
-  cabang: string;
-  status: 'Aktif' | 'Tidak Aktif';
-  
-  // Details
-  merek?: string;
-  tipeKendaraan?: string;
-  jenis?: string;
-  model?: string;
-  tahunPembuatan?: string;
-  warna?: string;
-  isiSilinder?: string;
-  noRangka?: string;
-  noMesin?: string;
-  
-  // Pengguna
-  pengguna?: string;
-
-  // Surat
-  noBpkb?: string;
-  keteranganBpkb?: string;
-  masaBerlaku1?: string;
-  masaBerlaku5?: string;
-  masaBerlakuKir?: string;
-
-  // Pembelian
-  tglBeli?: string;
-  hargaBeli?: string;
-
-  // Asuransi
-  noPolisAsuransi?: string;
-  jangkaPertanggungan?: string;
-}
-
-export interface ServiceRecord {
-  id: string; // e.g. "S2024060003"
-  noPolisi: string;
-  tglRequest: string;
-  channel: string;
-  cabang: string;
-  status: string; // e.g. "Draf"
-  statusApproval: string; // e.g. "-"
-  
-  // Form Details
-  aset?: string;
-  tglStnk?: string;
-  jenisServis?: string;
-  vendor?: string;
-  targetSelesai?: string;
-  kmKendaraan?: string;
-  masalah?: string;
-  penyebab?: string;
-  estimasiBiaya?: string;
-  jenisPembayaran?: string;
-  namaBank?: string;
-  nomorRekening?: string;
-}
-
-export interface TaxKirRecord {
-  id: string;
-  noPolisi: string;
-  tglRequest: string;
-  jenis: string;
-  channel: string;
-  cabang: string;
-  status: string;
-  statusApproval: string;
-
-  // Detail Fields based on form
-  aset?: string;
-  tglKir?: string;
-  tahunPembuatan?: string;
-  targetSelesai?: string;
-  vendor?: string;
-  alasan?: string;
-  penyebab?: string;
-  estimasiBiaya?: string;
-  jenisPembayaran?: string;
-  namaBank?: string;
-  nomorRekening?: string;
-}
-
-export interface MutationRecord {
-  id: string;
-  noPolisi: string;
-  cabangAset: string;
-  tipeMutasi: string;
-  tglPermintaan: string;
-  lokasiAsal: string;
-  lokasiTujuan: string;
-  status: string;
-  statusApproval: string;
-
-  // Form Details
-  channelAsal?: string;
-  channelTujuan?: string;
-  asetId?: string;
-  alasan?: string;
-}
-
-export interface SalesOffer {
-  nama: string;
-  pic: string;
-  phone: string;
-  price: string;
-}
-
-export interface SalesRecord {
-  id: string;
-  noPolisi: string;
-  tglRequest: string;
-  channel: string;
-  cabang: string;
-  hargaTertinggi: string;
-  status: string;
-  statusApproval: string;
-
-  // Form Details
-  asetId?: string;
-  targetSelesai?: string;
-  alasan?: string;
-  catatan?: string;
-  offers?: SalesOffer[];
 }
 
 export interface GeneralMasterItem {
@@ -222,51 +235,9 @@ export interface GeneralMasterItem {
   name: string;
 }
 
-export interface MasterVendorRecord {
-  id: number;
-  nama: string;
-  merek: string;
-  alamat: string;
-  noTelp: string;
-  tipe: string;
-  cabang: string;
-  aktif: boolean;
-  pic?: string;
-}
-
-// New Types for Stationery Request
-export interface StationeryRequestItem {
-    itemId: string;
-    qty: string;
-}
-
-export interface StationeryRequestRecord {
-    id: string;
-    type: string; // Pilih Kebutuhan
-    date: string;
-    remarks: string;
-    deliveryType: 'Dikirim' | 'Ambil di HO';
-    location: string;
-    items: StationeryRequestItem[];
-}
-
 export interface DeliveryLocationRecord {
-    id: number;
-    name: string;
-    address: string;
-    type: 'Head Office' | 'Branch' | 'Warehouse' | 'Store';
-}
-
-export interface LogBookRecord {
   id: number;
-  lokasiModena: string;
-  kategoriTamu: string;
-  namaTamu: string;
-  tanggalKunjungan: string;
-  jamDatang: string;
-  jamPulang: string;
-  wanita: number;
-  lakiLaki: number;
-  anakAnak: number;
-  note: string;
+  name: string;
+  address: string;
+  type: string;
 }

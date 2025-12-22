@@ -2,16 +2,11 @@
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, 
-  PenTool, 
-  ShoppingCart, 
   FileText, 
   Clock, 
   Users, 
-  CreditCard, 
   Home, 
   BookOpen, 
-  BarChart, 
-  Search,
   ChevronLeft,
   ChevronRight,
   Car,
@@ -21,12 +16,15 @@ import {
   DollarSign,
   ChevronDown,
   ChevronUp,
+  X,
+  Building,
+  Briefcase,
+  Bell,
+  ShieldCheck,
+  CreditCard,
   Settings,
-  List,
-  ClipboardCheck,
-  Building
+  UserCheck
 } from 'lucide-react';
-import { SidebarItem } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props {
@@ -34,21 +32,30 @@ interface Props {
   onNavigate: (label: string) => void;
   isCollapsed: boolean;
   onToggle: () => void;
+  isMobileOpen?: boolean;
+  onCloseMobile?: () => void;
 }
 
 interface MenuItem {
-    label: string; // This is the key for navigation and translation
+    label: string;
     icon: React.ReactNode;
     subItems?: MenuItem[];
 }
 
-export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, onToggle }) => {
+export const Sidebar: React.FC<Props> = ({ 
+  activeItem, 
+  onNavigate, 
+  isCollapsed, 
+  onToggle, 
+  isMobileOpen, 
+  onCloseMobile 
+}) => {
   const { t } = useLanguage();
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Master Data', 'ATK', 'ARK', 'Gedung']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Gedung', 'Master Data']);
 
   const toggleMenu = (label: string) => {
     if (isCollapsed) {
-        onToggle(); // Auto-expand if clicking a menu while collapsed
+        onToggle();
         if (!expandedMenus.includes(label)) {
              setExpandedMenus(prev => [...prev, label]);
         }
@@ -59,7 +66,6 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
     }
   };
 
-  // The 'label' property here serves as the ID for navigation logic AND the key for translation lookup.
   const menuItems: MenuItem[] = [
     { label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
     { 
@@ -67,28 +73,11 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
         icon: <Car size={20} />,
         subItems: [
             { label: 'Daftar Aset', icon: <Database size={18} /> },
+            { label: 'Kontrak Kendaraan', icon: <Briefcase size={18} /> },
             { label: 'Servis', icon: <Wrench size={18} /> },
             { label: 'Pajak & KIR', icon: <FileText size={18} /> },
             { label: 'Mutasi', icon: <Send size={18} /> },
             { label: 'Penjualan', icon: <DollarSign size={18} /> },
-        ]
-    },
-    { 
-        label: 'ATK', 
-        icon: <PenTool size={20} />,
-        subItems: [
-             { label: 'Daftar ATK', icon: <List size={18} /> },
-             { label: 'Stationery Request Approval', icon: <ClipboardCheck size={18} /> },
-             { label: 'Master ATK', icon: <Database size={18} /> },
-        ]
-    },
-    { 
-        label: 'ARK', 
-        icon: <ShoppingCart size={20} />,
-        subItems: [
-             { label: 'Daftar ARK', icon: <List size={18} /> },
-             { label: 'Household Request Approval', icon: <ClipboardCheck size={18} /> },
-             { label: 'Master ARK', icon: <Database size={18} /> },
         ]
     },
     { label: 'Log Book', icon: <BookOpen size={20} /> },
@@ -96,12 +85,12 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
         label: 'Gedung', 
         icon: <Building size={20} />,
         subItems: [
-             { label: 'Contract', icon: <FileText size={18} /> },
+             { label: 'Kontrak Gedung', icon: <FileText size={18} /> },
+             { label: 'List Reminder Dokumen', icon: <Bell size={18} /> },
         ]
     },
     { label: 'Timesheet', icon: <Clock size={20} /> },
     { label: 'Vendor', icon: <Users size={20} /> },
-    { label: 'Credit Card', icon: <CreditCard size={20} /> },
     { 
       label: 'Master Data', 
       icon: <Home size={20} />,
@@ -114,52 +103,44 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
         { label: 'Status Request', icon: <Wrench size={18} /> },
         { label: 'Tipe Mutasi', icon: <Wrench size={18} /> },
         { label: 'Tipe Vendor', icon: <Wrench size={18} /> },
-        { label: 'Role', icon: <Wrench size={18} /> },
+        { label: 'Peran', icon: <Wrench size={18} /> },
         { label: 'Master Vendor', icon: <Users size={18} /> },
       ]
     },
-    { label: 'Project Mgmt', icon: <BarChart size={20} /> },
   ];
 
+  const sidebarClasses = `
+    fixed inset-y-0 left-0 z-40 bg-black text-gray-400 flex flex-col transition-all duration-300 border-r border-gray-800
+    ${isMobileOpen ? 'translate-x-0 w-64' : '-translate-x-full lg:translate-x-0'}
+    ${isCollapsed && !isMobileOpen ? 'lg:w-20' : 'lg:w-64'}
+  `;
+
   return (
-    <div className={`${isCollapsed ? 'w-20' : 'w-64'} bg-black text-gray-400 flex flex-col h-screen fixed left-0 top-0 border-r border-gray-800 z-20 transition-all duration-300`}>
+    <div className={sidebarClasses}>
       {/* Logo Area */}
-      <div className={`p-6 flex items-center gap-3 text-white mb-2 ${isCollapsed ? 'justify-center' : ''}`}>
-        <div className="w-8 h-8 min-w-8 bg-white text-black rounded-full flex items-center justify-center font-bold text-xl">M</div>
-        {!isCollapsed && (
-            <div className="overflow-hidden whitespace-nowrap">
-                <h1 className="font-bold text-lg leading-none">MODENA</h1>
-                <p className="text-xs text-gray-500">Asset Management</p>
-            </div>
+      <div className={`p-6 flex items-center justify-between text-white mb-2`}>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 min-w-8 bg-white text-black rounded-full flex items-center justify-center font-bold text-xl">M</div>
+          {(!isCollapsed || isMobileOpen) && (
+              <div className="overflow-hidden whitespace-nowrap">
+                  <h1 className="font-bold text-lg leading-none">MODENA</h1>
+                  <p className="text-xs text-gray-500">Asset Management</p>
+              </div>
+          )}
+        </div>
+        {/* Close Button for Mobile */}
+        {isMobileOpen && (
+          <button onClick={onCloseMobile} className="lg:hidden p-1 hover:bg-gray-800 rounded">
+            <X size={20} />
+          </button>
         )}
       </div>
 
-      {/* Search Menu Input */}
-      <div className="px-4 mb-6">
-        <div className={`relative flex ${isCollapsed ? 'justify-center' : ''}`}>
-          {isCollapsed ? (
-             <button className="w-full h-10 flex items-center justify-center hover:bg-[#1a1a1a] rounded transition-colors">
-                <Search className="text-gray-600" size={16} />
-             </button>
-          ) : (
-            <>
-                <Search className="absolute left-3 top-2.5 text-gray-600" size={16} />
-                <input 
-                    type="text" 
-                    placeholder={t('Search Menu')} 
-                    className="w-full bg-[#1a1a1a] text-sm text-gray-300 pl-10 pr-4 py-2 rounded border border-gray-800 focus:outline-none focus:border-gray-600 placeholder-gray-600"
-                />
-            </>
-          )}
-        </div>
-      </div>
-
       {/* Navigation List */}
-      <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-1">
+      <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-1 mt-4">
         {menuItems.map((item, index) => {
           const hasSub = item.subItems && item.subItems.length > 0;
           const isExpanded = expandedMenus.includes(item.label);
-          // Check if parent or any child is active
           const isParentActive = activeItem === item.label || (item.subItems && item.subItems.some(sub => sub.label === activeItem)); 
 
           if (hasSub) {
@@ -167,18 +148,16 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
                   <div key={index} className="space-y-1">
                       <button
                         onClick={() => toggleMenu(item.label)}
-                        className={`w-full flex items-center ${isCollapsed ? 'justify-center px-0' : 'justify-between px-4'} py-3 text-sm font-medium rounded-lg transition-colors duration-200 hover:bg-[#1a1a1a] hover:text-white ${isParentActive ? 'text-white bg-[#1a1a1a]' : 'text-gray-500'}`}
-                        title={isCollapsed ? t(item.label) : undefined}
+                        className={`w-full flex items-center ${(isCollapsed && !isMobileOpen) ? 'justify-center px-0' : 'justify-between px-4'} py-3 text-sm font-medium rounded-lg transition-colors duration-200 hover:bg-[#1a1a1a] hover:text-white ${isParentActive ? 'text-white bg-[#1a1a1a]' : 'text-gray-500'}`}
                       >
-                         <div className={`flex items-center ${isCollapsed ? 'gap-0' : 'gap-4'}`}>
+                         <div className={`flex items-center ${(isCollapsed && !isMobileOpen) ? 'gap-0' : 'gap-4'}`}>
                             <span>{item.icon}</span>
-                            {!isCollapsed && t(item.label)}
+                            {(!isCollapsed || isMobileOpen) && t(item.label)}
                          </div>
-                         {!isCollapsed && (isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+                         {(!isCollapsed || isMobileOpen) && (isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />)}
                       </button>
 
-                      {/* Only show subitems if expanded AND NOT collapsed. If collapsed, hiding subitems keeps it clean */}
-                      {isExpanded && !isCollapsed && (
+                      {isExpanded && (!isCollapsed || isMobileOpen) && (
                           <div className="space-y-1">
                               {item.subItems!.map((sub, subIndex) => {
                                   const isSubActive = activeItem === sub.label;
@@ -191,8 +170,7 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
                                             ? 'bg-[#1a1a1a] text-white border-l-4 border-white' 
                                             : 'hover:bg-[#1a1a1a] hover:text-white border-l-4 border-transparent text-gray-500'}`}
                                     >
-                                        <span className={`${isSubActive ? 'text-white' : 'text-gray-500'}`}>{sub.icon}</span>
-                                        {t(sub.label)}
+                                        {sub.label}
                                     </button>
                                   )
                               })}
@@ -206,25 +184,23 @@ export const Sidebar: React.FC<Props> = ({ activeItem, onNavigate, isCollapsed, 
             <button
               key={index}
               onClick={() => onNavigate(item.label)}
-              className={`w-full flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-4 px-4'} py-3 text-sm font-medium rounded-lg transition-colors duration-200
+              className={`w-full flex items-center ${(isCollapsed && !isMobileOpen) ? 'justify-center px-0' : 'gap-4 px-4'} py-3 text-sm font-medium rounded-lg transition-colors duration-200
                 ${isParentActive
                   ? 'bg-[#1a1a1a] text-white border-l-4 border-white' 
                   : 'hover:bg-[#1a1a1a] hover:text-white border-l-4 border-transparent text-gray-500'}`}
-              title={isCollapsed ? t(item.label) : undefined}
             >
-              <span className={`${isParentActive ? 'text-white' : 'text-gray-500'}`}>{item.icon}</span>
-              {!isCollapsed && t(item.label)}
+              <span>{item.icon}</span>
+              {(!isCollapsed || isMobileOpen) && t(item.label)}
             </button>
           );
         })}
       </nav>
 
-      {/* Footer / Minimize */}
-      <div className="p-4 border-t border-gray-900">
+      {/* Minimize Button - Hide on Mobile */}
+      <div className="p-4 border-t border-gray-900 hidden lg:block">
         <button 
             onClick={onToggle}
             className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-2'} text-sm text-gray-500 hover:text-white transition-colors`}
-            title={t('Minimize menu')}
         >
           <div className="bg-gray-900 p-1 rounded-full">
             {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
