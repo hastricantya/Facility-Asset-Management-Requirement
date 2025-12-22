@@ -1,5 +1,5 @@
 
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, RoleMasterItem } from './types';
 
 // Helper function to generate mock data for ATK/ARK
 const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] => {
@@ -144,6 +144,18 @@ export const MOCK_REMINDER_DATA: ReminderRecord[] = [
     }
 ];
 
+export const MOCK_ROLES: RoleMasterItem[] = [
+  { id: 1, name: 'BM / Admin', description: 'Input proposal, revisi, upload dokumen' },
+  { id: 2, name: 'Regional Branch', description: 'Approval level 2' },
+  { id: 3, name: 'Jemmy Liem', description: 'Approval level 3' },
+  { id: 4, name: 'DJ', description: 'Approval final' },
+  { id: 5, name: 'Legal', description: 'Legal checking, surat kuasa' },
+  { id: 6, name: 'FM', description: 'Pajak & keuangan' },
+  { id: 7, name: 'Accounting', description: 'Approval keuangan' },
+  { id: 8, name: 'Finance & Governance', description: 'Approval lanjutan' },
+  { id: 9, name: 'COO', description: 'Final approval' },
+];
+
 export const MOCK_GENERAL_MASTER_DATA = {
     jenisPajak: [{ id: 1, name: 'Pajak STNK 1 Tahun' }, { id: 2, name: 'Pajak STNK 5 Tahun' }],
     jenisPembayaran: [{ id: 1, name: 'Kasbon' }, { id: 2, name: 'Reimbursement' }],
@@ -153,7 +165,7 @@ export const MOCK_GENERAL_MASTER_DATA = {
     statusRequest: [{ id: 1, name: 'New' }, { id: 2, name: 'Verified' }],
     tipeMutasi: [{ id: 1, name: 'Antar Cabang' }, { id: 2, name: 'Antar Departemen' }],
     tipeVendor: [{ id: 1, name: 'Bengkel Resmi' }, { id: 2, name: 'Asuransi' }],
-    peran: [{ id: 1, name: 'Super Admin' }, { id: 2, name: 'Fleet Coordinator' }]
+    peran: MOCK_ROLES,
 };
 
 export const MOCK_VEHICLE_DATA: VehicleRecord[] = [

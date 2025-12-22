@@ -1,22 +1,25 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Save, Database } from 'lucide-react';
-import { GeneralMasterItem } from '../types';
+import { GeneralMasterItem, RoleMasterItem } from '../types';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
-  initialData?: GeneralMasterItem | null;
+  onSave: (data: { name: string, description?: string }) => void;
+  initialData?: any | null; // Can be GeneralMasterItem or RoleMasterItem
   title: string;
 }
 
 export const GeneralMasterModal: React.FC<Props> = ({ isOpen, onClose, onSave, initialData, title }) => {
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const isRoleMode = title === 'Peran' || title === 'Role';
 
   useEffect(() => {
     if (isOpen) {
       setName(initialData ? initialData.name : '');
+      setDescription(initialData && 'description' in initialData ? initialData.description : '');
     }
   }, [isOpen, initialData]);
 
@@ -24,7 +27,10 @@ export const GeneralMasterModal: React.FC<Props> = ({ isOpen, onClose, onSave, i
 
   const handleSave = () => {
     if (name.trim()) {
-      onSave(name);
+      onSave({ 
+        name: name.trim(), 
+        description: isRoleMode ? description.trim() : undefined 
+      });
       onClose();
     }
   };
@@ -60,9 +66,22 @@ export const GeneralMasterModal: React.FC<Props> = ({ isOpen, onClose, onSave, i
               placeholder={`Masukkan nama ${title.toLowerCase()}...`}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSave()}
             />
           </div>
+
+          {isRoleMode && (
+            <div>
+              <label className="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">
+                Deskripsi
+              </label>
+              <textarea 
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium text-black focus:border-black focus:ring-2 focus:ring-gray-100 outline-none transition-all placeholder:text-gray-300 min-h-[100px] resize-none"
+                placeholder="Masukkan deskripsi peran..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+          )}
         </div>
 
         {/* Footer */}

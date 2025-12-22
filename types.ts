@@ -260,6 +260,12 @@ export interface GeneralMasterItem {
   name: string;
 }
 
+export interface RoleMasterItem {
+  id: number;
+  name: string;
+  description: string;
+}
+
 export interface DeliveryLocationRecord {
   id: number;
   name: string;
