@@ -77,7 +77,10 @@ export const MOCK_MASTER_ARK_DATA: MasterItem[] = [
 export const MOCK_STOCK_OPNAME_DATA: StockOpnameRecord[] = [
   { id: 1, opnameNumber: 'SO/ATK/2024/0001', itemCode: 'TP-HP0048', itemName: 'HP Laserjet 204A Black', category: 'Tinta Printer', systemQty: 5, physicalQty: 5, difference: 0, date: '2024-03-20', performedBy: 'Aan Junaidi', status: 'Matched' },
   { id: 2, opnameNumber: 'SO/ATK/2024/0002', itemCode: 'KRT-A4-70', itemName: 'Kertas A4 70gr', category: 'Kertas', systemQty: 50, physicalQty: 48, difference: -2, date: '2024-03-20', performedBy: 'Budi Santoso', status: 'Discrepancy' },
-  { id: 3, opnameNumber: 'SO/ATK/2024/0003', itemCode: 'ATK-PEN-01', itemName: 'Pulpen Standard AE7', category: 'Alat Tulis', systemQty: 120, physicalQty: 120, difference: 0, date: '2024-03-20', performedBy: 'Citra Lestari', status: 'Matched' }
+  { id: 3, opnameNumber: 'SO/ATK/2024/0003', itemCode: 'ATK-PEN-01', itemName: 'Pulpen Standard AE7', category: 'Alat Tulis', systemQty: 120, physicalQty: 120, difference: 0, date: '2024-03-20', performedBy: 'Citra Lestari', status: 'Matched' },
+  { id: 4, opnameNumber: 'SO/ATK/2024/0004', itemCode: 'EL-BAT-AA', itemName: 'Baterai AA Alkaline', category: 'Elektronik', systemQty: 24, physicalQty: 24, difference: 0, date: '2024-03-22', performedBy: 'Aan Junaidi', status: 'Draft' },
+  { id: 5, opnameNumber: 'SO/ATK/2024/0005', itemCode: 'FIL-MAP-01', itemName: 'Map Plastik Clear', category: 'Filing', systemQty: 200, physicalQty: 195, difference: -5, date: '2024-03-22', performedBy: 'Dewi Putri', status: 'Draft' },
+  { id: 6, opnameNumber: 'SO/ATK/2024/0006', itemCode: 'CL-WPL-01', itemName: 'Wipol Karbol', category: 'Pembersih', systemQty: 10, physicalQty: 12, difference: 2, date: '2024-03-22', performedBy: 'Eko Prasetyo', status: 'Draft' }
 ];
 
 export const MOCK_UOM_DATA: GeneralMasterItem[] = [
