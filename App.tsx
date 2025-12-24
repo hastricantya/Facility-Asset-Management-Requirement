@@ -119,8 +119,8 @@ const App: React.FC = () => {
 
   const handleModuleNavigate = (module: string) => {
     setActiveModule(module);
-    if (module === 'MODENA Pod') setActiveTab('Semua');
-    else if (module === 'Log Book' || module === 'Locker') setActiveTab('');
+    if (module === 'MODENA Pod' || module === 'Locker') setActiveTab('Semua');
+    else if (module === 'Log Book') setActiveTab('');
     else setActiveTab('Semua');
     setIsMobileMenuOpen(false); 
   };
@@ -163,6 +163,13 @@ const App: React.FC = () => {
       return podData;
   }, [podData, activeTab]);
 
+  const filteredLockerData = useMemo(() => {
+    if (activeTab === 'Terisi') return lockerData.filter(l => l.status === 'Terisi');
+    if (activeTab === 'Kosong') return lockerData.filter(l => l.status === 'Kosong');
+    if (activeTab === 'Kunci Hilang') return lockerData.filter(l => l.status === 'Kunci Hilang');
+    return lockerData;
+  }, [lockerData, activeTab]);
+
   const podStats = useMemo(() => {
     return podData.reduce((acc, curr) => ({
         pria: acc.pria + (curr.lantai.includes('Pria') ? 1 : 0),
@@ -175,7 +182,7 @@ const App: React.FC = () => {
   const renderContent = () => {
      switch(activeModule) {
          case 'Log Book': return <LogBookTable data={logBookData} onView={(item) => { setSelectedLogBook(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedLogBook(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
-         case 'Locker': return <LockerTable data={lockerData} onView={(item) => { setSelectedLocker(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedLocker(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
+         case 'Locker': return <LockerTable data={filteredLockerData} onView={(item) => { setSelectedLocker(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedLocker(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
          case 'MODENA Pod': return <ModenaPodTable data={filteredPodData} onView={(item) => { setSelectedPod(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedPod(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
          case 'Stock Opname': return <StockOpnameTable data={stockOpnameData} onView={(item) => { setSelectedStockOpname(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Request ATK':
@@ -190,6 +197,7 @@ const App: React.FC = () => {
 
   const mainTabs = useMemo(() => {
     if (activeModule === 'MODENA Pod') return ['Semua', 'Lt 2 Pria', 'Lt 2 Perempuan', 'Lt 3 Pria', 'Lt 3 Perempuan'];
+    if (activeModule === 'Locker') return ['Semua', 'Terisi', 'Kosong', 'Kunci Hilang'];
     if (activeModule.includes('Daftar') || activeModule.includes('Approval') || activeModule.includes('Request')) return ['Semua', 'Draft', 'Pending', 'Approved', 'Rejected'];
     if (activeModule === 'Stock Opname') return ['Semua', 'Matched', 'Discrepancy'];
     return ['Semua'];

@@ -83,6 +83,11 @@ const translations: Record<string, Record<Language, string>> = {
   'Persetujuan': { id: 'Persetujuan', en: 'Approval' },
   'On Progress': { id: 'Sedang Berjalan', en: 'On Progress' },
   
+  // Locker Tabs
+  'Terisi': { id: 'Terisi', en: 'Occupied' },
+  'Kosong': { id: 'Kosong', en: 'Empty' },
+  'Kunci Hilang': { id: 'Kunci Hilang', en: 'Lost Key' },
+
   // Action Buttons
   'Revise': { id: 'Revisi', en: 'Revise' },
   'Reject': { id: 'Tolak', en: 'Reject' },
