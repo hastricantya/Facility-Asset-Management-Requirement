@@ -84,10 +84,23 @@ export const MOCK_STOCK_OPNAME_DATA: StockOpnameRecord[] = [
 ];
 
 export const MOCK_LOCKER_DATA: LockerRecord[] = [
-    { id: 1, lockerNumber: 'LCK-001', location: 'HO - Floor 4', status: 'Occupied', employee: { name: 'Aan Junaidi', role: 'Technician', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=1' }, startDate: '2024-01-01', lastInspection: '2024-03-01', remarks: 'Good condition' },
-    { id: 2, lockerNumber: 'LCK-002', location: 'HO - Floor 4', status: 'Available', lastInspection: '2024-03-10', remarks: 'Key is at GA' },
-    { id: 3, lockerNumber: 'LCK-003', location: 'HO - Floor 2', status: 'Maintenance', lastInspection: '2024-02-15', remarks: 'Lock broken' },
-    { id: 4, lockerNumber: 'LCK-004', location: 'HO - Floor 2', status: 'Occupied', employee: { name: 'Citra Lestari', role: 'Manager', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=3' }, startDate: '2024-02-10', lastInspection: '2024-03-15', remarks: '' }
+    // Lantai 1: 1 - 70
+    { id: 1, lockerNumber: '001', location: 'Lantai 1', subLocation: '-', status: 'Terisi', employee: { name: 'Aan Junaidi', role: 'Technician', position: 'Team Leader', department: 'After Sales', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=1' }, spareKey: 'Ada', lastUpdate: '2024-03-20', remarks: 'Good condition' },
+    { id: 2, lockerNumber: '002', location: 'Lantai 1', subLocation: '-', status: 'Kosong', spareKey: 'Ada', lastUpdate: '2024-03-10', remarks: '' },
+    { id: 3, lockerNumber: '070', location: 'Lantai 1', subLocation: '-', status: 'Kunci Hilang', spareKey: 'Tidak Ada', lastUpdate: '2024-02-15', remarks: 'Needs lock replacement' },
+    
+    // Lantai 2 Satrio: S-2001, S-2002
+    { id: 4, lockerNumber: 'S-2001', location: 'Lantai 2', subLocation: 'Satrio', status: 'Terisi', employee: { name: 'Citra Lestari', role: 'Manager', position: 'Operations Manager', department: 'HQ', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=3' }, spareKey: 'Ada', lastUpdate: '2024-03-15', remarks: '' },
+    { id: 5, lockerNumber: 'S-2002', location: 'Lantai 2', subLocation: 'Satrio', status: 'Kosong', spareKey: 'Ada', lastUpdate: '2024-03-22', remarks: 'Deep cleaned' },
+    
+    // Lantai 2 Karang Asem: K-2001, K-2002
+    { id: 6, lockerNumber: 'K-2001', location: 'Lantai 2', subLocation: 'Karang Asem', status: 'Terisi', employee: { name: 'Budi Santoso', role: 'Staff', position: 'Inventory Control', department: 'Supply Chain', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=2' }, spareKey: 'Ada', lastUpdate: '2024-03-18', remarks: '' },
+    
+    // Lantai 3 Satrio: S-3001, S-3002
+    { id: 7, lockerNumber: 'S-3001', location: 'Lantai 3', subLocation: 'Satrio', status: 'Kosong', spareKey: 'Tidak Ada', lastUpdate: '2024-03-01', remarks: 'Spare key missing since move' },
+    
+    // Lantai 3 Karang Asem: K-3001
+    { id: 8, lockerNumber: 'K-3001', location: 'Lantai 3', subLocation: 'Karang Asem', status: 'Terisi', employee: { name: 'Dewi Putri', role: 'Staff', position: 'Finance Clerk', department: 'Finance', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=4' }, spareKey: 'Ada', lastUpdate: '2024-03-21', remarks: '' }
 ];
 
 export const MOCK_UOM_DATA: GeneralMasterItem[] = [

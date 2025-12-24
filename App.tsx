@@ -328,6 +328,26 @@ const App: React.FC = () => {
     setIsStockModalOpen(false);
   };
 
+  const handleSaveLocker = (data: Partial<LockerRecord>) => {
+    if (modalMode === 'create') {
+      const newRecord: LockerRecord = {
+        id: Date.now(),
+        lockerNumber: data.lockerNumber || 'NEW',
+        location: data.location || 'Lantai 1',
+        subLocation: data.subLocation || '-',
+        status: data.status || 'Kosong',
+        spareKey: data.spareKey || 'Ada',
+        lastUpdate: data.lastUpdate || new Date().toISOString().split('T')[0],
+        remarks: data.remarks || '',
+        employee: data.employee
+      };
+      setLockerData([newRecord, ...lockerData]);
+    } else {
+      setLockerData(lockerData.map(item => item.id === data.id ? { ...item, ...data } : item));
+    }
+    setIsStockModalOpen(false);
+  };
+
   const handleApproveAsset = () => {
     if (selectedAsset) {
       if (activeModule.includes('ATK')) {
@@ -434,8 +454,9 @@ const App: React.FC = () => {
   }, [stockOpnameData, activeTab]);
 
   const filteredLockerData = useMemo(() => {
-      if (activeTab === 'Occupied') return lockerData.filter(l => l.status === 'Occupied');
-      if (activeTab === 'Available') return lockerData.filter(l => l.status === 'Available');
+      if (activeTab === 'Terisi') return lockerData.filter(l => l.status === 'Terisi');
+      if (activeTab === 'Kosong') return lockerData.filter(l => l.status === 'Kosong');
+      if (activeTab === 'Kunci Hilang') return lockerData.filter(l => l.status === 'Kunci Hilang');
       return lockerData;
   }, [lockerData, activeTab]);
 
@@ -452,11 +473,11 @@ const App: React.FC = () => {
   // Locker stats calculation
   const lockerStats = useMemo(() => {
       return lockerData.reduce((acc, curr) => ({
-          occupied: acc.occupied + (curr.status === 'Occupied' ? 1 : 0),
-          available: acc.available + (curr.status === 'Available' ? 1 : 0),
-          maintenance: acc.maintenance + (curr.status === 'Maintenance' ? 1 : 0),
+          occupied: acc.occupied + (curr.status === 'Terisi' ? 1 : 0),
+          available: acc.available + (curr.status === 'Kosong' ? 1 : 0),
+          lostKey: acc.lostKey + (curr.status === 'Kunci Hilang' ? 1 : 0),
           total: acc.total + 1
-      }), { occupied: 0, available: 0, maintenance: 0, total: 0 });
+      }), { occupied: 0, available: 0, lostKey: 0, total: 0 });
   }, [lockerData]);
 
   const renderContent = () => {
@@ -535,7 +556,7 @@ const App: React.FC = () => {
     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') return ['Items', 'UOM', 'Category', 'Delivery Location'];
     if (activeModule.includes('Daftar') || activeModule.includes('Approval') || activeModule.includes('Request')) return ['Semua', 'Draft', 'On Progress', 'Pending', 'Approved', 'Rejected', 'Closed'];
     if (activeModule === 'Log Book') return []; 
-    if (activeModule === 'Locker') return ['Semua', 'Occupied', 'Available'];
+    if (activeModule === 'Locker') return ['Semua', 'Terisi', 'Kosong', 'Kunci Hilang'];
     if (activeModule === 'Stock Opname') return ['Semua', 'Matched', 'Discrepancy', 'Draft'];
     return ['Semua'];
   }, [activeModule]);
@@ -610,18 +631,18 @@ const App: React.FC = () => {
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-black"></div>
-                                <span className="text-[10px] font-black text-gray-400 uppercase">Occupied</span>
+                                <span className="text-[10px] font-black text-gray-400 uppercase">Terisi</span>
                                 <span className="text-[12px] font-black">{lockerStats.occupied}</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                <span className="text-[10px] font-black text-gray-400 uppercase">Available</span>
+                                <span className="text-[10px] font-black text-gray-400 uppercase">Kosong</span>
                                 <span className="text-[12px] font-black">{lockerStats.available}</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                                <span className="text-[10px] font-black text-gray-400 uppercase">Audit</span>
-                                <span className="text-[12px] font-black">{lockerStats.maintenance}</span>
+                                <span className="text-[10px] font-black text-gray-400 uppercase">Hlg Kunci</span>
+                                <span className="text-[12px] font-black">{lockerStats.lostKey}</span>
                             </div>
                         </div>
                         <div className="h-6 w-[1px] bg-gray-100"></div>
@@ -688,8 +709,10 @@ const App: React.FC = () => {
         initialAssetData={selectedAsset || undefined}
         initialLogBookData={selectedLogBook || undefined}
         initialStockOpnameData={selectedStockOpname || undefined}
+        initialLockerData={selectedLocker || undefined}
         onSaveLogBook={handleSaveLogBook}
         onSaveStockOpname={handleSaveStockOpname}
+        onSaveLocker={handleSaveLocker}
         onApprove={handleApproveAsset}
         onReject={handleRejectAsset}
         vehicleList={vehicleData}

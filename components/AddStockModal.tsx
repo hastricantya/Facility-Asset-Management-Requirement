@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
-import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search } from 'lucide-react';
-import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord } from '../types';
+import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key } from 'lucide-react';
+import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_DELIVERY_LOCATIONS } from '../constants';
 
@@ -20,6 +21,7 @@ interface Props {
   onSaveDeliveryLocation?: (location: Partial<DeliveryLocationRecord>) => void;
   onSaveLogBook?: (logbook: Partial<LogBookRecord>) => void;
   onSaveStockOpname?: (opname: Partial<StockOpnameRecord>) => void;
+  onSaveLocker?: (locker: Partial<LockerRecord>) => void;
   onRevise?: () => void;
   onApprove?: () => void;
   onReject?: () => void;
@@ -36,6 +38,7 @@ interface Props {
   initialAssetData?: AssetRecord;
   initialLogBookData?: LogBookRecord;
   initialStockOpnameData?: StockOpnameRecord;
+  initialLockerData?: LockerRecord;
   
   mode?: 'create' | 'edit' | 'view';
   vehicleList?: VehicleRecord[];
@@ -58,6 +61,7 @@ export const AddStockModal: React.FC<Props> = ({
     onSaveDeliveryLocation,
     onSaveLogBook,
     onSaveStockOpname,
+    onSaveLocker,
     onRevise,
     onApprove,
     onReject,
@@ -73,6 +77,7 @@ export const AddStockModal: React.FC<Props> = ({
     initialAssetData,
     initialLogBookData,
     initialStockOpnameData,
+    initialLockerData,
     mode = 'create',
     vehicleList = [],
     masterData = {}
@@ -92,6 +97,7 @@ export const AddStockModal: React.FC<Props> = ({
   });
   const [logBookForm, setLogBookForm] = useState<Partial<LogBookRecord>>({});
   const [stockOpnameForm, setStockOpnameForm] = useState<Partial<StockOpnameRecord>>({});
+  const [lockerForm, setLockerForm] = useState<Partial<LockerRecord>>({});
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
   const [showApprovalHistory, setShowApprovalHistory] = useState(false);
 
@@ -100,6 +106,7 @@ export const AddStockModal: React.FC<Props> = ({
   const isApprovalModule = moduleName.includes('Approval');
   const isLogBook = moduleName === 'Log Book';
   const isStockOpname = moduleName === 'Stock Opname';
+  const isLocker = moduleName === 'Locker';
   const isViewMode = mode === 'view';
 
   useEffect(() => {
@@ -112,6 +119,7 @@ export const AddStockModal: React.FC<Props> = ({
            if (initialMasterData) setMasterForm(initialMasterData);
            if (initialLogBookData) setLogBookForm(initialLogBookData);
            if (initialStockOpnameData) setStockOpnameForm(initialStockOpnameData);
+           if (initialLockerData) setLockerForm(initialLockerData);
            
            if (initialAssetData) {
                const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
@@ -152,6 +160,15 @@ export const AddStockModal: React.FC<Props> = ({
                 status: 'Draft'
               });
             }
+            if (isLocker) {
+              setLockerForm({
+                status: 'Kosong',
+                spareKey: 'Ada',
+                location: 'Lantai 1',
+                subLocation: '-',
+                lastUpdate: new Date().toISOString().split('T')[0]
+              });
+            }
             setStationeryRequestForm({ 
                 type: 'DAILY REQUEST', 
                 deliveryType: 'DELIVERY', 
@@ -162,12 +179,13 @@ export const AddStockModal: React.FC<Props> = ({
             setRequestItems([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
         }
     }
-  }, [isOpen, initialAssetData, mode, moduleName, isArkModule, initialStockOpnameData, isStockOpname]);
+  }, [isOpen, initialAssetData, mode, moduleName, isArkModule, initialStockOpnameData, isStockOpname, isLocker, initialLockerData]);
 
   const handleSave = () => {
       if (isLogBook && onSaveLogBook) onSaveLogBook(logBookForm);
       if (isStationeryRequest && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
       if (isStockOpname && onSaveStockOpname) onSaveStockOpname(stockOpnameForm);
+      if (isLocker && onSaveLocker) onSaveLocker(lockerForm);
       onClose();
   }
 
@@ -183,6 +201,27 @@ export const AddStockModal: React.FC<Props> = ({
       }
       return next;
     });
+  };
+
+  const handleLockerChange = (field: string, value: any) => {
+    setLockerForm(prev => {
+      const next = { ...prev, [field]: value };
+      // Handle subLocation logic: Floor 1 has no subLocation
+      if (field === 'location' && value === 'Lantai 1') {
+        next.subLocation = '-';
+      }
+      return next;
+    });
+  };
+
+  const handleLockerEmployeeChange = (field: string, value: any) => {
+    setLockerForm(prev => ({
+      ...prev,
+      employee: {
+        ...(prev.employee || { name: '', role: '', phone: '', avatar: '' }),
+        [field]: value
+      }
+    }));
   };
 
   const handleStationeryRequestChange = (field: keyof StationeryRequestRecord, value: any) => {
@@ -278,21 +317,22 @@ export const AddStockModal: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-[2px] p-4 transition-opacity duration-300">
-      <div className={`bg-[#F8F9FA] w-full ${isLogBook || (isStationeryRequest && !isViewMode) || isStockOpname ? 'max-w-5xl' : 'max-w-7xl'} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transform transition-all scale-100`}>
+      <div className={`bg-[#F8F9FA] w-full ${isLogBook || (isStationeryRequest && !isViewMode) || isStockOpname || isLocker ? 'max-w-5xl' : 'max-w-7xl'} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transform transition-all scale-100`}>
         {/* Header */}
         <div className="px-8 py-5 bg-white border-b border-gray-100 flex items-center justify-between shrink-0">
           <div>
               <h2 className="text-[14px] font-black text-black uppercase tracking-widest">
                 {isStockOpname ? (isViewMode ? 'Stock Opname Records Detail' : 'Create New Stock Opname') :
+                 isLocker ? (isViewMode ? 'Locker Management Details' : 'Register New Locker') :
                  isStationeryRequest ? (isViewMode ? (isApprovalModule ? 'Stationery Approval Process' : 'Stationery Request Details') : (isArkModule ? 'CREATE HOUSEHOLD REQUEST' : 'CREATE STATIONERY REQUEST')) : 
                  isLogBook ? 'Guest Log Detail' : moduleName}
               </h2>
-              {isViewMode && (initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber) && (
-                <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase mt-1 block">ID: {initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber}</span>
+              {isViewMode && (initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber || initialLockerData?.lockerNumber) && (
+                <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase mt-1 block">ID: {initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber || initialLockerData?.lockerNumber}</span>
               )}
           </div>
           <div className="flex items-center gap-3">
-            {isViewMode && isStationeryRequest && (
+            {isViewMode && (isStationeryRequest || isLocker) && (
               <button onClick={() => setShowApprovalHistory(true)} className="flex items-center gap-2 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-black bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all"><History size={14} /> History</button>
             )}
             <button className="text-gray-300 hover:text-red-500 transition-colors p-1" onClick={onClose}>
@@ -303,7 +343,167 @@ export const AddStockModal: React.FC<Props> = ({
         
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          {isStockOpname ? (
+          {isLocker ? (
+            /* --- LOCKER FORM --- */
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Locker Identification */}
+                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                  <SectionHeader icon={Lock} title="Locker Identification" />
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Locker Number</label>
+                        <input 
+                          type="text" 
+                          disabled={isViewMode}
+                          placeholder="e.g. S-2001"
+                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono font-bold text-black focus:border-black outline-none" 
+                          value={lockerForm.lockerNumber || ''} 
+                          onChange={(e) => handleLockerChange('lockerNumber', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Spare Key Status</label>
+                        <select 
+                          disabled={isViewMode}
+                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
+                          value={lockerForm.spareKey || 'Ada'}
+                          onChange={(e) => handleLockerChange('spareKey', e.target.value)}
+                        >
+                          <option value="Ada">Ada</option>
+                          <option value="Tidak Ada">Tidak Ada</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Floor Location</label>
+                        <select 
+                          disabled={isViewMode}
+                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
+                          value={lockerForm.location || ''}
+                          onChange={(e) => handleLockerChange('location', e.target.value)}
+                        >
+                          <option value="Lantai 1">Lantai 1</option>
+                          <option value="Lantai 2">Lantai 2</option>
+                          <option value="Lantai 3">Lantai 3</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Area / Sub Location</label>
+                        <select 
+                          disabled={isViewMode || lockerForm.location === 'Lantai 1'}
+                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none disabled:bg-gray-50"
+                          value={lockerForm.subLocation || ''}
+                          onChange={(e) => handleLockerChange('subLocation', e.target.value)}
+                        >
+                          <option value="-">-</option>
+                          <option value="Satrio">Satrio</option>
+                          <option value="Karang Asem">Karang Asem</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Status</label>
+                      <div className="flex gap-2">
+                        {['Kosong', 'Terisi', 'Kunci Hilang'].map((s) => (
+                          <button
+                            key={s}
+                            disabled={isViewMode}
+                            onClick={() => handleLockerChange('status', s)}
+                            className={`flex-1 py-2 text-[10px] font-black rounded-lg border transition-all uppercase tracking-widest
+                              ${lockerForm.status === s 
+                                ? (s === 'Kosong' ? 'bg-green-500 text-white border-green-600' : s === 'Terisi' ? 'bg-black text-white border-black' : 'bg-red-500 text-white border-red-600') 
+                                : 'bg-white text-gray-400 border-gray-200 hover:border-black hover:text-black'}`}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Occupant Information */}
+                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                  <SectionHeader icon={User} title="Occupant Details" />
+                  <div className="space-y-4">
+                    {lockerForm.status === 'Terisi' ? (
+                      <>
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Employee Name</label>
+                          <input 
+                            type="text" 
+                            disabled={isViewMode}
+                            placeholder="Full name of employee"
+                            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
+                            value={lockerForm.employee?.name || ''} 
+                            onChange={(e) => handleLockerEmployeeChange('name', e.target.value)}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Position</label>
+                            <input 
+                              type="text" 
+                              disabled={isViewMode}
+                              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
+                              value={lockerForm.employee?.position || ''} 
+                              onChange={(e) => handleLockerEmployeeChange('position', e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Department</label>
+                            <input 
+                              type="text" 
+                              disabled={isViewMode}
+                              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
+                              value={lockerForm.employee?.department || ''} 
+                              onChange={(e) => handleLockerEmployeeChange('department', e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl opacity-40">
+                         <User size={32} className="text-gray-300 mb-2" />
+                         <p className="text-[10px] font-black text-gray-400 uppercase">No occupant assigned</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Maintenance & Notes */}
+              <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                <SectionHeader icon={MessageSquare} title="Audit & Remarks" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Last Audit / Update</label>
+                    <input 
+                      type="date" 
+                      disabled={isViewMode}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
+                      value={lockerForm.lastUpdate || ''} 
+                      onChange={(e) => handleLockerChange('lastUpdate', e.target.value)}
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Remarks</label>
+                    <textarea 
+                      rows={1}
+                      disabled={isViewMode}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white focus:border-black outline-none transition-all" 
+                      placeholder="Maintenance notes, damage, or other info..." 
+                      value={lockerForm.remarks || ''} 
+                      onChange={(e) => handleLockerChange('remarks', e.target.value)} 
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : isStockOpname ? (
             /* --- STOCK OPNAME FORM --- */
             <div className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

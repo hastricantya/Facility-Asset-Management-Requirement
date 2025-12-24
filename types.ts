@@ -6,6 +6,8 @@ export interface Employee {
   phone: string;
   role: string;
   avatar: string;
+  position?: string;
+  department?: string;
 }
 
 export interface SparePart {
@@ -203,12 +205,12 @@ export interface LogBookRecord {
 export interface LockerRecord {
   id: number;
   lockerNumber: string;
-  location: string;
+  location: string; // Floor info
+  subLocation: 'Satrio' | 'Karang Asem' | '-';
   employee?: Employee;
-  status: 'Available' | 'Occupied' | 'Maintenance' | 'Requested';
-  startDate?: string;
-  endDate?: string;
-  lastInspection: string;
+  status: 'Terisi' | 'Kosong' | 'Kunci Hilang';
+  spareKey: 'Ada' | 'Tidak Ada';
+  lastUpdate: string;
   remarks: string;
 }
 
