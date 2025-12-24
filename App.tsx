@@ -260,7 +260,7 @@ const App: React.FC = () => {
                 onAddClick={handleAddClick}
                 moduleName={activeModule}
                 searchPlaceholder={`Search ${activeModule}...`}
-                hideAdd={activeModule === 'Stock Opname'}
+                hideAdd={false}
                 podFilters={podFilters}
                 onPodFilterChange={(field, value) => setPodFilters(prev => ({ ...prev, [field]: value }))}
                 stationeryFilters={stationeryFilters}
@@ -285,9 +285,11 @@ const App: React.FC = () => {
         initialStockOpnameData={selectedStockOpname || undefined}
         onSavePod={handleSavePod}
         onSaveLogBook={(data) => setLogBookData([data as LogBookRecord, ...logBookData])}
+        onSaveStockOpname={(data) => setStockOpnameData([data as StockOpnameRecord, ...stockOpnameData])}
       />
     </div>
   );
 };
 
+// Added missing default export for the App component
 export default App;

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home } from 'lucide-react';
+import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord, ModenaPodRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_DELIVERY_LOCATIONS } from '../constants';
@@ -105,6 +105,7 @@ export const AddStockModal: React.FC<Props> = ({
   const [podForm, setPodForm] = useState<Partial<ModenaPodRecord>>({});
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
   const [showApprovalHistory, setShowApprovalHistory] = useState(false);
+  const [opnameInventoryType, setOpnameInventoryType] = useState<'ATK' | 'ARK'>('ATK');
 
   const isArkModule = moduleName.includes('ARK') || moduleName.includes('Household');
   const isStationeryRequest = moduleName.includes('ATK') || moduleName.includes('ARK') || moduleName.includes('Stationery') || moduleName.includes('Household');
@@ -124,7 +125,12 @@ export const AddStockModal: React.FC<Props> = ({
            if (initialTaxKirData) setTaxKirForm(initialTaxKirData);
            if (initialMasterData) setMasterForm(initialMasterData);
            if (initialLogBookData) setLogBookForm(initialLogBookData);
-           if (initialStockOpnameData) setStockOpnameForm(initialStockOpnameData);
+           if (initialStockOpnameData) {
+              setStockOpnameForm(initialStockOpnameData);
+              // Simple check to infer category from initial data
+              const isArk = MOCK_MASTER_ARK_DATA.some(m => m.itemCode === initialStockOpnameData.itemCode);
+              setOpnameInventoryType(isArk ? 'ARK' : 'ATK');
+           }
            if (initialLockerData) setLockerForm(initialLockerData);
            if (initialPodData) setPodForm(initialPodData);
            
@@ -157,8 +163,9 @@ export const AddStockModal: React.FC<Props> = ({
            }
         } else {
             if (isStockOpname) {
+              setOpnameInventoryType('ATK');
               setStockOpnameForm({
-                opnameNumber: `SO/ATK/${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`,
+                opnameNumber: `SO/CAT/${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`,
                 date: new Date().toISOString().split('T')[0],
                 performedBy: 'Aan Junaidi',
                 systemQty: 0,
@@ -366,7 +373,7 @@ export const AddStockModal: React.FC<Props> = ({
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
           {isPod ? (
-            /* --- MODENA POD FORM (DORMITORY STRUCTURE) --- */
+            /* --- MODENA POD FORM --- */
             <div className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Room Setup */}
@@ -687,6 +694,29 @@ export const AddStockModal: React.FC<Props> = ({
                 <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
                   <SectionHeader icon={Search} title="Inventory Selection" />
                   <div className="space-y-4">
+                    {/* Category Selection Toggle (ATK / ARK) */}
+                    <div>
+                      <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Inventory Category</label>
+                      <div className="flex bg-gray-100 p-1 rounded-xl border border-gray-200 shadow-inner">
+                        <button 
+                           onClick={() => setOpnameInventoryType('ATK')}
+                           disabled={isViewMode}
+                           className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all uppercase tracking-widest flex items-center justify-center gap-2
+                             ${opnameInventoryType === 'ATK' ? 'bg-black text-white shadow-lg' : 'text-gray-400 hover:text-black'}`}
+                        >
+                          <Box size={14} /> ATK Stationery
+                        </button>
+                        <button 
+                           onClick={() => setOpnameInventoryType('ARK')}
+                           disabled={isViewMode}
+                           className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all uppercase tracking-widest flex items-center justify-center gap-2
+                             ${opnameInventoryType === 'ARK' ? 'bg-black text-white shadow-lg' : 'text-gray-400 hover:text-black'}`}
+                        >
+                          <Home size={14} /> ARK Household
+                        </button>
+                      </div>
+                    </div>
+
                     <div>
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Select Item</label>
                       <select 
@@ -694,7 +724,7 @@ export const AddStockModal: React.FC<Props> = ({
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                         value={stockOpnameForm.itemCode || ''}
                         onChange={(e) => {
-                          const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+                          const masterList = opnameInventoryType === 'ARK' ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
                           const found = masterList.find(m => m.itemCode === e.target.value);
                           if (found) {
                             handleStockOpnameChange('itemCode', found.itemCode);
@@ -704,8 +734,8 @@ export const AddStockModal: React.FC<Props> = ({
                           }
                         }}
                       >
-                        <option value="">(Select Item from Master)</option>
-                        {(isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA).map(m => (
+                        <option value="">(Select Item from {opnameInventoryType})</option>
+                        {(opnameInventoryType === 'ARK' ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA).map(m => (
                           <option key={m.id} value={m.itemCode}>{m.itemCode} - {m.itemName}</option>
                         ))}
                       </select>
@@ -716,7 +746,10 @@ export const AddStockModal: React.FC<Props> = ({
                           <div className="text-[12px] font-black text-black uppercase">{stockOpnameForm.itemName}</div>
                           <div className="text-[10px] font-bold text-gray-400 uppercase">{stockOpnameForm.category}</div>
                         </div>
-                        <span className="text-[10px] font-mono font-black text-blue-600 bg-white px-2 py-0.5 rounded border border-blue-100">{stockOpnameForm.itemCode}</span>
+                        <span className={`text-[10px] font-mono font-black px-2 py-0.5 rounded border 
+                          ${opnameInventoryType === 'ARK' ? 'text-green-600 bg-green-50 border-green-100' : 'text-blue-600 bg-blue-50 border-blue-100'}`}>
+                          #{stockOpnameForm.itemCode}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -759,10 +792,9 @@ export const AddStockModal: React.FC<Props> = ({
               </div>
             </div>
           ) : isStationeryRequest && isViewMode ? (
-            /* --- POPUP CONTENT FOR VIEW MODE STATIONERY (APPROVAL) --- */
+            /* --- POPUP CONTENT FOR VIEW MODE STATIONERY --- */
             <div className="space-y-8">
                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                   {/* Requester Info - Read Only */}
                    <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden">
                       <SectionHeader icon={User} title="Requester Info" />
                       <div className="space-y-4">
@@ -777,7 +809,6 @@ export const AddStockModal: React.FC<Props> = ({
                       </div>
                    </div>
 
-                   {/* Request Type - Editable */}
                    <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
                       <SectionHeader icon={Package} title="Request Setup" />
                       <div className="space-y-4">
@@ -804,7 +835,6 @@ export const AddStockModal: React.FC<Props> = ({
                       </div>
                    </div>
 
-                   {/* Delivery & Status - Editable Delivery, Read Only Status */}
                    <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
                       <SectionHeader icon={MapPin} title="Delivery & Status" />
                       <div className="space-y-4">
@@ -839,7 +869,6 @@ export const AddStockModal: React.FC<Props> = ({
                    </div>
                </div>
 
-               {/* ITEMS TABLE - Editable */}
                <div className="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
                   <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Inventory List</h4>
@@ -952,9 +981,8 @@ export const AddStockModal: React.FC<Props> = ({
                 </div>
             </div>
           ) : isStationeryRequest && !isViewMode ? (
-            /* --- CREATE MODE STATIONERY (MATCHING SCREENSHOT) --- */
+            /* --- CREATE MODE STATIONERY --- */
              <div className="space-y-6">
-                 {/* ORDER SETUP Section */}
                  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                      <SectionHeader icon={FileText} title="ORDER SETUP" />
                      <div className="grid grid-cols-2 gap-8">
@@ -988,7 +1016,6 @@ export const AddStockModal: React.FC<Props> = ({
                      </div>
                  </div>
 
-                 {/* DELIVERY STATUS Section - Added as requested */}
                  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                     <SectionHeader icon={MapPin} title="DELIVERY STATUS" />
                     <div className="grid grid-cols-2 gap-8">
@@ -1028,7 +1055,6 @@ export const AddStockModal: React.FC<Props> = ({
                     </div>
                  </div>
 
-                 {/* ITEMS LIST Section */}
                  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative">
                     <div className="flex justify-between items-center mb-6">
                         <SectionHeader icon={List} title="ITEMS LIST" />
