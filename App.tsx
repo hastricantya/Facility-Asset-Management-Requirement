@@ -78,6 +78,7 @@ const App: React.FC = () => {
   const [logBookFilters, setLogBookFilters] = useState({ location: '', category: '', date: '' });
   const [stationeryFilters, setStationeryFilters] = useState({ transactionId: '', requester: '', date: '' });
   const [masterFilters, setMasterFilters] = useState({ category: '', partCode: '' });
+  const [podFilters, setPodFilters] = useState({ lantai: '', jenisKamar: '' });
 
   // Data States
   const [atkData, setAtkData] = useState<AssetRecord[]>(MOCK_ATK_DATA);
@@ -156,12 +157,13 @@ const App: React.FC = () => {
   };
 
   const filteredPodData = useMemo(() => {
-      if (activeTab === 'Lt 2 Pria') return podData.filter(p => p.lantai === 'Lt 2 Pria');
-      if (activeTab === 'Lt 2 Perempuan') return podData.filter(p => p.lantai === 'Lt 2 Perempuan');
-      if (activeTab === 'Lt 3 Pria') return podData.filter(p => p.lantai === 'Lt 3 Pria');
-      if (activeTab === 'Lt 3 Perempuan') return podData.filter(p => p.lantai === 'Lt 3 Perempuan');
-      return podData;
-  }, [podData, activeTab]);
+      return podData.filter(p => {
+          const matchesTab = activeTab === 'Semua' || activeTab === '' || p.lantai === activeTab;
+          const matchesLantai = !podFilters.lantai || p.lantai === podFilters.lantai;
+          const matchesJenisKamar = !podFilters.jenisKamar || p.jenisKamar === podFilters.jenisKamar;
+          return matchesTab && matchesLantai && matchesJenisKamar;
+      });
+  }, [podData, activeTab, podFilters]);
 
   const filteredLockerData = useMemo(() => {
     if (activeTab === 'Terisi') return lockerData.filter(l => l.status === 'Terisi');
@@ -259,6 +261,12 @@ const App: React.FC = () => {
                 moduleName={activeModule}
                 searchPlaceholder={`Search ${activeModule}...`}
                 hideAdd={activeModule === 'Stock Opname'}
+                podFilters={podFilters}
+                onPodFilterChange={(field, value) => setPodFilters(prev => ({ ...prev, [field]: value }))}
+                stationeryFilters={stationeryFilters}
+                onStationeryFilterChange={(field, value) => setStationeryFilters(prev => ({ ...prev, [field]: value }))}
+                masterFilters={masterFilters}
+                onMasterFilterChange={(field, value) => setMasterFilters(prev => ({ ...prev, [field]: value }))}
             />
             
             {renderContent()}

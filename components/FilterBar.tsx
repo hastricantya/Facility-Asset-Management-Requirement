@@ -1,5 +1,6 @@
+
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Filter, Plus, Download, Calendar, MapPin, Tag, ChevronDown, X, Hash, User, Layers, FileSpreadsheet, Upload } from 'lucide-react';
+import { Search, Filter, Plus, Download, Calendar, MapPin, Tag, ChevronDown, X, Hash, User, Layers, FileSpreadsheet, Upload, Home, LayoutGrid } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props {
@@ -34,6 +35,13 @@ interface Props {
     partCode: string;
   };
   onMasterFilterChange?: (field: string, value: string) => void;
+
+  // MODENA Pod specific filters
+  podFilters?: {
+    lantai: string;
+    jenisKamar: string;
+  };
+  onPodFilterChange?: (field: string, value: string) => void;
 }
 
 export const FilterBar: React.FC<Props> = ({ 
@@ -50,7 +58,9 @@ export const FilterBar: React.FC<Props> = ({
   stationeryFilters,
   onStationeryFilterChange,
   masterFilters,
-  onMasterFilterChange
+  onMasterFilterChange,
+  podFilters,
+  onPodFilterChange
 }) => {
   const { t } = useLanguage();
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
@@ -58,12 +68,14 @@ export const FilterBar: React.FC<Props> = ({
   
   const isLogBook = moduleName === 'Log Book';
   const isMaster = moduleName?.includes('Master');
+  const isPod = moduleName === 'MODENA Pod';
   const isStationeryModule = moduleName?.includes('ATK') || moduleName?.includes('ARK') || moduleName?.includes('Request') || moduleName?.includes('Approval');
   const isMasterATKARK = moduleName === 'Master ATK' || moduleName === 'Master ARK';
 
   const hasActiveStatFilters = stationeryFilters && (stationeryFilters.transactionId || stationeryFilters.requester || stationeryFilters.date);
   const hasActiveMasterFilters = masterFilters && (masterFilters.category || masterFilters.partCode);
-  const hasAnyActiveFilters = hasActiveStatFilters || hasActiveMasterFilters;
+  const hasActivePodFilters = podFilters && (podFilters.lantai || podFilters.jenisKamar);
+  const hasAnyActiveFilters = hasActiveStatFilters || hasActiveMasterFilters || hasActivePodFilters;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -80,6 +92,9 @@ export const FilterBar: React.FC<Props> = ({
     if (isMaster) {
       onMasterFilterChange?.('category', '');
       onMasterFilterChange?.('partCode', '');
+    } else if (isPod) {
+      onPodFilterChange?.('lantai', '');
+      onPodFilterChange?.('jenisKamar', '');
     } else {
       onStationeryFilterChange?.('transactionId', '');
       onStationeryFilterChange?.('requester', '');
@@ -188,7 +203,7 @@ export const FilterBar: React.FC<Props> = ({
                 <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
                   <div className="flex items-center gap-2">
                     <Filter size={14} className="text-gray-400" />
-                    <span className="text-[13px] font-semibold text-gray-700">Filter - {isMaster ? 'Master Data' : 'Request'}</span>
+                    <span className="text-[13px] font-semibold text-gray-700">Filter - {isMaster ? 'Master Data' : isPod ? 'MODENA Pod' : 'Request'}</span>
                   </div>
                   <button onClick={() => setIsFilterDropdownOpen(false)} className="text-gray-400 hover:text-gray-600">
                     <X size={16} />
@@ -200,7 +215,6 @@ export const FilterBar: React.FC<Props> = ({
                     {isMaster ? (
                       /* --- MASTER ATK/ARK FILTERS --- */
                       <>
-                        {/* Kategori Filter */}
                         <div className="flex items-center gap-2">
                           <div className="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-2">
                             <Layers size={14} className="text-gray-400" />
@@ -218,7 +232,6 @@ export const FilterBar: React.FC<Props> = ({
                           </button>
                         </div>
 
-                        {/* Kode Part Filter */}
                         <div className="flex items-center gap-2">
                           <div className="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-2">
                             <Hash size={14} className="text-gray-400" />
@@ -231,6 +244,50 @@ export const FilterBar: React.FC<Props> = ({
                             value={masterFilters?.partCode}
                             onChange={(e) => onMasterFilterChange?.('partCode', e.target.value)}
                           />
+                          <button className="p-2 text-yellow-500 border border-yellow-400 rounded hover:bg-yellow-50">
+                            <Plus size={16} />
+                          </button>
+                        </div>
+                      </>
+                    ) : isPod ? (
+                      /* --- MODENA POD FILTERS (Matching Design) --- */
+                      <>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-2">
+                            <Home size={14} className="text-gray-400" />
+                            <span className="text-[12px] font-bold text-gray-600 uppercase">Lantai</span>
+                          </div>
+                          <select 
+                            className="flex-[1.5] border border-gray-200 rounded px-3 py-2 text-[12px] focus:border-blue-400 outline-none bg-white"
+                            value={podFilters?.lantai}
+                            onChange={(e) => onPodFilterChange?.('lantai', e.target.value)}
+                          >
+                            <option value="">Filter value</option>
+                            <option value="Lt 2 Pria">Lt 2 Pria</option>
+                            <option value="Lt 2 Perempuan">Lt 2 Perempuan</option>
+                            <option value="Lt 3 Pria">Lt 3 Pria</option>
+                            <option value="Lt 3 Perempuan">Lt 3 Perempuan</option>
+                          </select>
+                          <button className="p-2 text-yellow-500 border border-yellow-400 rounded hover:bg-yellow-50">
+                            <Plus size={16} />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-2">
+                            <LayoutGrid size={14} className="text-gray-400" />
+                            <span className="text-[12px] font-bold text-gray-600 uppercase">Jenis Kamar</span>
+                          </div>
+                          <select 
+                            className="flex-[1.5] border border-gray-200 rounded px-3 py-2 text-[12px] focus:border-blue-400 outline-none bg-white"
+                            value={podFilters?.jenisKamar}
+                            onChange={(e) => onPodFilterChange?.('jenisKamar', e.target.value)}
+                          >
+                            <option value="">Filter value</option>
+                            <option value="Single Bed">Single Bed</option>
+                            <option value="Double Bed">Double Bed</option>
+                            <option value="Quadruple Bed">Quadruple Bed</option>
+                          </select>
                           <button className="p-2 text-yellow-500 border border-yellow-400 rounded hover:bg-yellow-50">
                             <Plus size={16} />
                           </button>
