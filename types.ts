@@ -200,6 +200,18 @@ export interface LogBookRecord {
   note: string;
 }
 
+export interface LockerRecord {
+  id: number;
+  lockerNumber: string;
+  location: string;
+  employee?: Employee;
+  status: 'Available' | 'Occupied' | 'Maintenance' | 'Requested';
+  startDate?: string;
+  endDate?: string;
+  lastInspection: string;
+  remarks: string;
+}
+
 export interface MasterItem {
   id: string | number;
   category: string;

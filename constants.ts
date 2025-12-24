@@ -1,5 +1,5 @@
 
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord } from './types';
 
 // Helper function to generate mock data for ATK/ARK
 const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] => {
@@ -81,6 +81,13 @@ export const MOCK_STOCK_OPNAME_DATA: StockOpnameRecord[] = [
   { id: 4, opnameNumber: 'SO/ATK/2024/0004', itemCode: 'EL-BAT-AA', itemName: 'Baterai AA Alkaline', category: 'Elektronik', systemQty: 24, physicalQty: 24, difference: 0, date: '2024-03-22', performedBy: 'Aan Junaidi', status: 'Draft' },
   { id: 5, opnameNumber: 'SO/ATK/2024/0005', itemCode: 'FIL-MAP-01', itemName: 'Map Plastik Clear', category: 'Filing', systemQty: 200, physicalQty: 195, difference: -5, date: '2024-03-22', performedBy: 'Dewi Putri', status: 'Draft' },
   { id: 6, opnameNumber: 'SO/ATK/2024/0006', itemCode: 'CL-WPL-01', itemName: 'Wipol Karbol', category: 'Pembersih', systemQty: 10, physicalQty: 12, difference: 2, date: '2024-03-22', performedBy: 'Eko Prasetyo', status: 'Draft' }
+];
+
+export const MOCK_LOCKER_DATA: LockerRecord[] = [
+    { id: 1, lockerNumber: 'LCK-001', location: 'HO - Floor 4', status: 'Occupied', employee: { name: 'Aan Junaidi', role: 'Technician', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=1' }, startDate: '2024-01-01', lastInspection: '2024-03-01', remarks: 'Good condition' },
+    { id: 2, lockerNumber: 'LCK-002', location: 'HO - Floor 4', status: 'Available', lastInspection: '2024-03-10', remarks: 'Key is at GA' },
+    { id: 3, lockerNumber: 'LCK-003', location: 'HO - Floor 2', status: 'Maintenance', lastInspection: '2024-02-15', remarks: 'Lock broken' },
+    { id: 4, lockerNumber: 'LCK-004', location: 'HO - Floor 2', status: 'Occupied', employee: { name: 'Citra Lestari', role: 'Manager', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=3' }, startDate: '2024-02-10', lastInspection: '2024-03-15', remarks: '' }
 ];
 
 export const MOCK_UOM_DATA: GeneralMasterItem[] = [

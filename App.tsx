@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
@@ -15,6 +16,7 @@ import { MasterAtkTable } from './components/MasterAtkTable';
 import { MasterDeliveryLocationTable } from './components/MasterDeliveryLocationTable';
 import { LogBookTable } from './components/LogBookTable';
 import { StockOpnameTable } from './components/StockOpnameTable';
+import { LockerTable } from './components/LockerTable';
 import { VehicleModal } from './components/VehicleModal';
 import { BuildingModal } from './components/BuildingModal';
 import { GeneralMasterModal } from './components/GeneralMasterModal';
@@ -23,7 +25,7 @@ import { MasterItemModal } from './components/MasterItemModal';
 import { DeliveryLocationModal } from './components/DeliveryLocationModal';
 import { ConfirmationModal } from './components/ConfirmationModal';
 import { ImportExcelModal } from './components/ImportExcelModal';
-import { Users, User, Baby, Activity } from 'lucide-react';
+import { Users, User, Baby, Activity, Lock } from 'lucide-react';
 import { 
   MOCK_VEHICLE_DATA, 
   MOCK_SERVICE_DATA, 
@@ -39,6 +41,7 @@ import {
   MOCK_MASTER_ARK_DATA,
   MOCK_LOGBOOK_DATA,
   MOCK_STOCK_OPNAME_DATA,
+  MOCK_LOCKER_DATA,
   MOCK_UOM_DATA,
   MOCK_ATK_CATEGORY,
   MOCK_ARK_CATEGORY,
@@ -56,7 +59,8 @@ import {
   LogBookRecord,
   MasterItem,
   DeliveryLocationRecord,
-  StockOpnameRecord
+  StockOpnameRecord,
+  LockerRecord
 } from './types';
 import { useLanguage } from './contexts/LanguageContext';
 
@@ -113,6 +117,7 @@ const App: React.FC = () => {
   const [arkMaster, setArkMaster] = useState<MasterItem[]>(MOCK_MASTER_ARK_DATA);
   const [logBookData, setLogBookData] = useState<LogBookRecord[]>(MOCK_LOGBOOK_DATA);
   const [stockOpnameData, setStockOpnameData] = useState<StockOpnameRecord[]>(MOCK_STOCK_OPNAME_DATA);
+  const [lockerData, setLockerData] = useState<LockerRecord[]>(MOCK_LOCKER_DATA);
   
   // Master Lists (UOM, Category, Loc) with setters
   const [uomList, setUomList] = useState<GeneralMasterItem[]>(MOCK_UOM_DATA);
@@ -149,6 +154,7 @@ const App: React.FC = () => {
   const [selectedMasterItem, setSelectedMasterItem] = useState<GeneralMasterItem | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<AssetRecord | null>(null);
   const [selectedLogBook, setSelectedLogBook] = useState<LogBookRecord | null>(null);
+  const [selectedLocker, setSelectedLocker] = useState<LockerRecord | null>(null);
   const [selectedMasterProduct, setSelectedMasterProduct] = useState<MasterItem | null>(null);
   const [selectedDeliveryLocation, setSelectedDeliveryLocation] = useState<DeliveryLocationRecord | null>(null);
   const [selectedStockOpname, setSelectedStockOpname] = useState<StockOpnameRecord | null>(null);
@@ -169,7 +175,7 @@ const App: React.FC = () => {
         setActiveTab('Aktif');
     } else if (module.includes('Master')) {
         setActiveTab('Items');
-    } else if (module === 'Log Book') {
+    } else if (module === 'Log Book' || module === 'Locker') {
         setActiveTab(''); 
     } else if (module === 'Stock Opname') {
         setActiveTab('Semua');
@@ -186,6 +192,7 @@ const App: React.FC = () => {
     setSelectedMasterProduct(null);
     setSelectedDeliveryLocation(null);
     setSelectedStockOpname(null);
+    setSelectedLocker(null);
 
     if (activeModule === 'Daftar Aset') {
         setSelectedVehicle(null);
@@ -203,7 +210,7 @@ const App: React.FC = () => {
         } else {
             setIsMasterItemModalOpen(true);
         }
-    } else if (activeModule.includes('ATK') || activeModule.includes('ARK') || activeModule === 'Log Book' || activeModule === 'Servis' || activeModule === 'Stock Opname') {
+    } else if (activeModule.includes('ATK') || activeModule.includes('ARK') || activeModule === 'Log Book' || activeModule === 'Servis' || activeModule === 'Stock Opname' || activeModule === 'Locker') {
         setIsStockModalOpen(true);
     } else if (masterLists[activeModule]) {
         setSelectedMasterItem(null);
@@ -426,6 +433,12 @@ const App: React.FC = () => {
     return stockOpnameData;
   }, [stockOpnameData, activeTab]);
 
+  const filteredLockerData = useMemo(() => {
+      if (activeTab === 'Occupied') return lockerData.filter(l => l.status === 'Occupied');
+      if (activeTab === 'Available') return lockerData.filter(l => l.status === 'Available');
+      return lockerData;
+  }, [lockerData, activeTab]);
+
   // Log Book stats calculation
   const logBookStats = useMemo(() => {
     return filteredLogBookData.reduce((acc, curr) => ({
@@ -435,6 +448,16 @@ const App: React.FC = () => {
       total: acc.total + curr.wanita + curr.lakiLaki + curr.anakAnak
     }), { wanita: 0, lakiLaki: 0, anakAnak: 0, total: 0 });
   }, [filteredLogBookData]);
+
+  // Locker stats calculation
+  const lockerStats = useMemo(() => {
+      return lockerData.reduce((acc, curr) => ({
+          occupied: acc.occupied + (curr.status === 'Occupied' ? 1 : 0),
+          available: acc.available + (curr.status === 'Available' ? 1 : 0),
+          maintenance: acc.maintenance + (curr.status === 'Maintenance' ? 1 : 0),
+          total: acc.total + 1
+      }), { occupied: 0, available: 0, maintenance: 0, total: 0 });
+  }, [lockerData]);
 
   const renderContent = () => {
      if (masterLists[activeModule]) {
@@ -490,6 +513,12 @@ const App: React.FC = () => {
                 onView={(item) => { setSelectedLogBook(item); setModalMode('view'); setIsStockModalOpen(true); }} 
                 onEdit={(item) => { setSelectedLogBook(item); setModalMode('edit'); setIsStockModalOpen(true); }}
             />;
+         case 'Locker':
+            return <LockerTable 
+                data={filteredLockerData}
+                onView={(item) => { setSelectedLocker(item); setModalMode('view'); setIsStockModalOpen(true); }}
+                onEdit={(item) => { setSelectedLocker(item); setModalMode('edit'); setIsStockModalOpen(true); }}
+            />;
          case 'Stock Opname':
             return <StockOpnameTable 
                 data={filteredStockOpnameData}
@@ -506,6 +535,7 @@ const App: React.FC = () => {
     if (activeModule === 'Master ATK' || activeModule === 'Master ARK') return ['Items', 'UOM', 'Category', 'Delivery Location'];
     if (activeModule.includes('Daftar') || activeModule.includes('Approval') || activeModule.includes('Request')) return ['Semua', 'Draft', 'On Progress', 'Pending', 'Approved', 'Rejected', 'Closed'];
     if (activeModule === 'Log Book') return []; 
+    if (activeModule === 'Locker') return ['Semua', 'Occupied', 'Available'];
     if (activeModule === 'Stock Opname') return ['Semua', 'Matched', 'Discrepancy', 'Draft'];
     return ['Semua'];
   }, [activeModule]);
@@ -569,6 +599,37 @@ const App: React.FC = () => {
                         </div>
                     </div>
                 )}
+
+                {activeModule === 'Locker' && (
+                    <div className="flex items-center gap-6 bg-white border border-gray-100 rounded-2xl px-6 py-3 shadow-sm">
+                        <div className="flex items-center gap-2">
+                            <Lock size={14} className="text-gray-400" />
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Locker Inventory</span>
+                        </div>
+                        <div className="h-6 w-[1px] bg-gray-100"></div>
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-black"></div>
+                                <span className="text-[10px] font-black text-gray-400 uppercase">Occupied</span>
+                                <span className="text-[12px] font-black">{lockerStats.occupied}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                <span className="text-[10px] font-black text-gray-400 uppercase">Available</span>
+                                <span className="text-[12px] font-black">{lockerStats.available}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                                <span className="text-[10px] font-black text-gray-400 uppercase">Audit</span>
+                                <span className="text-[12px] font-black">{lockerStats.maintenance}</span>
+                            </div>
+                        </div>
+                        <div className="h-6 w-[1px] bg-gray-100"></div>
+                        <div className="bg-black text-white px-3 py-1 rounded-lg text-[10px] font-black">
+                            {lockerStats.total} UNITS
+                        </div>
+                    </div>
+                )}
             </div>
             
             {showFilterBar && (
@@ -579,7 +640,7 @@ const App: React.FC = () => {
                     onAddClick={handleAddClick}
                     onImportExcelClick={() => setIsImportExcelModalOpen(true)}
                     moduleName={activeModule}
-                    searchPlaceholder={activeModule === 'Log Book' ? "Cari berdasarkan Nama Tamu..." : activeModule === 'Kontrak Gedung' ? "Cari berdasarkan Karyawan, Barang..." : undefined}
+                    searchPlaceholder={activeModule === 'Log Book' ? "Cari berdasarkan Nama Tamu..." : activeModule === 'Locker' ? "Cari Locker atau Nama Karyawan..." : activeModule === 'Kontrak Gedung' ? "Cari berdasarkan Karyawan, Barang..." : undefined}
                     hideAdd={['List Reminder Dokumen'].includes(activeModule)}
                     logBookFilters={activeModule === 'Log Book' ? logBookFilters : undefined}
                     onLogBookFilterChange={handleLogBookFilterChange}

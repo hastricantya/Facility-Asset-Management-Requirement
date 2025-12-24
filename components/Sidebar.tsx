@@ -26,7 +26,8 @@ import {
   UserCheck,
   Box,
   House,
-  ClipboardList
+  ClipboardList,
+  Lock
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -101,6 +102,7 @@ export const Sidebar: React.FC<Props> = ({
         ]
     },
     { label: 'Log Book', icon: <BookOpen size={20} /> },
+    { label: 'Locker', icon: <Lock size={20} /> },
     { 
         label: 'Gedung', 
         icon: <Building size={20} />,
