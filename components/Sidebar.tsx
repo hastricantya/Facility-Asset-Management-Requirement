@@ -27,7 +27,8 @@ import {
   Box,
   House,
   ClipboardList,
-  Lock
+  Lock,
+  LayoutGrid
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -103,6 +104,7 @@ export const Sidebar: React.FC<Props> = ({
     },
     { label: 'Log Book', icon: <BookOpen size={20} /> },
     { label: 'Locker', icon: <Lock size={20} /> },
+    { label: 'MODENA Pod', icon: <LayoutGrid size={20} /> },
     { 
         label: 'Gedung', 
         icon: <Building size={20} />,

@@ -1,5 +1,5 @@
 
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord, ModenaPodRecord } from './types';
 
 // Helper function to generate mock data for ATK/ARK
 const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] => {
@@ -101,6 +101,17 @@ export const MOCK_LOCKER_DATA: LockerRecord[] = [
     
     // Lantai 3 Karang Asem: K-3001
     { id: 8, lockerNumber: 'K-3001', location: 'Lantai 3', subLocation: 'Karang Asem', status: 'Terisi', employee: { name: 'Dewi Putri', role: 'Staff', position: 'Finance Clerk', department: 'Finance', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=4' }, spareKey: 'Ada', lastUpdate: '2024-03-21', remarks: '' }
+];
+
+export const MOCK_POD_DATA: ModenaPodRecord[] = [
+    { id: 1, lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', nomorKamar: '211', namaPenghuni: 'Gian Nanda Pratama', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: '-', keterangan: 'isi' },
+    { id: 2, lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', nomorKamar: '212', namaPenghuni: 'Yogi Danis Fermana', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Belum Dapat', jadwalLaundry: '-', keterangan: 'isi' },
+    { id: 3, lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', nomorKamar: '215', namaPenghuni: 'Aditya Raka Pradana', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Selasa dan Jumat', keterangan: 'isi' },
+    { id: 4, lantai: 'Lt 2 Pria', jenisKamar: 'Quadruple Bed', nomorKamar: '217 A', namaPenghuni: 'Mr. Kim Il Dong (Expat)', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Terpakai', jadwalLaundry: 'Tidak ada', keterangan: '-' },
+    { id: 5, lantai: 'Lt 2 Pria', jenisKamar: 'Quadruple Bed', nomorKamar: '217 B', namaPenghuni: 'Mr. Kim Il Dong (Expat)', statusLokerBarang: 'Extra Loker Terpakai', statusLokerPantry: 'Extra Loker Terpakai', jadwalLaundry: 'Tidak ada', keterangan: 'Loker barang dipakai Pak Bambang' },
+    { id: 6, lantai: 'Lt 2 Perempuan', jenisKamar: 'Single Bed', nomorKamar: '221', namaPenghuni: 'Achmad Fachriza Putra', statusLokerBarang: 'Tidak Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Selasa dan Jumat', keterangan: 'kosong blm ada org' },
+    { id: 7, lantai: 'Lt 3 Pria', jenisKamar: 'Quadruple Bed', nomorKamar: '317 A', namaPenghuni: 'Mr. Sung Yong Hong (Expat)', statusLokerBarang: 'Extra Loker Terpakai', statusLokerPantry: 'Extra Loker Terpakai', jadwalLaundry: '-', keterangan: 'Loker barang terpakai untuk tempat tissue' },
+    { id: 8, lantai: 'Lt 3 Perempuan', jenisKamar: 'Double Bed', nomorKamar: '329 A', namaPenghuni: 'Galuh Sekar Mulatsih', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Senin dan Kamis', keterangan: 'isi' }
 ];
 
 export const MOCK_UOM_DATA: GeneralMasterItem[] = [

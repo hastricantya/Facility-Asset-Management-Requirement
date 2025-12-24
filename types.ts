@@ -214,6 +214,18 @@ export interface LockerRecord {
   remarks: string;
 }
 
+export interface ModenaPodRecord {
+  id: number;
+  lantai: string;
+  jenisKamar: 'Single Bed' | 'Double Bed' | 'Quadruple Bed';
+  nomorKamar: string;
+  namaPenghuni: string;
+  statusLokerBarang: 'Terpakai' | 'Tidak Terpakai' | 'Belum Dapat' | 'Extra Loker Terpakai';
+  statusLokerPantry: 'Terpakai' | 'Tidak Terpakai' | 'Belum Dapat' | 'Extra Loker Terpakai';
+  jadwalLaundry: string;
+  keterangan: string;
+}
+
 export interface MasterItem {
   id: string | number;
   category: string;
