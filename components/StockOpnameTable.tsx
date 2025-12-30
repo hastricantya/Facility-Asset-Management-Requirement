@@ -30,7 +30,7 @@ export const StockOpnameTable: React.FC<Props> = ({ data, onView }) => {
               </th>
               <th className="p-5 w-64 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Item Name</span>
+                  <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Item Category</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
@@ -52,7 +52,7 @@ export const StockOpnameTable: React.FC<Props> = ({ data, onView }) => {
                    </div>
                 </td>
                 <td className="p-5 font-mono text-[11px] text-gray-500 font-bold uppercase">{item.itemCode}</td>
-                <td className="p-5 font-black text-black text-[13px] uppercase tracking-tight">{item.itemName}</td>
+                <td className="p-5 font-black text-black text-[13px] uppercase tracking-tight">{item.category}</td>
                 <td className="p-5 text-center font-black text-gray-400 text-[14px]">{item.systemQty}</td>
                 <td className="p-5 text-center font-black text-black text-[14px]">{item.physicalQty}</td>
                 <td className="p-5 text-center">
