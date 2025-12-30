@@ -56,7 +56,7 @@ export const Sidebar: React.FC<Props> = ({
   onCloseMobile 
 }) => {
   const { t } = useLanguage();
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Gedung', 'ATK', 'ARK', 'Master Data']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Gedung', 'ATK', 'ARK', 'Locker', 'Master Data']);
 
   const toggleMenu = (label: string) => {
     if (isCollapsed) {
@@ -103,7 +103,14 @@ export const Sidebar: React.FC<Props> = ({
         ]
     },
     { label: 'Log Book', icon: <BookOpen size={20} /> },
-    { label: 'Locker', icon: <Lock size={20} /> },
+    { 
+        label: 'Locker', 
+        icon: <Lock size={20} />,
+        subItems: [
+            { label: 'Daftar Loker', icon: <Database size={18} /> },
+            { label: 'Request Locker', icon: <Send size={18} /> },
+        ]
+    },
     { label: 'MODENA Pod', icon: <LayoutGrid size={20} /> },
     { 
         label: 'Gedung', 

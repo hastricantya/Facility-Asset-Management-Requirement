@@ -33,6 +33,9 @@ const translations: Record<string, Record<Language, string>> = {
   'Master ARK': { id: 'Master ARK', en: 'Master Household' },
 
   'Log Book': { id: 'Log Book', en: 'Log Book' },
+  'Locker': { id: 'Loker', en: 'Locker' },
+  'Daftar Loker': { id: 'Daftar Loker', en: 'Locker List' },
+  'Request Locker': { id: 'Permintaan Loker', en: 'Request Locker' },
   'Gedung': { id: 'Gedung', en: 'Building' },
   'Contract': { id: 'Kontrak', en: 'Contract' },
   'Timesheet': { id: 'Absensi', en: 'Timesheet' },

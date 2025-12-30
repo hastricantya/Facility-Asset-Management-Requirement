@@ -1,5 +1,5 @@
 
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord, ModenaPodRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord } from './types';
 
 // Helper function to generate mock data for ATK/ARK
 const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] => {
@@ -62,6 +62,27 @@ const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] 
 
 export const MOCK_DATA: AssetRecord[] = generateAssetData('ATK', 1);
 export const MOCK_ARK_DATA: AssetRecord[] = generateAssetData('ARK', 100);
+
+export const MOCK_LOCKER_REQUEST_DATA: LockerRequestRecord[] = [
+  {
+    id: 1,
+    transactionNumber: 'REQ/LCK/2024/001',
+    employee: { name: 'Citra Lestari', role: 'Manager', phone: '0813', avatar: 'https://i.pravatar.cc/150?u=3' },
+    date: '22/03/2024',
+    status: 'Pending',
+    reason: 'New employee joining technical team.',
+    preferredLocation: 'Lantai 2 Satrio'
+  },
+  {
+    id: 2,
+    transactionNumber: 'REQ/LCK/2024/002',
+    employee: { name: 'Eko Prasetyo', role: 'Staff', phone: '0815', avatar: 'https://i.pravatar.cc/150?u=5' },
+    date: '21/03/2024',
+    status: 'Approved',
+    reason: 'Existing locker lock broken.',
+    preferredLocation: 'Lantai 1'
+  }
+];
 
 export const MOCK_MASTER_DATA: MasterItem[] = [
   { id: 1, category: 'Tinta Printer', itemName: 'HP Laserjet 204A Black', itemCode: 'TP-HP0048', uom: 'Pcs', remainingStock: 5, minimumStock: 2, maximumStock: 10, requestedStock: 0, purchaseDate: '27/08/2008', lastPurchasePrice: 'Rp. 22.000', averagePrice: 'Rp. 21.082' },

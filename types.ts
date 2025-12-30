@@ -41,6 +41,16 @@ export interface AssetRecord {
   status: 'Approved' | 'Pending' | 'Rejected' | 'Closed' | 'Draft' | 'On Progress';
 }
 
+export interface LockerRequestRecord {
+  id: number;
+  transactionNumber: string;
+  employee: Employee;
+  date: string;
+  status: 'Approved' | 'Pending' | 'Rejected' | 'Closed' | 'Draft';
+  reason: string;
+  preferredLocation?: string;
+}
+
 export interface BuildingRecord {
   id: string;
   name: string;
