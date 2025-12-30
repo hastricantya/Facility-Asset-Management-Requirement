@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { AssetRecord } from '../types';
 import { ChevronsUpDown, ChevronLeft, ChevronRight, Eye, MoreHorizontal, Check } from 'lucide-react';
@@ -12,7 +13,7 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseT
   return (
     <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden transition-all duration-500">
       <div className="overflow-x-auto custom-scrollbar">
-        <table className="w-full min-w-[1300px] text-left border-collapse">
+        <table className="w-full min-w-[900px] text-left border-collapse">
           <thead>
             <tr className="bg-[#F2F2F2] border-b border-gray-200">
               <th className="p-5 w-14 text-center pl-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">#</th>
@@ -28,20 +29,6 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseT
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-40 group cursor-pointer hover:bg-gray-200/50 transition-colors">
-                <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Category</span>
-                    <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
-                </div>
-              </th>
-              <th className="p-5 w-64 group cursor-pointer hover:bg-gray-200/50 transition-colors">
-                <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Item Details</span>
-                    <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
-                </div>
-              </th>
-              <th className="p-5 w-24 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Qty</th>
-              <th className="p-5 w-32 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">In Stock</th>
               <th className="p-5 w-36 text-[10px] font-black text-black uppercase tracking-[0.15em]">Date</th>
               <th className="p-5 w-36 text-[10px] font-black text-black uppercase tracking-[0.15em]">Status</th>
               <th className="p-5 w-24 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Action</th>
@@ -71,23 +58,6 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseT
                       <p className="text-[9px] text-gray-400 font-black uppercase tracking-wider">{item.employee.role}</p>
                     </div>
                   </div>
-                </td>
-                <td className="p-5">
-                    <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter bg-gray-100/50 px-2 py-0.5 rounded">
-                        {item.category}
-                    </span>
-                </td>
-                <td className="p-5">
-                    <p className="font-black text-black text-[13px] uppercase tracking-tight">{item.itemName}</p>
-                    <p className="text-[10px] font-mono text-gray-400 font-bold mt-1 uppercase">{item.itemCode}</p>
-                </td>
-                <td className="p-5 text-center">
-                    <span className="text-[14px] font-black text-black">{item.qty}</span>
-                </td>
-                <td className="p-5 text-center">
-                    <span className={`text-[12px] font-mono font-bold ${item.remainingStock < 10 ? 'text-red-500' : 'text-gray-400'}`}>
-                        {item.remainingStock}
-                    </span>
                 </td>
                 <td className="p-5">
                     <span className="text-[11px] font-black text-gray-400 uppercase tracking-tight">{item.date}</span>
