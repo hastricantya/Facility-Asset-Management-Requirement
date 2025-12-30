@@ -19,6 +19,7 @@ import { StockOpnameTable } from './components/StockOpnameTable';
 import { LockerTable } from './components/LockerTable';
 import { LockerRequestTable } from './components/LockerRequestTable';
 import { ModenaPodTable } from './components/ModenaPodTable';
+import { PodRequestTable } from './components/PodRequestTable';
 import { VehicleModal } from './components/VehicleModal';
 import { BuildingModal } from './components/BuildingModal';
 import { GeneralMasterModal } from './components/GeneralMasterModal';
@@ -46,6 +47,7 @@ import {
   MOCK_LOCKER_DATA,
   MOCK_LOCKER_REQUEST_DATA,
   MOCK_POD_DATA,
+  MOCK_POD_REQUEST_DATA,
   MOCK_UOM_DATA,
   MOCK_ATK_CATEGORY,
   MOCK_ARK_CATEGORY,
@@ -66,6 +68,7 @@ import {
   StockOpnameRecord,
   LockerRecord,
   LockerRequestRecord,
+  PodRequestRecord,
   ModenaPodRecord
 } from './types';
 import { useLanguage } from './contexts/LanguageContext';
@@ -93,6 +96,7 @@ const App: React.FC = () => {
   const [lockerData, setLockerData] = useState<LockerRecord[]>(MOCK_LOCKER_DATA);
   const [lockerRequestData, setLockerRequestData] = useState<LockerRequestRecord[]>(MOCK_LOCKER_REQUEST_DATA);
   const [podData, setPodData] = useState<ModenaPodRecord[]>(MOCK_POD_DATA);
+  const [podRequestData, setPodRequestData] = useState<PodRequestRecord[]>(MOCK_POD_REQUEST_DATA);
   
   const [vehicleData] = useState<VehicleRecord[]>(MOCK_VEHICLE_DATA);
   const [buildingData] = useState<BuildingRecord[]>(MOCK_BUILDING_DATA);
@@ -118,6 +122,7 @@ const App: React.FC = () => {
   const [selectedLocker, setSelectedLocker] = useState<LockerRecord | null>(null);
   const [selectedLockerRequest, setSelectedLockerRequest] = useState<LockerRequestRecord | null>(null);
   const [selectedPod, setSelectedPod] = useState<ModenaPodRecord | null>(null);
+  const [selectedPodRequest, setSelectedPodRequest] = useState<PodRequestRecord | null>(null);
   const [selectedStockOpname, setSelectedStockOpname] = useState<StockOpnameRecord | null>(null);
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -125,8 +130,8 @@ const App: React.FC = () => {
 
   const handleModuleNavigate = (module: string) => {
     setActiveModule(module);
-    if (module === 'MODENA Pod' || module === 'Daftar Loker') setActiveTab('Semua');
-    else if (module === 'Log Book' || module === 'Request Locker') setActiveTab('');
+    if (module === 'Pod Census' || module === 'Daftar Loker') setActiveTab('Semua');
+    else if (module === 'Log Book' || module === 'Request Locker' || module === 'Request MODENA Pod') setActiveTab('');
     else setActiveTab('Semua');
     setIsMobileMenuOpen(false); 
   };
@@ -139,6 +144,7 @@ const App: React.FC = () => {
     setSelectedLocker(null);
     setSelectedLockerRequest(null);
     setSelectedPod(null);
+    setSelectedPodRequest(null);
     setIsStockModalOpen(true);
   };
 
@@ -192,7 +198,8 @@ const App: React.FC = () => {
          case 'Log Book': return <LogBookTable data={logBookData} onView={(item) => { setSelectedLogBook(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedLogBook(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
          case 'Daftar Loker': return <LockerTable data={filteredLockerData} onView={(item) => { setSelectedLocker(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedLocker(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
          case 'Request Locker': return <LockerRequestTable data={lockerRequestData} onView={(item) => { setSelectedLockerRequest(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
-         case 'MODENA Pod': return <ModenaPodTable data={filteredPodData} onView={(item) => { setSelectedPod(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedPod(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
+         case 'Pod Census': return <ModenaPodTable data={filteredPodData} onView={(item) => { setSelectedPod(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedPod(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
+         case 'Request MODENA Pod': return <PodRequestTable data={podRequestData} onView={(item) => { setSelectedPodRequest(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Stock Opname': return <StockOpnameTable data={stockOpnameData} onView={(item) => { setSelectedStockOpname(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Request ATK':
          case 'Stationery Request Approval':
@@ -205,7 +212,7 @@ const App: React.FC = () => {
   };
 
   const mainTabs = useMemo(() => {
-    if (activeModule === 'MODENA Pod') return ['Semua', 'Lt 2 Pria', 'Lt 2 Perempuan', 'Lt 3 Pria', 'Lt 3 Perempuan'];
+    if (activeModule === 'Pod Census') return ['Semua', 'Lt 2 Pria', 'Lt 2 Perempuan', 'Lt 3 Pria', 'Lt 3 Perempuan'];
     if (activeModule === 'Daftar Loker') return ['Semua', 'Terisi', 'Kosong', 'Kunci Hilang'];
     if (activeModule.includes('Daftar') || activeModule.includes('Approval') || activeModule.includes('Request')) return ['Semua', 'Draft', 'Pending', 'Approved', 'Rejected'];
     if (activeModule === 'Stock Opname') return ['Semua', 'Matched', 'Discrepancy'];
@@ -233,7 +240,7 @@ const App: React.FC = () => {
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-[20px] font-bold text-black tracking-tight">{t(activeModule)}</h1>
                 
-                {activeModule === 'MODENA Pod' && (
+                {activeModule === 'Pod Census' && (
                     <div className="flex items-center gap-6 bg-white border border-gray-100 rounded-2xl px-6 py-3 shadow-sm">
                         <div className="flex items-center gap-2">
                             <Home size={14} className="text-gray-400" />
@@ -290,15 +297,16 @@ const App: React.FC = () => {
         initialLockerData={selectedLocker || undefined}
         initialLockerRequestData={selectedLockerRequest || undefined}
         initialPodData={selectedPod || undefined}
+        initialPodRequestData={selectedPodRequest || undefined}
         initialStockOpnameData={selectedStockOpname || undefined}
         onSavePod={handleSavePod}
         onSaveLogBook={(data) => setLogBookData([data as LogBookRecord, ...logBookData])}
         onSaveStockOpname={(data) => setStockOpnameData([data as StockOpnameRecord, ...stockOpnameData])}
         onSaveLockerRequest={(data) => setLockerRequestData([data as LockerRequestRecord, ...lockerRequestData])}
+        onSavePodRequest={(data) => setPodRequestData([data as PodRequestRecord, ...podRequestData])}
       />
     </div>
   );
 };
 
-// Added missing default export for the App component
 export default App;

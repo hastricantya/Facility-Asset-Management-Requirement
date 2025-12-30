@@ -36,6 +36,11 @@ const translations: Record<string, Record<Language, string>> = {
   'Locker': { id: 'Loker', en: 'Locker' },
   'Daftar Loker': { id: 'Daftar Loker', en: 'Locker List' },
   'Request Locker': { id: 'Permintaan Loker', en: 'Request Locker' },
+  
+  'MODENA Pod': { id: 'MODENA Pod', en: 'MODENA Pod' },
+  'Pod Census': { id: 'Sensus Pod', en: 'Pod Census' },
+  'Request MODENA Pod': { id: 'Permintaan Pod', en: 'Request MODENA Pod' },
+
   'Gedung': { id: 'Gedung', en: 'Building' },
   'Contract': { id: 'Kontrak', en: 'Contract' },
   'Timesheet': { id: 'Absensi', en: 'Timesheet' },

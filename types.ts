@@ -51,6 +51,17 @@ export interface LockerRequestRecord {
   preferredLocation?: string;
 }
 
+export interface PodRequestRecord {
+  id: number;
+  transactionNumber: string;
+  employee: Employee;
+  date: string;
+  status: 'Approved' | 'Pending' | 'Rejected' | 'Closed' | 'Draft';
+  reason: string;
+  preferredFloor?: string;
+  preferredRoomType?: string;
+}
+
 export interface BuildingRecord {
   id: string;
   name: string;

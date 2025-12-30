@@ -1,5 +1,5 @@
 
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord } from './types';
 
 // Helper function to generate mock data for ATK/ARK
 const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] => {
@@ -81,6 +81,29 @@ export const MOCK_LOCKER_REQUEST_DATA: LockerRequestRecord[] = [
     status: 'Approved',
     reason: 'Existing locker lock broken.',
     preferredLocation: 'Lantai 1'
+  }
+];
+
+export const MOCK_POD_REQUEST_DATA: PodRequestRecord[] = [
+  {
+    id: 1,
+    transactionNumber: 'REQ/POD/2024/001',
+    employee: { name: 'Aan Junaidi', role: 'Technician', phone: '0812', avatar: 'https://i.pravatar.cc/150?u=1' },
+    date: '20/03/2024',
+    status: 'Pending',
+    reason: 'Temporary housing for project duration.',
+    preferredFloor: 'Lt 2 Pria',
+    preferredRoomType: 'Single Bed'
+  },
+  {
+    id: 2,
+    transactionNumber: 'REQ/POD/2024/002',
+    employee: { name: 'Dewi Putri', role: 'Finance', phone: '0814', avatar: 'https://i.pravatar.cc/150?u=4' },
+    date: '19/03/2024',
+    status: 'Approved',
+    reason: 'Assigned to head office from regional.',
+    preferredFloor: 'Lt 3 Perempuan',
+    preferredRoomType: 'Double Bed'
   }
 ];
 

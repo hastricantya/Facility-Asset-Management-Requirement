@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send } from 'lucide-react';
-import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord } from '../types';
+import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid } from 'lucide-react';
+import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_DELIVERY_LOCATIONS } from '../constants';
 
@@ -23,6 +23,7 @@ interface Props {
   onSaveStockOpname?: (opname: Partial<StockOpnameRecord>) => void;
   onSaveLocker?: (locker: Partial<LockerRecord>) => void;
   onSaveLockerRequest?: (request: Partial<LockerRequestRecord>) => void;
+  onSavePodRequest?: (request: Partial<PodRequestRecord>) => void;
   onSavePod?: (pod: Partial<ModenaPodRecord>) => void;
   onRevise?: () => void;
   onApprove?: () => void;
@@ -42,6 +43,7 @@ interface Props {
   initialStockOpnameData?: StockOpnameRecord;
   initialLockerData?: LockerRecord;
   initialLockerRequestData?: LockerRequestRecord;
+  initialPodRequestData?: PodRequestRecord;
   initialPodData?: ModenaPodRecord;
   
   mode?: 'create' | 'edit' | 'view';
@@ -67,6 +69,7 @@ export const AddStockModal: React.FC<Props> = ({
     onSaveStockOpname,
     onSaveLocker,
     onSaveLockerRequest,
+    onSavePodRequest,
     onSavePod,
     onRevise,
     onApprove,
@@ -85,6 +88,7 @@ export const AddStockModal: React.FC<Props> = ({
     initialStockOpnameData,
     initialLockerData,
     initialLockerRequestData,
+    initialPodRequestData,
     initialPodData,
     mode = 'create',
     vehicleList = [],
@@ -107,6 +111,7 @@ export const AddStockModal: React.FC<Props> = ({
   const [stockOpnameForm, setStockOpnameForm] = useState<Partial<StockOpnameRecord>>({});
   const [lockerForm, setLockerForm] = useState<Partial<LockerRecord>>({});
   const [lockerRequestForm, setLockerRequestForm] = useState<Partial<LockerRequestRecord>>({});
+  const [podRequestForm, setPodRequestForm] = useState<Partial<PodRequestRecord>>({});
   const [podForm, setPodForm] = useState<Partial<ModenaPodRecord>>({});
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
   const [showApprovalHistory, setShowApprovalHistory] = useState(false);
@@ -119,7 +124,8 @@ export const AddStockModal: React.FC<Props> = ({
   const isStockOpname = moduleName === 'Stock Opname';
   const isLocker = moduleName === 'Daftar Loker';
   const isLockerRequest = moduleName === 'Request Locker';
-  const isPod = moduleName === 'MODENA Pod';
+  const isPod = moduleName === 'Pod Census';
+  const isPodRequest = moduleName === 'Request MODENA Pod';
   const isViewMode = mode === 'view';
 
   useEffect(() => {
@@ -138,6 +144,7 @@ export const AddStockModal: React.FC<Props> = ({
            }
            if (initialLockerData) setLockerForm(initialLockerData);
            if (initialLockerRequestData) setLockerRequestForm(initialLockerRequestData);
+           if (initialPodRequestData) setPodRequestForm(initialPodRequestData);
            if (initialPodData) setPodForm(initialPodData);
            
            if (initialAssetData) {
@@ -198,6 +205,17 @@ export const AddStockModal: React.FC<Props> = ({
                 employee: { name: 'Current User', role: 'Staff', phone: '-', avatar: 'https://i.pravatar.cc/150?u=current' }
               });
             }
+            if (isPodRequest) {
+              setPodRequestForm({
+                transactionNumber: `REQ/POD/${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`,
+                date: new Date().toISOString().split('T')[0],
+                status: 'Pending',
+                reason: '',
+                preferredFloor: 'Lt 2 Pria',
+                preferredRoomType: 'Single Bed',
+                employee: { name: 'Current User', role: 'Staff', phone: '-', avatar: 'https://i.pravatar.cc/150?u=current' }
+              });
+            }
             if (isPod) {
               setPodForm({
                 lantai: 'Lt 2 Pria',
@@ -218,7 +236,7 @@ export const AddStockModal: React.FC<Props> = ({
             setRequestItems([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
         }
     }
-  }, [isOpen, initialAssetData, mode, moduleName, isArkModule, initialStockOpnameData, isStockOpname, isLocker, isLockerRequest, initialLockerData, initialLockerRequestData, initialPodData, isPod]);
+  }, [isOpen, initialAssetData, mode, moduleName, isArkModule, initialStockOpnameData, isStockOpname, isLocker, isLockerRequest, isPodRequest, initialLockerData, initialLockerRequestData, initialPodRequestData, initialPodData, isPod]);
 
   const handleSave = () => {
       if (isLogBook && onSaveLogBook) onSaveLogBook(logBookForm);
@@ -226,6 +244,7 @@ export const AddStockModal: React.FC<Props> = ({
       if (isStockOpname && onSaveStockOpname) onSaveStockOpname(stockOpnameForm);
       if (isLocker && onSaveLocker) onSaveLocker(lockerForm);
       if (isLockerRequest && onSaveLockerRequest) onSaveLockerRequest(lockerRequestForm);
+      if (isPodRequest && onSavePodRequest) onSavePodRequest(podRequestForm);
       if (isPod && onSavePod) onSavePod(podForm);
       onClose();
   }
@@ -256,6 +275,10 @@ export const AddStockModal: React.FC<Props> = ({
 
   const handleLockerRequestChange = (field: string, value: any) => {
     setLockerRequestForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handlePodRequestChange = (field: string, value: any) => {
+    setPodRequestForm(prev => ({ ...prev, [field]: value }));
   };
 
   const handlePodChange = (field: string, value: any) => {
@@ -317,7 +340,7 @@ export const AddStockModal: React.FC<Props> = ({
                 <div className="px-8 py-6 border-b border-gray-100 flex items-start justify-between">
                     <div>
                         <h2 className="text-[18px] font-bold text-[#111827]">Approval History</h2>
-                        <p className="text-[14px] text-[#6B7280] mt-1">Document Number: {initialAssetData?.transactionNumber || initialLockerRequestData?.transactionNumber || 'PR/085/BOK/12.25'}</p>
+                        <p className="text-[14px] text-[#6B7280] mt-1">Document Number: {initialAssetData?.transactionNumber || initialLockerRequestData?.transactionNumber || initialPodRequestData?.transactionNumber || 'PR/085/BOK/12.25'}</p>
                     </div>
                     <button onClick={() => setShowApprovalHistory(false)} className="text-gray-400 hover:text-gray-600 transition-colors p-1">
                         <X size={24} />
@@ -365,7 +388,7 @@ export const AddStockModal: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-[2px] p-4 transition-opacity duration-300">
-      <div className={`bg-[#F8F9FA] w-full ${isLogBook || (isStationeryRequest && !isViewMode) || isStockOpname || isLocker || isLockerRequest || isPod ? 'max-w-5xl' : 'max-w-7xl'} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transform transition-all scale-100`}>
+      <div className={`bg-[#F8F9FA] w-full ${isLogBook || (isStationeryRequest && !isViewMode) || isStockOpname || isLocker || isLockerRequest || isPod || isPodRequest ? 'max-w-5xl' : 'max-w-7xl'} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transform transition-all scale-100`}>
         {/* Header */}
         <div className="px-8 py-5 bg-white border-b border-gray-100 flex items-center justify-between shrink-0">
           <div>
@@ -373,16 +396,17 @@ export const AddStockModal: React.FC<Props> = ({
                 {isStockOpname ? (isViewMode ? 'Stock Opname Records Detail' : 'Create New Stock Opname') :
                  isLocker ? (isViewMode ? 'Locker Management Details' : 'Register New Locker') :
                  isLockerRequest ? (isViewMode ? 'Locker Request Details' : 'Submit Locker Request') :
+                 isPodRequest ? (isViewMode ? 'Pod Request Details' : 'Submit Pod Assignment Request') :
                  isPod ? (isViewMode ? 'Pod Occupancy Detail' : 'Register New Room Assignment') :
                  isStationeryRequest ? (isViewMode ? (isApprovalModule ? 'Stationery Approval Process' : 'Stationery Request Details') : (isArkModule ? 'CREATE HOUSEHOLD REQUEST' : 'CREATE STATIONERY REQUEST')) : 
                  isLogBook ? 'Guest Log Detail' : moduleName}
               </h2>
-              {isViewMode && (initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber || initialLockerData?.lockerNumber || initialLockerRequestData?.transactionNumber) && (
-                <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase mt-1 block">ID: {initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber || initialLockerData?.lockerNumber || initialLockerRequestData?.transactionNumber}</span>
+              {isViewMode && (initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber || initialLockerData?.lockerNumber || initialLockerRequestData?.transactionNumber || initialPodRequestData?.transactionNumber) && (
+                <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase mt-1 block">ID: {initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber || initialLockerData?.lockerNumber || initialLockerRequestData?.transactionNumber || initialPodRequestData?.transactionNumber}</span>
               )}
           </div>
           <div className="flex items-center gap-3">
-            {isViewMode && (isStationeryRequest || isLocker || isLockerRequest || isPod) && (
+            {isViewMode && (isStationeryRequest || isLocker || isLockerRequest || isPod || isPodRequest) && (
               <button onClick={() => setShowApprovalHistory(true)} className="flex items-center gap-2 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-black bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all"><History size={14} /> History</button>
             )}
             <button className="text-gray-300 hover:text-red-500 transition-colors p-1" onClick={onClose}>
@@ -393,7 +417,86 @@ export const AddStockModal: React.FC<Props> = ({
         
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          {isLockerRequest ? (
+          {isPodRequest ? (
+             /* --- POD REQUEST FORM --- */
+             <div className="space-y-8">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                   <SectionHeader icon={Send} title="Application Info" />
+                   <div className="space-y-4">
+                     <div>
+                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Request Date</label>
+                       <input 
+                         type="date" 
+                         disabled={isViewMode}
+                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
+                         value={podRequestForm.date || ''} 
+                         onChange={(e) => handlePodRequestChange('date', e.target.value)}
+                       />
+                     </div>
+                     <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Floor Preference</label>
+                          <select 
+                            disabled={isViewMode}
+                            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
+                            value={podRequestForm.preferredFloor || ''}
+                            onChange={(e) => handlePodRequestChange('preferredFloor', e.target.value)}
+                          >
+                            <option value="Lt 2 Pria">Lt 2 Pria</option>
+                            <option value="Lt 2 Perempuan">Lt 2 Perempuan</option>
+                            <option value="Lt 3 Pria">Lt 3 Pria</option>
+                            <option value="Lt 3 Perempuan">Lt 3 Perempuan</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Room Type</label>
+                          <select 
+                            disabled={isViewMode}
+                            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
+                            value={podRequestForm.preferredRoomType || ''}
+                            onChange={(e) => handlePodRequestChange('preferredRoomType', e.target.value)}
+                          >
+                            <option value="Single Bed">Single Bed</option>
+                            <option value="Double Bed">Double Bed</option>
+                            <option value="Quadruple Bed">Quadruple Bed</option>
+                          </select>
+                        </div>
+                     </div>
+                   </div>
+                 </div>
+
+                 <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                   <SectionHeader icon={User} title="Applicant" />
+                   <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                       <img src={podRequestForm.employee?.avatar} className="w-12 h-12 rounded-full border border-white shadow-sm" />
+                       <div>
+                           <div className="text-[14px] font-black text-black uppercase">{podRequestForm.employee?.name}</div>
+                           <div className="text-[10px] font-bold text-gray-400 uppercase">{podRequestForm.employee?.role}</div>
+                       </div>
+                   </div>
+                   {isViewMode && (
+                     <div className="mt-4">
+                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Application Status</label>
+                       <span className={`inline-block px-3 py-1 text-white text-[10px] font-black rounded uppercase ${podRequestForm.status === 'Approved' ? 'bg-green-500' : 'bg-orange-500'}`}>{podRequestForm.status}</span>
+                     </div>
+                   )}
+                 </div>
+               </div>
+
+               <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                 <SectionHeader icon={MessageSquare} title="Reason for Stay" />
+                 <textarea 
+                   rows={4}
+                   disabled={isViewMode}
+                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white focus:border-black outline-none transition-all" 
+                   placeholder="Briefly explain the reason for your pod request..." 
+                   value={podRequestForm.reason || ''} 
+                   onChange={(e) => handlePodRequestChange('reason', e.target.value)} 
+                 />
+               </div>
+             </div>
+          ) : isLockerRequest ? (
             /* --- LOCKER REQUEST FORM --- */
             <div className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -462,7 +565,6 @@ export const AddStockModal: React.FC<Props> = ({
           ) : isPod ? (
             /* --- MODENA POD FORM --- */
             <div className="space-y-8">
-              {/* ... existing pod form ... */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
                   <SectionHeader icon={Home} title="Room Assignment" />
@@ -581,7 +683,6 @@ export const AddStockModal: React.FC<Props> = ({
           ) : isLocker ? (
             /* --- LOCKER FORM --- */
             <div className="space-y-8">
-              {/* ... existing locker form ... */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
                   <SectionHeader icon={Lock} title="Locker Identification" />
@@ -737,7 +838,6 @@ export const AddStockModal: React.FC<Props> = ({
           ) : isStockOpname ? (
             /* --- STOCK OPNAME FORM --- */
             <div className="space-y-8">
-              {/* ... existing stock opname form ... */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
                   <SectionHeader icon={Activity} title="Record Metadata" />
