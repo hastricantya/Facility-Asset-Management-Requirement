@@ -74,7 +74,7 @@ const translations: Record<string, Record<Language, string>> = {
   'Approval': { id: 'Persetujuan', en: 'Approval' },
   'Approved': { id: 'Disetujui', en: 'Approved' },
   'Rejected': { id: 'Ditolak', en: 'Rejected' },
-  'Pending': { id: 'Menunggu', en: 'Pending' },
+  'Pending': { id: 'Waiting Approval', en: 'Waiting Approval' },
   'Closed': { id: 'Selesai', en: 'Closed' },
   'Own': { id: 'Milik Sendiri', en: 'Own' },
   'Rent': { id: 'Sewa', en: 'Rent' },

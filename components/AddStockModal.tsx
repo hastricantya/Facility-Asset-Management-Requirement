@@ -477,7 +477,9 @@ export const AddStockModal: React.FC<Props> = ({
                    {isViewMode && (
                      <div className="mt-4">
                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Application Status</label>
-                       <span className={`inline-block px-3 py-1 text-white text-[10px] font-black rounded uppercase ${podRequestForm.status === 'Approved' ? 'bg-green-500' : 'bg-orange-500'}`}>{podRequestForm.status}</span>
+                       <span className={`inline-block px-3 py-1 text-white text-[10px] font-black rounded uppercase ${podRequestForm.status === 'Approved' ? 'bg-green-500' : 'bg-orange-500'}`}>
+                        {podRequestForm.status === 'Pending' ? 'Waiting Approval' : podRequestForm.status}
+                       </span>
                      </div>
                    )}
                  </div>
@@ -543,7 +545,9 @@ export const AddStockModal: React.FC<Props> = ({
                   {isViewMode && (
                     <div className="mt-4">
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Request Status</label>
-                      <span className={`inline-block px-3 py-1 text-white text-[10px] font-black rounded uppercase ${lockerRequestForm.status === 'Approved' ? 'bg-green-500' : 'bg-orange-500'}`}>{lockerRequestForm.status}</span>
+                      <span className={`inline-block px-3 py-1 text-white text-[10px] font-black rounded uppercase ${lockerRequestForm.status === 'Approved' ? 'bg-green-500' : 'bg-orange-500'}`}>
+                        {lockerRequestForm.status === 'Pending' ? 'Waiting Approval' : lockerRequestForm.status}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -749,7 +753,7 @@ export const AddStockModal: React.FC<Props> = ({
                             onClick={() => handleLockerChange('status', s)}
                             className={`flex-1 py-2 text-[10px] font-black rounded-lg border transition-all uppercase tracking-widest
                               ${lockerForm.status === s 
-                                ? (s === 'Kosong' ? 'bg-green-500 text-white border-green-600' : s === 'Terisi' ? 'bg-black text-white border-black' : s === 'Kunci Hilang' ? 'bg-red-500 text-white border-red-600' : 'bg-red-500 text-white border-red-600') 
+                                ? (s === 'Kosong' ? 'bg-green-500 text-white border-green-600' : s === 'Terisi' ? 'bg-black text-white border-black' : s === 'Kunci Hilang' ? 'bg-red-500 text-white border-red-600' : 'bg-red-50 text-red-600') 
                                 : 'bg-white text-gray-400 border-gray-200 hover:border-black hover:text-black'}`}
                           >
                             {s}
@@ -1276,14 +1280,19 @@ export const AddStockModal: React.FC<Props> = ({
           )}
         </div>
 
-        {/* Footer */}
+        {/* Footer Actions */}
         <div className="px-8 py-6 bg-white border-t border-gray-100 flex justify-end gap-3 shrink-0">
           {isViewMode ? (
             <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-black bg-gray-100 rounded-xl hover:bg-gray-200 transition-all">Close</button>
           ) : (
             <>
               <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:text-black transition-all">CANCEL</button>
-              <button onClick={handleSave} className="px-12 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-xl hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95">SAVE DATA</button>
+              {isStationeryRequest && !isViewMode && (
+                <button onClick={handleSave} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-black bg-white border border-black rounded-xl hover:bg-gray-50 transition-all active:scale-95 shadow-sm">SAVE DRAFT</button>
+              )}
+              <button onClick={handleSave} className="px-12 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-xl hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95">
+                {isStationeryRequest && !isViewMode ? 'SUBMIT DATA' : 'SAVE DATA'}
+              </button>
             </>
           )}
         </div>

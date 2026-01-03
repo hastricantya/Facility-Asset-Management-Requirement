@@ -73,7 +73,7 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseT
                 </td>
                 <td className="p-5">
                     <div className="flex items-center justify-center">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.1em] border
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.1em] border whitespace-nowrap
                             ${item.status === 'Approved' ? 'bg-green-500 text-white border-green-600' : 
                               item.status === 'Pending' ? 'bg-orange-500 text-white border-orange-600' : 
                               item.status === 'Rejected' ? 'bg-red-500 text-white border-red-600' : 
@@ -81,7 +81,7 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseT
                               item.status === 'On Progress' ? 'bg-blue-500 text-white border-blue-600' :
                               'bg-white text-gray-300 border-gray-200' // Draft
                             }`}>
-                            {item.status}
+                            {item.status === 'Pending' ? 'Waiting Approval' : item.status}
                         </span>
                     </div>
                 </td>

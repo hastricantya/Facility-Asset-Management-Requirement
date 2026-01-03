@@ -194,6 +194,9 @@ const App: React.FC = () => {
   }, [podData]);
 
   const renderContent = () => {
+     const statusMap: Record<string, string> = { 'Waiting Approval': 'Pending' };
+     const currentTargetStatus = statusMap[activeTab] || activeTab;
+
      switch(activeModule) {
          case 'Log Book': return <LogBookTable data={logBookData} onView={(item) => { setSelectedLogBook(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedLogBook(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
          case 'Daftar Loker': return <LockerTable data={filteredLockerData} onView={(item) => { setSelectedLocker(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedLocker(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
@@ -203,10 +206,12 @@ const App: React.FC = () => {
          case 'Stock Opname': return <StockOpnameTable data={stockOpnameData} onView={(item) => { setSelectedStockOpname(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Request ATK':
          case 'Stationery Request Approval':
-            return <StationeryRequestTable data={atkData} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
+            const filteredAtk = atkData.filter(item => activeTab === 'Semua' || activeTab === '' || item.status === currentTargetStatus);
+            return <StationeryRequestTable data={filteredAtk} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Daftar ARK':
          case 'Household Request Approval':
-            return <StationeryRequestTable data={arkData} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
+            const filteredArk = arkData.filter(item => activeTab === 'Semua' || activeTab === '' || item.status === currentTargetStatus);
+            return <StationeryRequestTable data={filteredArk} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          default: return <div className="p-8 text-center text-gray-400 uppercase font-black text-[10px] tracking-widest">{activeModule} module content placeholder</div>;
      }
   };
@@ -214,7 +219,9 @@ const App: React.FC = () => {
   const mainTabs = useMemo(() => {
     if (activeModule === 'Pod Census') return ['Semua', 'Lt 2 Pria', 'Lt 2 Perempuan', 'Lt 3 Pria', 'Lt 3 Perempuan'];
     if (activeModule === 'Daftar Loker') return ['Semua', 'Terisi', 'Kosong', 'Kunci Hilang'];
-    if (activeModule.includes('Daftar') || activeModule.includes('Approval') || activeModule.includes('Request')) return ['Semua', 'Draft', 'Pending', 'Approved', 'Rejected'];
+    if (activeModule.includes('Daftar') || activeModule.includes('Approval') || activeModule.includes('Request')) {
+        return ['Semua', 'Draft', 'Waiting Approval', 'Approved', 'Rejected', 'Closed'];
+    }
     if (activeModule === 'Stock Opname') return ['Semua', 'Matched', 'Discrepancy'];
     return ['Semua'];
   }, [activeModule]);
