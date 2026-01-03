@@ -13,7 +13,7 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseT
   return (
     <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden transition-all duration-500">
       <div className="overflow-x-auto custom-scrollbar">
-        <table className="w-full min-w-[900px] text-left border-collapse">
+        <table className="w-full min-w-[1000px] text-left border-collapse">
           <thead>
             <tr className="bg-[#F2F2F2] border-b border-gray-200">
               <th className="p-5 w-14 text-center pl-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">#</th>
@@ -26,6 +26,12 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseT
               <th className="p-5 w-72 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Requester</span>
+                  <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
+                </div>
+              </th>
+              <th className="p-5 w-48 group cursor-pointer hover:bg-gray-200/50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Department</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
@@ -58,6 +64,9 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseT
                       <p className="text-[9px] text-gray-400 font-black uppercase tracking-wider">{item.employee.role}</p>
                     </div>
                   </div>
+                </td>
+                <td className="p-5">
+                    <span className="text-[11px] font-black text-gray-700 uppercase tracking-tight">{item.employee.department || '-'}</span>
                 </td>
                 <td className="p-5">
                     <span className="text-[11px] font-black text-gray-400 uppercase tracking-tight">{item.date}</span>

@@ -8,11 +8,11 @@ const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] 
   let idCounter = startId;
 
   const employees = [
-    { name: 'Aan Junaidi', role: 'Technician Team Leader', phone: '08123456789', avatar: 'https://i.pravatar.cc/150?u=aan' },
-    { name: 'Budi Santoso', role: 'Staff Admin', phone: '08129876543', avatar: 'https://i.pravatar.cc/150?u=budi' },
-    { name: 'Citra Lestari', role: 'HRGA Manager', phone: '08134567890', avatar: 'https://i.pravatar.cc/150?u=citra' },
-    { name: 'Dewi Putri', role: 'Finance Staff', phone: '08145678901', avatar: 'https://i.pravatar.cc/150?u=dewi' },
-    { name: 'Eko Prasetyo', role: 'General Affair', phone: '08156789012', avatar: 'https://i.pravatar.cc/150?u=eko' }
+    { name: 'Aan Junaidi', role: 'Technician Team Leader', phone: '08123456789', avatar: 'https://i.pravatar.cc/150?u=aan', department: 'After Sales' },
+    { name: 'Budi Santoso', role: 'Staff Admin', phone: '08129876543', avatar: 'https://i.pravatar.cc/150?u=budi', department: 'Supply Chain' },
+    { name: 'Citra Lestari', role: 'HRGA Manager', phone: '08134567890', avatar: 'https://i.pravatar.cc/150?u=citra', department: 'HRGA' },
+    { name: 'Dewi Putri', role: 'Finance Staff', phone: '08145678901', avatar: 'https://i.pravatar.cc/150?u=dewi', department: 'Finance' },
+    { name: 'Eko Prasetyo', role: 'General Affair', phone: '08156789012', avatar: 'https://i.pravatar.cc/150?u=eko', department: 'General Affair' }
   ];
 
   const itemsATK = [

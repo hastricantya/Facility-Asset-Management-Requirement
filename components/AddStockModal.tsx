@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid } from 'lucide-react';
+import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid, ChevronDown } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_DELIVERY_LOCATIONS } from '../constants';
@@ -103,7 +103,7 @@ export const AddStockModal: React.FC<Props> = ({
   const [masterForm, setMasterForm] = useState<Partial<GeneralMasterItem>>({});
   const [stationeryRequestForm, setStationeryRequestForm] = useState<Partial<StationeryRequestRecord>>({
       type: 'DAILY REQUEST',
-      deliveryType: 'DELIVERY',
+      deliveryType: 'PICKUP HO',
       location: 'MODENA Head Office',
       date: new Date().toISOString().split('T')[0]
   });
@@ -161,7 +161,7 @@ export const AddStockModal: React.FC<Props> = ({
                    type: 'DAILY REQUEST',
                    date: formattedDate,
                    remarks: initialAssetData.itemDescription || '',
-                   deliveryType: 'DELIVERY',
+                   deliveryType: 'PICKUP HO',
                    location: 'MODENA Head Office'
                });
 
@@ -228,7 +228,7 @@ export const AddStockModal: React.FC<Props> = ({
             }
             setStationeryRequestForm({ 
                 type: 'DAILY REQUEST', 
-                deliveryType: 'DELIVERY', 
+                deliveryType: 'PICKUP HO', 
                 location: 'MODENA Head Office', 
                 date: new Date().toISOString().split('T')[0],
                 remarks: `Permintaan rutin ${isArkModule ? 'ARK' : 'ATK'} untuk operasional kantor.`
@@ -297,11 +297,9 @@ export const AddStockModal: React.FC<Props> = ({
 
   const handleStationeryRequestChange = (field: keyof StationeryRequestRecord, value: any) => {
     if (field === 'location') {
-        const isHO = value === 'MODENA Head Office';
         setStationeryRequestForm(prev => ({ 
             ...prev, 
-            [field]: value,
-            deliveryType: isHO ? 'PICKUP HO' : (prev.deliveryType === 'PICKUP HO' ? 'DELIVERY' : prev.deliveryType)
+            [field]: value
         }));
     } else {
         setStationeryRequestForm(prev => ({ ...prev, [field]: value }));
@@ -1018,7 +1016,6 @@ export const AddStockModal: React.FC<Props> = ({
                               value={stationeryRequestForm.deliveryType} 
                               onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
                             >
-                                {stationeryRequestForm.location !== 'MODENA Head Office' && <option value="DELIVERY">DELIVERY</option>}
                                 <option value="PICKUP HO">PICKUP HO</option>
                             </select>
                           </div>
@@ -1138,7 +1135,7 @@ export const AddStockModal: React.FC<Props> = ({
                  </div>
                  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                     <SectionHeader icon={MapPin} title="DELIVERY STATUS" />
-                    <div className="grid grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
                             <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">LOCATION</label>
                             <select 
@@ -1150,6 +1147,21 @@ export const AddStockModal: React.FC<Props> = ({
                                     <option key={loc.id} value={loc.name}>{loc.name}</option>
                                 ))}
                             </select>
+                        </div>
+                        <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">DELIVERY METHOD</label>
+                            <div className="relative">
+                                <select 
+                                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[12px] font-black bg-white uppercase appearance-none shadow-sm focus:border-black outline-none transition-all"
+                                    value={stationeryRequestForm.deliveryType}
+                                    onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
+                                >
+                                    <option value="PICKUP HO">PICKUP HO</option>
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <ChevronDown size={14} className="text-gray-400" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                  </div>
