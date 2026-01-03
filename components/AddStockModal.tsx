@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, Save, List, Calendar, CheckCircle, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid, ChevronDown } from 'lucide-react';
+/* Added CheckCircle2 to the import list from lucide-react */
+import { X, Save, List, Calendar, CheckCircle, CheckCircle2, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid, ChevronDown } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_DELIVERY_LOCATIONS } from '../constants';
@@ -386,7 +387,7 @@ export const AddStockModal: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-[2px] p-4 transition-opacity duration-300">
-      <div className={`bg-[#F8F9FA] w-full ${isLogBook || (isStationeryRequest && !isViewMode) || isStockOpname || isLocker || isLockerRequest || isPod || isPodRequest ? 'max-w-5xl' : 'max-w-7xl'} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transform transition-all scale-100`}>
+      <div className={`bg-[#F8F9FA] w-full ${isLogBook || (isStationeryRequest && !isViewMode) || isStockOpname || isLocker || isLockerRequest || isPod || isPodRequest ? 'max-w-6xl' : 'max-w-7xl'} rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transform transition-all scale-100`}>
         {/* Header */}
         <div className="px-8 py-5 bg-white border-b border-gray-100 flex items-center justify-between shrink-0">
           <div>
@@ -945,7 +946,7 @@ export const AddStockModal: React.FC<Props> = ({
                     </div>
                     <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border
                       ${(stockOpnameForm.difference || 0) === 0 ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
-                      {(stockOpnameForm.difference || 0) === 0 ? <CheckCircle size={10} /> : <AlertTriangle size={10} />}
+                      {(stockOpnameForm.difference || 0) === 0 ? <CheckCircle2 size={10} /> : <AlertTriangle size={10} />}
                       {stockOpnameForm.status}
                     </div>
                   </div>
@@ -974,20 +975,23 @@ export const AddStockModal: React.FC<Props> = ({
                       <div className="space-y-4">
                           <div>
                             <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Category</label>
-                            <select 
-                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-black bg-white uppercase shadow-sm" 
-                              value={stationeryRequestForm.type} 
-                              onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
-                            >
-                                <option value="DAILY REQUEST">DAILY REQUEST</option>
-                                <option value="EVENT REQUEST">EVENT REQUEST</option>
-                            </select>
+                            <div className="relative">
+                                <select 
+                                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[12px] font-black bg-white uppercase shadow-sm appearance-none focus:border-black outline-none" 
+                                value={stationeryRequestForm.type} 
+                                onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
+                                >
+                                    <option value="DAILY REQUEST">DAILY REQUEST</option>
+                                    <option value="EVENT REQUEST">EVENT REQUEST</option>
+                                </select>
+                                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            </div>
                           </div>
                           <div>
                             <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Submit Date</label>
                             <input 
                               type="date" 
-                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-bold bg-white shadow-sm" 
+                              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[12px] font-bold bg-white shadow-sm focus:border-black outline-none" 
                               value={stationeryRequestForm.date} 
                               onChange={(e) => handleStationeryRequestChange('date', e.target.value)} 
                             />
@@ -999,33 +1003,38 @@ export const AddStockModal: React.FC<Props> = ({
                       <div className="space-y-4">
                           <div>
                             <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Location</label>
-                            <select 
-                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-black bg-white uppercase shadow-sm" 
-                              value={stationeryRequestForm.location} 
-                              onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
-                            >
-                                {MOCK_DELIVERY_LOCATIONS.map(loc => (
-                                    <option key={loc.id} value={loc.name}>{loc.name}</option>
-                                ))}
-                            </select>
+                            <div className="relative">
+                                <select 
+                                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[12px] font-black bg-white uppercase shadow-sm appearance-none focus:border-black outline-none" 
+                                value={stationeryRequestForm.location} 
+                                onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
+                                >
+                                    {MOCK_DELIVERY_LOCATIONS.map(loc => (
+                                        <option key={loc.id} value={loc.name}>{loc.name}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            </div>
                           </div>
                           <div>
                             <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Delivery Method</label>
-                            <select 
-                              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-black bg-white uppercase shadow-sm" 
-                              value={stationeryRequestForm.deliveryType} 
-                              onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
-                            >
-                                <option value="PICKUP HO">PICKUP HO</option>
-                            </select>
+                            <div className="relative">
+                                <select 
+                                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[12px] font-black bg-white uppercase shadow-sm appearance-none focus:border-black outline-none" 
+                                value={stationeryRequestForm.deliveryType} 
+                                onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
+                                >
+                                    <option value="PICKUP HO">PICKUP HO</option>
+                                </select>
+                                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            </div>
                           </div>
                       </div>
                    </div>
                </div>
-               <div className="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
-                  <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mt-8">
+                  <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
                     <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Inventory List</h4>
-                    {isApprovalModule && <button onClick={addRequestItemRow} className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-all">+ Add Row</button>}
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
@@ -1035,55 +1044,47 @@ export const AddStockModal: React.FC<Props> = ({
                                 <th className="px-8 py-4 w-48">Category</th>
                                 <th className="px-8 py-4">Item Name / Description</th>
                                 <th className="px-8 py-4 w-28 text-center">Qty</th>
+                                <th className="px-8 py-4 w-28 text-center">In Stock</th>
                                 <th className="px-8 py-4 w-24 text-center">UOM</th>
-                                <th className="px-8 py-4 w-16 text-center"></th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {requestItems.map((item, index) => {
-                                const categoryList = isArkModule ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY;
                                 const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
-                                const filteredItems = item.categoryId ? masterList.filter(m => m.category === item.categoryId) : [];
+                                const selectedProduct = masterList.find(m => m.id.toString() === item.itemId);
                                 
                                 return (
                                     <tr key={index} className="hover:bg-gray-50/50 transition-colors">
                                         <td className="px-8 py-4 text-center text-gray-300 font-bold text-[11px]">{index + 1}</td>
                                         <td className="px-8 py-4">
-                                            <select 
-                                                className="w-full border border-gray-100 rounded-lg px-2 py-1.5 text-[11px] font-bold bg-white" 
-                                                value={item.categoryId} 
-                                                onChange={(e) => handleRequestItemChange(index, 'categoryId', e.target.value)}
-                                            >
-                                                <option value="">Category...</option>
-                                                {categoryList.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                                            </select>
+                                            <div className="relative">
+                                                <select className="w-full border border-gray-200 rounded-xl px-2 py-1.5 text-[11px] font-bold bg-white appearance-none" value={item.categoryId} disabled>
+                                                    <option>{item.categoryId || 'N/A'}</option>
+                                                </select>
+                                                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300" />
+                                            </div>
                                         </td>
                                         <td className="px-8 py-4">
-                                            <select 
-                                                disabled={!item.categoryId}
-                                                className={`w-full border border-gray-100 rounded-lg px-2 py-1.5 text-[11px] font-bold ${!item.categoryId ? 'bg-gray-50 text-gray-400' : 'text-black bg-white'}`} 
-                                                value={item.itemId} 
-                                                onChange={(e) => handleRequestItemChange(index, 'itemId', e.target.value)}
-                                            >
-                                                <option value="">{item.categoryId ? 'Search Product...' : 'Select category'}</option>
-                                                {filteredItems.map(m => <option key={m.id} value={m.id}>{m.itemName}</option>)}
-                                            </select>
+                                            <div className="relative">
+                                                <select className="w-full border border-gray-200 rounded-xl px-2 py-1.5 text-[11px] font-bold bg-white appearance-none" value={item.itemId} disabled>
+                                                    <option>{selectedProduct ? `${selectedProduct.itemCode} - ${selectedProduct.itemName}` : 'Search Product...'}</option>
+                                                </select>
+                                                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300" />
+                                            </div>
                                         </td>
                                         <td className="px-8 py-4 text-center">
-                                            <input type="number" className="w-20 border border-gray-100 rounded-lg px-2 py-1.5 text-[14px] font-black text-center bg-white" value={item.qty} onChange={(e) => handleRequestItemChange(index, 'qty', e.target.value)} />
+                                            <input type="text" readOnly className="w-20 border border-gray-200 rounded-xl px-2 py-1.5 text-[14px] font-black text-center bg-gray-50" value={item.qty} />
                                         </td>
                                         <td className="px-8 py-4 text-center">
-                                            <select 
-                                                className="w-full border border-gray-100 rounded-lg px-1 py-1.5 text-[10px] font-black text-center uppercase bg-white" 
-                                                value={item.uom} 
-                                                onChange={(e) => handleRequestItemChange(index, 'uom', e.target.value)}
-                                            >
-                                                <option value="">UOM</option>
-                                                {MOCK_UOM_DATA.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
-                                            </select>
+                                            <span className="font-mono font-black text-[14px] text-gray-400">{selectedProduct?.remainingStock ?? '-'}</span>
                                         </td>
                                         <td className="px-8 py-4 text-center">
-                                          {isApprovalModule && <button onClick={() => removeRequestItemRow(index)} className="text-gray-300 hover:text-red-500 transition-all"><X size={16}/></button>}
+                                            <div className="relative">
+                                                <select className="w-full border border-gray-200 rounded-xl px-1 py-1.5 text-[10px] font-black text-center uppercase bg-white appearance-none" value={item.uom} disabled>
+                                                    <option>{item.uom || 'UOM'}</option>
+                                                </select>
+                                                <ChevronDown size={10} className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-300" />
+                                            </div>
                                         </td>
                                     </tr>
                                 );
@@ -1106,63 +1107,167 @@ export const AddStockModal: React.FC<Props> = ({
                 </div>
             </div>
           ) : isStationeryRequest && !isViewMode ? (
-            /* --- CREATE MODE STATIONERY --- */
+            /* --- CREATE MODE STATIONERY (SCMP STYLE) --- */
              <div className="space-y-6">
-                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                     <SectionHeader icon={FileText} title="ORDER SETUP" />
-                     <div className="grid grid-cols-2 gap-8">
-                         <div>
-                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">ORDER TYPE</label>
-                            <select 
-                                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[12px] font-black bg-white uppercase appearance-none shadow-sm focus:border-black outline-none transition-all" 
-                                value={stationeryRequestForm.type} 
-                                onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
-                            >
-                                <option value="DAILY REQUEST">DAILY REQUEST</option>
-                                <option value="EVENT REQUEST">EVENT REQUEST</option>
-                            </select>
-                         </div>
-                         <div>
-                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">DATE</label>
-                            <input 
-                                type="date" 
-                                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[12px] font-bold bg-white shadow-sm focus:border-black outline-none transition-all" 
-                                value={stationeryRequestForm.date} 
-                                onChange={(e) => handleStationeryRequestChange('date', e.target.value)} 
-                            />
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                     {/* ORDER SETUP BOX */}
+                     <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+                         <SectionHeader icon={FileText} title="ORDER SETUP" />
+                         <div className="grid grid-cols-2 gap-6">
+                             <div>
+                                <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">ORDER TYPE</label>
+                                <div className="relative">
+                                    <select 
+                                        className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-[12px] font-black bg-white uppercase appearance-none focus:border-black outline-none transition-all shadow-sm" 
+                                        value={stationeryRequestForm.type} 
+                                        onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
+                                    >
+                                        <option value="DAILY REQUEST">DAILY REQUEST</option>
+                                        <option value="EVENT REQUEST">EVENT REQUEST</option>
+                                    </select>
+                                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                                </div>
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">DATE</label>
+                                <input 
+                                    type="date" 
+                                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[12px] font-bold bg-white focus:border-black outline-none transition-all shadow-sm" 
+                                    value={stationeryRequestForm.date} 
+                                    onChange={(e) => handleStationeryRequestChange('date', e.target.value)} 
+                                />
+                             </div>
                          </div>
                      </div>
-                 </div>
-                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                    <SectionHeader icon={MapPin} title="DELIVERY STATUS" />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">LOCATION</label>
-                            <select 
-                                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[12px] font-black bg-white uppercase appearance-none shadow-sm focus:border-black outline-none transition-all" 
-                                value={stationeryRequestForm.location} 
-                                onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
-                            >
-                                {MOCK_DELIVERY_LOCATIONS.map(loc => (
-                                    <option key={loc.id} value={loc.name}>{loc.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">DELIVERY METHOD</label>
-                            <div className="relative">
-                                <select 
-                                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[12px] font-black bg-white uppercase appearance-none shadow-sm focus:border-black outline-none transition-all"
-                                    value={stationeryRequestForm.deliveryType}
-                                    onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
-                                >
-                                    <option value="PICKUP HO">PICKUP HO</option>
-                                </select>
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                    <ChevronDown size={14} className="text-gray-400" />
+
+                     {/* DELIVERY STATUS BOX */}
+                     <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+                        <SectionHeader icon={MapPin} title="DELIVERY STATUS" />
+                        <div className="grid grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">LOCATION</label>
+                                <div className="relative">
+                                    <select 
+                                        className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-[12px] font-black bg-white uppercase appearance-none focus:border-black outline-none transition-all shadow-sm" 
+                                        value={stationeryRequestForm.location} 
+                                        onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
+                                    >
+                                        {MOCK_DELIVERY_LOCATIONS.map(loc => (
+                                            <option key={loc.id} value={loc.name}>{loc.name}</option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">DELIVERY METHOD</label>
+                                <div className="relative">
+                                    <select 
+                                        className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-[12px] font-black bg-white uppercase appearance-none focus:border-black outline-none transition-all shadow-sm"
+                                        value={stationeryRequestForm.deliveryType}
+                                        onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
+                                    >
+                                        <option value="PICKUP HO">PICKUP HO</option>
+                                    </select>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                        <ChevronDown size={14} className="text-gray-400" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                     </div>
+                 </div>
+
+                 {/* INVENTORY LIST TABLE */}
+                 <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mt-8">
+                    <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
+                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">INVENTORY LIST</h4>
+                        <button onClick={addRequestItemRow} className="text-[9px] font-black uppercase tracking-widest px-4 py-2 bg-black text-white rounded-xl hover:bg-gray-800 transition-all">+ ADD ROW</button>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-white border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">
+                                    <th className="px-8 py-4 w-12 text-center">#</th>
+                                    <th className="px-8 py-4 w-56">CATEGORY</th>
+                                    <th className="px-8 py-4">ITEM NAME / DESCRIPTION</th>
+                                    <th className="px-8 py-4 w-32 text-center">QTY</th>
+                                    <th className="px-8 py-4 w-32 text-center">IN STOCK</th>
+                                    <th className="px-8 py-4 w-32 text-center">UOM</th>
+                                    <th className="px-8 py-4 w-16 text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {requestItems.map((item, index) => {
+                                    const categoryList = isArkModule ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY;
+                                    const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+                                    const filteredItems = item.categoryId ? masterList.filter(m => m.category === item.categoryId) : [];
+                                    const selectedItemData = masterList.find(m => m.id.toString() === item.itemId);
+                                    
+                                    return (
+                                        <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+                                            <td className="px-8 py-5 text-center text-gray-300 font-bold text-[11px]">{index + 1}</td>
+                                            <td className="px-8 py-5">
+                                                <div className="relative">
+                                                    <select 
+                                                        className="w-full border border-gray-200 rounded-xl px-4 py-2 text-[11px] font-bold bg-white focus:border-black outline-none appearance-none" 
+                                                        value={item.categoryId} 
+                                                        onChange={(e) => handleRequestItemChange(index, 'categoryId', e.target.value)}
+                                                    >
+                                                        <option value="">Category...</option>
+                                                        {categoryList.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                                                    </select>
+                                                    <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" />
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-5">
+                                                <div className="relative">
+                                                    <select 
+                                                        disabled={!item.categoryId}
+                                                        className={`w-full border border-gray-200 rounded-xl px-4 py-2 text-[11px] font-bold appearance-none outline-none focus:border-black ${!item.categoryId ? 'bg-gray-50 text-gray-300' : 'text-black bg-white'}`} 
+                                                        value={item.itemId} 
+                                                        onChange={(e) => handleRequestItemChange(index, 'itemId', e.target.value)}
+                                                    >
+                                                        <option value="">{item.categoryId ? 'Search Product...' : 'Select category'}</option>
+                                                        {filteredItems.map(m => <option key={m.id} value={m.id}>{m.itemCode} - {m.itemName}</option>)}
+                                                    </select>
+                                                    <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" />
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-5 text-center">
+                                                <input 
+                                                    type="number" 
+                                                    className="w-24 border border-gray-200 rounded-xl px-2 py-2 text-[14px] font-black text-center bg-white focus:border-black outline-none" 
+                                                    value={item.qty} 
+                                                    onChange={(e) => handleRequestItemChange(index, 'qty', e.target.value)} 
+                                                />
+                                            </td>
+                                            <td className="px-8 py-5 text-center">
+                                                <span className="font-mono font-black text-[14px] text-gray-400">
+                                                    {selectedItemData?.remainingStock ?? '-'}
+                                                </span>
+                                            </td>
+                                            <td className="px-8 py-5 text-center">
+                                                <div className="relative">
+                                                    <select 
+                                                        className="w-full border border-gray-200 rounded-xl px-1 py-2 text-[10px] font-black text-center uppercase bg-white appearance-none outline-none" 
+                                                        value={item.uom} 
+                                                        onChange={(e) => handleRequestItemChange(index, 'uom', e.target.value)}
+                                                    >
+                                                        <option value="">UOM</option>
+                                                        {MOCK_UOM_DATA.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
+                                                    </select>
+                                                    <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300" />
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-5 text-center">
+                                                <button onClick={() => removeRequestItemRow(index)} className="text-gray-300 hover:text-red-500 transition-all active:scale-90"><X size={18}/></button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
                     </div>
                  </div>
              </div>
