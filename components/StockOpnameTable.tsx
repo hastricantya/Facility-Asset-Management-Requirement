@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { StockOpnameRecord } from '../types';
-import { ChevronsUpDown, ChevronLeft, ChevronRight, Eye, MoreHorizontal, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ChevronsUpDown, ChevronLeft, ChevronRight, Eye, MoreHorizontal, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 interface Props {
   data: StockOpnameRecord[];
@@ -38,6 +38,7 @@ export const StockOpnameTable: React.FC<Props> = ({ data, onView }) => {
               <th className="p-5 w-32 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Physical Qty</th>
               <th className="p-5 w-32 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Diff</th>
               <th className="p-5 w-40 text-[10px] font-black text-black uppercase tracking-[0.15em]">Performed By</th>
+              <th className="p-5 w-36 text-[10px] font-black text-black uppercase tracking-[0.15em]">Date</th>
               <th className="p-5 w-36 text-[10px] font-black text-black uppercase tracking-[0.15em]">Status</th>
               <th className="p-5 w-24 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Action</th>
             </tr>
@@ -62,7 +63,9 @@ export const StockOpnameTable: React.FC<Props> = ({ data, onView }) => {
                 </td>
                 <td className="p-5">
                     <p className="font-black text-black text-[12px] uppercase">{item.performedBy}</p>
-                    <p className="text-[9px] text-gray-400 font-bold uppercase">{item.date}</p>
+                </td>
+                <td className="p-5">
+                    <span className="text-[11px] font-black text-gray-400 uppercase tracking-tight">{item.date}</span>
                 </td>
                 <td className="p-5">
                     <div className="flex items-center">
@@ -71,7 +74,8 @@ export const StockOpnameTable: React.FC<Props> = ({ data, onView }) => {
                               item.status === 'Discrepancy' ? 'bg-red-50 text-red-600 border-red-100' : 
                               'bg-gray-50 text-gray-400 border-gray-100' // Draft
                             }`}>
-                            {item.status === 'Matched' ? <CheckCircle2 size={10} /> : item.status === 'Discrepancy' ? <AlertCircle size={10} /> : null}
+                            {/* Fixed: AlertTriangle was used but not imported. AlertCircle was imported but not used. */}
+                            {item.status === 'Matched' ? <CheckCircle2 size={10} /> : item.status === 'Discrepancy' ? <AlertTriangle size={10} /> : null}
                             {item.status}
                         </span>
                     </div>
