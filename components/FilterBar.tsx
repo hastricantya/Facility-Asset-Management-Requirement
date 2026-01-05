@@ -140,9 +140,9 @@ export const FilterBar: React.FC<Props> = ({
                   onChange={(e) => onLogBookFilterChange?.('location', e.target.value)}
                 >
                   <option value="">{t('Semua Lokasi')}</option>
-                  <option value="MODENA Head Office">MODENA Head Office</option>
-                  <option value="MODENA Kemang">MODENA Kemang</option>
-                  <option value="Warehouse Cakung">Warehouse Cakung</option>
+                  <option value="Satrio">Satrio</option>
+                  <option value="Suryo">Suryo</option>
+                  <option value="Kemang">Kemang</option>
                 </select>
                 <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" />
               </div>

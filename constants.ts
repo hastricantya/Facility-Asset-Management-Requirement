@@ -25,7 +25,7 @@ const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] 
 
   const itemsARK = [
       { name: 'Wipol Karbol', cat: 'Pembersih', code: 'CL-WPL-01' },
-      { name: 'Tisu Nice 250s', cat: 'Tisu', code: 'TS-NIC-250' },
+      { name: 'Tisu Nice 250s', cat: 'Tisu', code: 'TS-NICE-250' },
       { name: 'Sabun Cuci Tangan', cat: 'Kebersihan', code: 'SOAP-HW-01' },
       { name: 'Pengharum Ruangan', cat: 'Kebersihan', code: 'AIR-FRESH-01' },
       { name: 'Lampu LED 10W', cat: 'Elektronik', code: 'LMP-LED-10' }
@@ -115,14 +115,14 @@ export const MOCK_MASTER_DATA: MasterItem[] = [
 
 export const MOCK_MASTER_ARK_DATA: MasterItem[] = [
   { id: 1, category: 'Pembersih', itemName: 'Wipol Karbol', itemCode: 'CL-WPL-01', uom: 'Pcs', remainingStock: 10, minimumStock: 5, maximumStock: 20, requestedStock: 0, purchaseDate: '10/03/2024', lastPurchasePrice: 'Rp. 15.000', averagePrice: 'Rp. 14.800' },
-  { id: 2, category: 'Tisu', itemName: 'Tisu Nice 250s', itemCode: 'TS-NIC-250', uom: 'Pack', remainingStock: 30, minimumStock: 10, maximumStock: 50, requestedStock: 10, purchaseDate: '12/03/2024', lastPurchasePrice: 'Rp. 8.000', averagePrice: 'Rp. 7.900' }
+  { id: 2, category: 'Tisu', itemName: 'Tisu Nice 250s', itemCode: 'TS-NICE-250', uom: 'Pack', remainingStock: 30, minimumStock: 10, maximumStock: 50, requestedStock: 10, purchaseDate: '12/03/2024', lastPurchasePrice: 'Rp. 8.000', averagePrice: 'Rp. 7.900' }
 ];
 
 export const MOCK_STOCK_OPNAME_DATA: StockOpnameRecord[] = [
   { id: 1, opnameNumber: 'SO/ATK/2024/0001', itemCode: 'TP-HP0048', itemName: 'HP Laserjet 204A Black', category: 'Tinta Printer', systemQty: 5, physicalQty: 5, difference: 0, date: '2024-03-20', performedBy: 'Aan Junaidi', status: 'Matched' },
   { id: 2, opnameNumber: 'SO/ATK/2024/0002', itemCode: 'KRT-A4-70', itemName: 'Kertas A4 70gr', category: 'Kertas', systemQty: 50, physicalQty: 48, difference: -2, date: '2024-03-20', performedBy: 'Budi Santoso', status: 'Discrepancy' },
   { id: 3, opnameNumber: 'SO/ATK/2024/0003', itemCode: 'ATK-PEN-01', itemName: 'Pulpen Standard AE7', category: 'Alat Tulis', systemQty: 120, physicalQty: 120, difference: 0, date: '2024-03-20', performedBy: 'Citra Lestari', status: 'Matched' },
-  { id: 4, opnameNumber: 'SO/ATK/2024/0004', itemCode: 'EL-BAT-AA', itemName: 'Baterai AA Alkaline', category: 'Elektronik', systemQty: 24, physicalQty: 24, difference: 0, date: '2024-03-22', performedBy: 'Aan Junaidi', status: 'Draft' },
+  { id: 4, opnameNumber: 'SO/ATK/2024/0004', itemCode: 'EL-BAT-AA', itemName: 'BATERAI AA ALKALINE', category: 'Elektronik', systemQty: 24, physicalQty: 24, difference: 0, date: '2024-03-22', performedBy: 'Aan Junaidi', status: 'Draft' },
   { id: 5, opnameNumber: 'SO/ATK/2024/0005', itemCode: 'FIL-MAP-01', itemName: 'Map Plastik Clear', category: 'Filing', systemQty: 200, physicalQty: 195, difference: -5, date: '2024-03-22', performedBy: 'Dewi Putri', status: 'Draft' },
   { id: 6, opnameNumber: 'SO/ATK/2024/0006', itemCode: 'CL-WPL-01', itemName: 'Wipol Karbol', category: 'Pembersih', systemQty: 10, physicalQty: 12, difference: 2, date: '2024-03-22', performedBy: 'Eko Prasetyo', status: 'Draft' }
 ];
@@ -182,32 +182,32 @@ export const MOCK_ARK_CATEGORY: GeneralMasterItem[] = [
 ];
 
 export const MOCK_DELIVERY_LOCATIONS: DeliveryLocationRecord[] = [
-    { id: 1, name: 'MODENA Head Office', address: 'Jl. Prof. DR. Satrio No. C4', type: 'HO' },
-    { id: 2, name: 'MODENA Kemang', address: 'Jl. Kemang Selatan No. 150', type: 'Showroom' },
-    { id: 3, name: 'Warehouse Cakung', address: 'Kawasan Industri Cakung Blok B', type: 'Warehouse' }
+    { id: 1, name: 'Satrio', address: 'Jl. Prof. DR. Satrio No. 84', type: 'HO' },
+    { id: 2, name: 'Suryo', address: 'Jl. Suryo No. 123', type: 'Office' },
+    { id: 3, name: 'Kemang', address: 'Jl. Kemang Selatan No. 150', type: 'Showroom' }
 ];
 
 export const MOCK_BUILDING_DATA: BuildingRecord[] = [
     {
         id: '1',
-        name: 'Gedung Pusat Satrio',
+        name: 'Gedung Satrio',
         assetNo: 'BDG-JKT-009',
         type: 'Head Office',
         ownership: 'Own',
         location: 'Jakarta',
-        address: 'Jl. Prof. DR. Satrio No. C4',
+        address: 'Jl. Prof. DR. Satrio No. 84',
         status: 'Close',
         certificateNo: 'SHM/123/JKT',
         acquisitionValue: '50000000000'
     },
     {
         id: '2',
-        name: 'Branch Office Surabaya',
-        assetNo: 'BDG-SBY-012',
-        type: 'Branch',
+        name: 'Branch Suryo',
+        assetNo: 'BDG-JKT-010',
+        type: 'Office',
         ownership: 'Rent',
-        location: 'Surabaya',
-        address: 'Jl. Ahmad Yani No. 15',
+        location: 'Jakarta',
+        address: 'Jl. Suryo No. 123',
         status: 'Open',
         landlordName: 'PT Properti Makmur',
         rentalCost: '250000000',
@@ -220,7 +220,7 @@ export const MOCK_REMINDER_DATA: ReminderRecord[] = [
     {
         id: 'REM-001',
         documentName: 'Kontrak Sewa Lantai 5',
-        buildingName: 'Gedung Pusat Satrio',
+        buildingName: 'Gedung Satrio',
         assetNo: 'BDG-JKT-009',
         expiryDate: '2024-12-31',
         daysRemaining: 15,
@@ -309,9 +309,13 @@ export const MOCK_MASTER_VENDOR_DATA: MasterVendorRecord[] = [];
 export const MOCK_LOGBOOK_DATA: LogBookRecord[] = [
   {
     id: 1,
-    lokasiModena: 'MODENA Head Office',
+    lokasiModena: 'Satrio',
     kategoriTamu: 'Customer',
     namaTamu: 'Budi Santoso',
+    nomorHp: '081234567890',
+    email: 'budi.santoso@email.com',
+    visitorCard: 'VC-001',
+    noIdentitas: '3171234567890001',
     tanggalKunjungan: '2024-03-20',
     jamDatang: '09:00',
     jamPulang: '11:30',
@@ -322,9 +326,13 @@ export const MOCK_LOGBOOK_DATA: LogBookRecord[] = [
   },
   {
     id: 2,
-    lokasiModena: 'MODENA Kemang',
+    lokasiModena: 'Kemang',
     kategoriTamu: 'Supplier',
     namaTamu: 'Siti Aminah',
+    nomorHp: '081299887766',
+    email: 'siti.aminah@supplier.co.id',
+    visitorCard: 'VC-012',
+    noIdentitas: '3171221100998877',
     tanggalKunjungan: '2024-03-20',
     jamDatang: '10:15',
     jamPulang: '12:00',
@@ -332,6 +340,23 @@ export const MOCK_LOGBOOK_DATA: LogBookRecord[] = [
     lakiLaki: 0,
     anakAnak: 0,
     note: 'Delivery of spare parts.'
+  },
+  {
+    id: 3,
+    lokasiModena: 'Suryo',
+    kategoriTamu: 'Partner',
+    namaTamu: 'Bambang Irawan',
+    nomorHp: '081122334455',
+    email: 'bambang@partner.com',
+    visitorCard: 'VC-045',
+    noIdentitas: '3171334455667788',
+    tanggalKunjungan: '2024-03-22',
+    jamDatang: '14:00',
+    jamPulang: '15:30',
+    wanita: 0,
+    lakiLaki: 1,
+    anakAnak: 0,
+    note: 'Discussion on new project.'
   }
 ];
 

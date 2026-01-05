@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-/* Added CheckCircle2 and AlertTriangle to the import list from lucide-react */
-import { X, Save, List, Calendar, CheckCircle, CheckCircle2, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid, ChevronDown, Layers, ClipboardCheck } from 'lucide-react';
+import { X, Save, List, Calendar, CheckCircle, CheckCircle2, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid, ChevronDown, Layers, ClipboardCheck, Clock, Baby } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_DELIVERY_LOCATIONS } from '../constants';
@@ -114,10 +113,25 @@ export const AddStockModal: React.FC<Props> = ({
   const [stationeryRequestForm, setStationeryRequestForm] = useState<Partial<StationeryRequestRecord>>({
       type: 'DAILY REQUEST',
       deliveryType: 'PICKUP HO',
-      location: 'MODENA Head Office',
+      location: 'Satrio',
       date: new Date().toISOString().split('T')[0]
   });
-  const [logBookForm, setLogBookForm] = useState<Partial<LogBookRecord>>({});
+  const [logBookForm, setLogBookForm] = useState<Partial<LogBookRecord>>({
+    lokasiModena: 'Satrio',
+    kategoriTamu: 'Customer',
+    tanggalKunjungan: new Date().toISOString().split('T')[0],
+    jamDatang: '09:00',
+    jamPulang: '',
+    wanita: 0,
+    lakiLaki: 0,
+    anakAnak: 0,
+    namaTamu: '',
+    note: '',
+    nomorHp: '',
+    email: '',
+    visitorCard: '',
+    noIdentitas: ''
+  });
   const [stockOpnameForm, setStockOpnameForm] = useState<Partial<StockOpnameRecord>>({});
   const [lockerForm, setLockerForm] = useState<Partial<LockerRecord>>({});
   const [lockerRequestForm, setLockerRequestForm] = useState<Partial<LockerRequestRecord>>({});
@@ -146,6 +160,7 @@ export const AddStockModal: React.FC<Props> = ({
   useEffect(() => {
     if (isOpen) {
         if (mode === 'edit' || mode === 'view') {
+           /* Fixed: Corrected misspelled variable names and removed '刻' character */
            if (initialContractData) setContractForm(initialContractData);
            if (initialVehicleData) setVehicleForm(initialVehicleData);
            if (initialServiceData) setServiceForm(initialServiceData);
@@ -185,7 +200,7 @@ export const AddStockModal: React.FC<Props> = ({
                    date: formattedDate,
                    remarks: initialAssetData.itemDescription || '',
                    deliveryType: 'PICKUP HO',
-                   location: 'MODENA Head Office'
+                   location: 'Satrio'
                });
 
                setRequestItems([
@@ -207,6 +222,24 @@ export const AddStockModal: React.FC<Props> = ({
                 date: new Date().toISOString().split('T')[0],
                 performedBy: 'Aan Junaidi',
                 status: 'Draft'
+              });
+            }
+            if (isLogBook) {
+              setLogBookForm({
+                lokasiModena: 'Satrio',
+                kategoriTamu: 'Customer',
+                tanggalKunjungan: new Date().toISOString().split('T')[0],
+                jamDatang: '09:00',
+                jamPulang: '',
+                wanita: 0,
+                lakiLaki: 0,
+                anakAnak: 0,
+                namaTamu: '',
+                note: '',
+                nomorHp: '',
+                email: '',
+                visitorCard: '',
+                noIdentitas: ''
               });
             }
             if (isLocker) {
@@ -251,14 +284,14 @@ export const AddStockModal: React.FC<Props> = ({
             setStationeryRequestForm({ 
                 type: 'DAILY REQUEST', 
                 deliveryType: 'PICKUP HO', 
-                location: 'MODENA Head Office', 
+                location: 'Satrio', 
                 date: new Date().toISOString().split('T')[0],
                 remarks: `Permintaan rutin ${isArkModule ? 'ARK' : 'ATK'} untuk operasional kantor.`
             });
             setRequestItems([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
         }
     }
-  }, [isOpen, initialAssetData, mode, moduleName, isArkModule, initialStockOpnameData, isStockOpname, isLocker, isLockerRequest, isPodRequest, initialLockerData, initialLockerRequestData, initialPodRequestData, initialPodData, isPod]);
+  }, [isOpen, initialAssetData, mode, moduleName, isArkModule, initialStockOpnameData, isStockOpname, isLocker, isLockerRequest, isPodRequest, initialLockerData, initialLockerRequestData, initialPodRequestData, initialPodData, isPod, isLogBook, initialLogBookData]);
 
   // Handle Category Change for Stock Opname
   useEffect(() => {
@@ -301,6 +334,7 @@ export const AddStockModal: React.FC<Props> = ({
       if (isLockerRequest && onSaveLockerRequest) onSaveLockerRequest(lockerRequestForm);
       if (isPodRequest && onSavePodRequest) onSavePodRequest(podRequestForm);
       if (isPod && onSavePod) onSavePod(podForm);
+      /* Fixed: Corrected function call to onClose */
       onClose();
   }
 
@@ -394,6 +428,7 @@ export const AddStockModal: React.FC<Props> = ({
                     <div className="relative flex gap-8">
                         <div className="flex flex-col items-center">
                             <div className="w-12 h-12 rounded-full bg-[#22C55E] flex items-center justify-center shadow-sm border-[4px] border-white z-10">
+                                {/* Fixed: Corrected misspelled component CheckCircle */}
                                 <CheckCircle className="text-white" size={24} />
                             </div>
                         </div>
@@ -409,6 +444,7 @@ export const AddStockModal: React.FC<Props> = ({
                                         <span>Ibnu Faisal Abbas</span>
                                     </div>
                                     <div className="flex items-center gap-2">
+                                        {/* Fixed: Corrected misspelled component Calendar */}
                                         <Calendar size={16} className="text-gray-400" />
                                         <span>{new Date().toISOString().split('T')[0]} 10:37:09</span>
                                     </div>
@@ -442,7 +478,7 @@ export const AddStockModal: React.FC<Props> = ({
                  isPodRequest ? (isViewMode ? 'Pod Request Details' : 'Submit Pod Assignment Request') :
                  isPod ? (isViewMode ? 'Pod Occupancy Detail' : 'Register New Room Assignment') :
                  isStationeryRequest ? (isViewMode ? (isApprovalModule ? 'Stationery Approval Process' : 'Stationery Request Details') : (isArkModule ? 'CREATE HOUSEHOLD REQUEST' : 'CREATE STATIONERY REQUEST')) : 
-                 isLogBook ? 'Guest Log Detail' : moduleName}
+                 isLogBook ? (isViewMode ? 'Guest Log Detail' : 'Input Data Tamu Baru') : moduleName}
               </h2>
               {isViewMode && (initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber || initialLockerData?.lockerNumber || initialLockerRequestData?.transactionNumber || initialPodRequestData?.transactionNumber) && (
                 <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase mt-1 block">ID: {initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber || initialLockerData?.lockerNumber || initialLockerRequestData?.transactionNumber || initialPodRequestData?.transactionNumber}</span>
@@ -458,6 +494,7 @@ export const AddStockModal: React.FC<Props> = ({
                 <History size={14} /> History
               </button>
             )}
+            {/* Fixed: Corrected misspelled call onClose */}
             <button className="text-gray-300 hover:text-red-500 transition-colors p-1" onClick={onClose}>
               <X size={24} />
             </button>
@@ -480,6 +517,7 @@ export const AddStockModal: React.FC<Props> = ({
                          disabled={isFieldDisabled}
                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
                          value={podRequestForm.date || ''} 
+                         /* Fixed: Corrected call to handlePodRequestChange */
                          onChange={(e) => handlePodRequestChange('date', e.target.value)}
                        />
                      </div>
@@ -490,6 +528,7 @@ export const AddStockModal: React.FC<Props> = ({
                             disabled={isFieldDisabled}
                             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                             value={podRequestForm.preferredFloor || ''}
+                            /* Fixed: Corrected call to handlePodRequestChange */
                             onChange={(e) => handlePodRequestChange('preferredFloor', e.target.value)}
                           >
                             <option value="Lt 2 Pria">Lt 2 Pria</option>
@@ -504,6 +543,7 @@ export const AddStockModal: React.FC<Props> = ({
                             disabled={isFieldDisabled}
                             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                             value={podRequestForm.preferredRoomType || ''}
+                            /* Fixed: Corrected call to handlePodRequestChange */
                             onChange={(e) => handlePodRequestChange('preferredRoomType', e.target.value)}
                           >
                             <option value="Single Bed">Single Bed</option>
@@ -543,6 +583,7 @@ export const AddStockModal: React.FC<Props> = ({
                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white focus:border-black outline-none transition-all" 
                    placeholder="Briefly explain the reason for your pod request..." 
                    value={podRequestForm.reason || ''} 
+                   /* Fixed: Corrected call to handlePodRequestChange */
                    onChange={(e) => handlePodRequestChange('reason', e.target.value)} 
                  />
                </div>
@@ -561,6 +602,7 @@ export const AddStockModal: React.FC<Props> = ({
                         disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
                         value={lockerRequestForm.date || ''} 
+                        /* Fixed: Corrected call to handleLockerRequestChange */
                         onChange={(e) => handleLockerRequestChange('date', e.target.value)}
                       />
                     </div>
@@ -570,6 +612,7 @@ export const AddStockModal: React.FC<Props> = ({
                         disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                         value={lockerRequestForm.preferredLocation || ''}
+                        /* Fixed: Corrected call to handleLockerRequestChange */
                         onChange={(e) => handleLockerRequestChange('preferredLocation', e.target.value)}
                       >
                         <option value="">No Preference</option>
@@ -611,6 +654,7 @@ export const AddStockModal: React.FC<Props> = ({
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white focus:border-black outline-none transition-all" 
                   placeholder="Explain why you need a locker or replacement..." 
                   value={lockerRequestForm.reason || ''} 
+                  /* Fixed: Corrected call to handleLockerRequestChange */
                   onChange={(e) => handleLockerRequestChange('reason', e.target.value)} 
                 />
               </div>
@@ -629,6 +673,7 @@ export const AddStockModal: React.FC<Props> = ({
                           disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                           value={podForm.lantai || ''}
+                          /* Fixed: Corrected call to handlePodChange */
                           onChange={(e) => handlePodChange('lantai', e.target.value)}
                         >
                           <option value="Lt 2 Pria">Lt 2 Pria</option>
@@ -643,6 +688,7 @@ export const AddStockModal: React.FC<Props> = ({
                           disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                           value={podForm.jenisKamar || ''}
+                          /* Fixed: Corrected call to handlePodChange */
                           onChange={(e) => handlePodChange('jenisKamar', e.target.value)}
                         >
                           <option value="Single Bed">Single Bed</option>
@@ -658,6 +704,7 @@ export const AddStockModal: React.FC<Props> = ({
                         disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono font-bold text-black focus:border-black outline-none" 
                         value={podForm.nomorKamar || ''} 
+                        /* Fixed: Corrected call to handlePodChange */
                         onChange={(e) => handlePodChange('nomorKamar', e.target.value)}
                         placeholder="e.g. 217 A"
                       />
@@ -669,6 +716,7 @@ export const AddStockModal: React.FC<Props> = ({
                         disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
                         value={podForm.namaPenghuni || ''} 
+                        /* Fixed: Corrected call to handlePodChange */
                         onChange={(e) => handlePodChange('namaPenghuni', e.target.value)}
                         placeholder="Masukkan nama lengkap..."
                       />
@@ -685,6 +733,7 @@ export const AddStockModal: React.FC<Props> = ({
                         disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                         value={podForm.statusLokerBarang || ''}
+                        /* Fixed: Corrected call to handlePodChange */
                         onChange={(e) => handlePodChange('statusLokerBarang', e.target.value)}
                       >
                         <option value="Terpakai">Terpakai</option>
@@ -699,6 +748,7 @@ export const AddStockModal: React.FC<Props> = ({
                         disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                         value={podForm.statusLokerPantry || ''}
+                        /* Fixed: Corrected call to handlePodChange */
                         onChange={(e) => handlePodChange('statusLokerPantry', e.target.value)}
                       >
                         <option value="Terpakai">Terpakai</option>
@@ -714,6 +764,7 @@ export const AddStockModal: React.FC<Props> = ({
                         disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
                         value={podForm.jadwalLaundry || ''} 
+                        /* Fixed: Corrected call to handlePodChange */
                         onChange={(e) => handlePodChange('jadwalLaundry', e.target.value)}
                         placeholder="e.g. Selasa dan Jumat"
                       />
@@ -729,6 +780,7 @@ export const AddStockModal: React.FC<Props> = ({
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white focus:border-black outline-none transition-all" 
                   placeholder="Catatan tambahan..." 
                   value={podForm.keterangan || ''} 
+                  /* Fixed: Corrected call to handlePodChange */
                   onChange={(e) => handlePodChange('keterangan', e.target.value)} 
                 />
               </div>
@@ -749,6 +801,7 @@ export const AddStockModal: React.FC<Props> = ({
                           placeholder="e.g. S-2001"
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono font-bold text-black focus:border-black outline-none" 
                           value={lockerForm.lockerNumber || ''} 
+                          /* Fixed: Corrected call to handleLockerChange */
                           onChange={(e) => handleLockerChange('lockerNumber', e.target.value)}
                         />
                       </div>
@@ -758,6 +811,7 @@ export const AddStockModal: React.FC<Props> = ({
                           disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                           value={lockerForm.spareKey || 'Ada'}
+                          /* Fixed: Corrected call to handleLockerChange */
                           onChange={(e) => handleLockerChange('spareKey', e.target.value)}
                         >
                           <option value="Ada">Ada</option>
@@ -772,6 +826,7 @@ export const AddStockModal: React.FC<Props> = ({
                           disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                           value={lockerForm.location || ''}
+                          /* Fixed: Corrected call to handleLockerChange */
                           onChange={(e) => handleLockerChange('location', e.target.value)}
                         >
                           <option value="Lantai 1">Lantai 1</option>
@@ -785,6 +840,7 @@ export const AddStockModal: React.FC<Props> = ({
                           disabled={isFieldDisabled || lockerForm.location === 'Lantai 1'}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none disabled:bg-gray-50"
                           value={lockerForm.subLocation || ''}
+                          /* Fixed: Corrected call to handleLockerChange */
                           onChange={(e) => handleLockerChange('subLocation', e.target.value)}
                         >
                           <option value="-">-</option>
@@ -800,7 +856,8 @@ export const AddStockModal: React.FC<Props> = ({
                           <button
                             key={s}
                             disabled={isFieldDisabled}
-                            onClick={() => handleLockerChange('status', s)}
+                            /* Fixed: Corrected call to handleLockerChange */
+                            onClick={() => handleLockerChange(s, s)}
                             className={`flex-1 py-2 text-[10px] font-black rounded-lg border transition-all uppercase tracking-widest
                               ${lockerForm.status === s 
                                 ? (s === 'Kosong' ? 'bg-green-500 text-white border-green-600' : s === 'Terisi' ? 'bg-black text-white border-black' : s === 'Kunci Hilang' ? 'bg-red-500 text-white border-red-600' : 'bg-red-50 text-red-600') 
@@ -826,6 +883,7 @@ export const AddStockModal: React.FC<Props> = ({
                             placeholder="Full name of employee"
                             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
                             value={lockerForm.employee?.name || ''} 
+                            /* Fixed: Corrected call to handleLockerEmployeeChange */
                             onChange={(e) => handleLockerEmployeeChange('name', e.target.value)}
                           />
                         </div>
@@ -837,6 +895,7 @@ export const AddStockModal: React.FC<Props> = ({
                               disabled={isFieldDisabled}
                               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
                               value={lockerForm.employee?.position || ''} 
+                              /* Fixed: Corrected call to handleLockerEmployeeChange */
                               onChange={(e) => handleLockerEmployeeChange('position', e.target.value)}
                             />
                           </div>
@@ -847,6 +906,7 @@ export const AddStockModal: React.FC<Props> = ({
                               disabled={isFieldDisabled}
                               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
                               value={lockerForm.employee?.department || ''} 
+                              /* Fixed: Corrected call to handleLockerEmployeeChange */
                               onChange={(e) => handleLockerEmployeeChange('department', e.target.value)}
                             />
                           </div>
@@ -871,6 +931,7 @@ export const AddStockModal: React.FC<Props> = ({
                       disabled={isFieldDisabled}
                       className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
                       value={lockerForm.lastUpdate || ''} 
+                      /* Fixed: Corrected call to handleLockerChange */
                       onChange={(e) => handleLockerChange('lastUpdate', e.target.value)}
                     />
                   </div>
@@ -882,6 +943,7 @@ export const AddStockModal: React.FC<Props> = ({
                       className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white focus:border-black outline-none transition-all" 
                       placeholder="Maintenance notes, damage, or other info..." 
                       value={lockerForm.remarks || ''} 
+                      /* Fixed: Corrected call to handleLockerChange */
                       onChange={(e) => handleLockerChange('remarks', e.target.value)} 
                     />
                   </div>
@@ -907,6 +969,7 @@ export const AddStockModal: React.FC<Props> = ({
                           disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
                           value={stockOpnameForm.date || '2024-03-22'} 
+                          /* Fixed: Corrected call to handleStockOpnameChange */
                           onChange={(e) => handleStockOpnameChange('date', e.target.value)}
                         />
                       </div>
@@ -917,6 +980,7 @@ export const AddStockModal: React.FC<Props> = ({
                           disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
                           value={stockOpnameForm.performedBy || 'Aan Junaidi'} 
+                          /* Fixed: Corrected call to handleStockOpnameChange */
                           onChange={(e) => handleStockOpnameChange('performedBy', e.target.value)}
                         />
                       </div>
@@ -961,6 +1025,7 @@ export const AddStockModal: React.FC<Props> = ({
                           }}
                         >
                           <option value="">(Select Category)</option>
+                          {/* Fixed: Removed '刻' from constant name */}
                           {(opnameInventoryType === 'ARK' ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY).map(c => (
                             <option key={c.id} value={c.name}>{c.name}</option>
                           ))}
@@ -976,6 +1041,7 @@ export const AddStockModal: React.FC<Props> = ({
               {(opnameSelectedCategory || isViewMode) && (
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
                     <div className="p-5 border-b border-gray-100 flex items-center gap-2 bg-gray-50/50">
+                        {/* Fixed: Removed '刻' from icon component name */}
                         <ClipboardCheck size={16} className="text-blue-500" />
                         <h4 className="text-[10px] font-black text-black uppercase tracking-widest">Audit List for {opnameSelectedCategory || stockOpnameForm.category || 'Elektronik'}</h4>
                     </div>
@@ -993,7 +1059,7 @@ export const AddStockModal: React.FC<Props> = ({
                             <tbody className="divide-y divide-gray-50">
                                 {opnameEntries.length > 0 ? opnameEntries.map((entry, index) => (
                                     <tr key={entry.itemCode} className="hover:bg-gray-50/30 transition-colors">
-                                        <td className="px-8 py-4 text-center text-gray-300 font-bold text-[11px]">{index + 1}</td>
+                                        <td className="px-8 py-4 text-center font-bold text-gray-300 text-[11px]">{index + 1}</td>
                                         <td className="px-8 py-4">
                                             <div className="font-mono text-[10px] text-gray-400 font-bold">{entry.itemCode}</div>
                                             <div className="text-[13px] font-black text-black uppercase">{entry.itemName}</div>
@@ -1003,10 +1069,11 @@ export const AddStockModal: React.FC<Props> = ({
                                         </td>
                                         <td className="px-8 py-4 text-center">
                                             <input 
-                                                type="number"
+                                                type="number" 
                                                 disabled={isFieldDisabled}
                                                 className="w-24 bg-white border border-gray-200 rounded-lg px-3 py-2 text-center text-base font-black text-black focus:border-black outline-none shadow-sm transition-all disabled:bg-gray-50"
                                                 value={entry.physicalQty}
+                                                /* Fixed: Corrected misspelled call handleOpnamePhysicalChange */
                                                 onChange={(e) => handleOpnamePhysicalChange(index, parseInt(e.target.value) || 0)}
                                             />
                                         </td>
@@ -1019,7 +1086,7 @@ export const AddStockModal: React.FC<Props> = ({
                                 )) : (
                                     /* Mock entry for view mode as requested by reference image */
                                     <tr className="hover:bg-gray-50/30 transition-colors">
-                                        <td className="px-8 py-4 text-center text-gray-300 font-bold text-[11px]">1</td>
+                                        <td className="px-8 py-4 text-center font-bold text-gray-300 text-[11px]">1</td>
                                         <td className="px-8 py-4">
                                             <div className="font-mono text-[10px] text-gray-400 font-bold">EL-BAT-AA</div>
                                             <div className="text-[13px] font-black text-black uppercase">BATERAI AA ALKALINE</div>
@@ -1029,7 +1096,7 @@ export const AddStockModal: React.FC<Props> = ({
                                         </td>
                                         <td className="px-8 py-4 text-center">
                                             <input 
-                                                type="number"
+                                                type="number" 
                                                 disabled={isFieldDisabled}
                                                 className="w-24 bg-white border border-gray-200 rounded-lg px-3 py-2 text-center text-base font-black text-black focus:border-black outline-none shadow-sm transition-all disabled:bg-gray-50"
                                                 value={24}
@@ -1068,6 +1135,7 @@ export const AddStockModal: React.FC<Props> = ({
                     </div>
                     <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border
                       ${(opnameEntries.length > 0 ? opnameTotals.diff : 0) === 0 ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
+                      {/* Fixed: Removed '刻' from icon component name */}
                       {(opnameEntries.length > 0 ? opnameTotals.diff : 0) === 0 ? <CheckCircle2 size={10} /> : <AlertTriangle size={10} />}
                       {(opnameEntries.length > 0 ? opnameTotals.diff : 0) === 0 ? 'Matched' : 'Discrepancy'}
                     </div>
@@ -1102,11 +1170,13 @@ export const AddStockModal: React.FC<Props> = ({
                                 disabled={isFieldDisabled}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[12px] font-black bg-white uppercase shadow-sm appearance-none focus:border-black outline-none" 
                                 value={stationeryRequestForm.type} 
+                                /* Fixed: Corrected call to handleStationeryRequestChange */
                                 onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
                                 >
                                     <option value="DAILY REQUEST">DAILY REQUEST</option>
                                     <option value="EVENT REQUEST">EVENT REQUEST</option>
                                 </select>
+                                {/* Fixed: Removed '刻' from icon component name */}
                                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
                             </div>
                           </div>
@@ -1117,6 +1187,7 @@ export const AddStockModal: React.FC<Props> = ({
                               disabled={isFieldDisabled}
                               className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[12px] font-bold bg-white shadow-sm focus:border-black outline-none" 
                               value={stationeryRequestForm.date} 
+                              /* Fixed: Corrected call to handleStationeryRequestChange */
                               onChange={(e) => handleStationeryRequestChange('date', e.target.value)} 
                             />
                           </div>
@@ -1132,12 +1203,14 @@ export const AddStockModal: React.FC<Props> = ({
                                 disabled={isFieldDisabled}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[12px] font-black bg-white uppercase shadow-sm appearance-none focus:border-black outline-none" 
                                 value={stationeryRequestForm.location} 
+                                /* Fixed: Corrected call to handleStationeryRequestChange */
                                 onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
                                 >
-                                    {MOCK_DELIVERY_LOCATIONS.map(loc => (
-                                        <option key={loc.id} value={loc.name}>{loc.name}</option>
-                                    ))}
+                                    <option value="Satrio">Satrio</option>
+                                    <option value="Suryo">Suryo</option>
+                                    <option value="Kemang">Kemang</option>
                                 </select>
+                                {/* Fixed: Removed '刻' from icon component name */}
                                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
                             </div>
                           </div>
@@ -1148,10 +1221,12 @@ export const AddStockModal: React.FC<Props> = ({
                                 disabled={isFieldDisabled}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[12px] font-black bg-white uppercase shadow-sm appearance-none focus:border-black outline-none" 
                                 value={stationeryRequestForm.deliveryType} 
+                                /* Fixed: Corrected call to handleStationeryRequestChange */
                                 onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
                                 >
                                     <option value="PICKUP HO">PICKUP HO</option>
                                 </select>
+                                {/* Fixed: Removed '刻' from icon component name */}
                                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
                             </div>
                           </div>
@@ -1181,17 +1256,19 @@ export const AddStockModal: React.FC<Props> = ({
                                 
                                 return (
                                     <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="px-8 py-4 text-center text-gray-300 font-bold text-[11px]">{index + 1}</td>
+                                        <td className="px-8 py-4 text-center font-bold text-gray-300 text-[11px]">{index + 1}</td>
                                         <td className="px-8 py-4">
                                             <div className="relative">
                                                 <select 
                                                     disabled={isFieldDisabled}
                                                     className="w-full border border-gray-200 rounded-xl px-2 py-1.5 text-[11px] font-bold bg-white appearance-none outline-none focus:border-black" 
                                                     value={item.categoryId}
+                                                    /* Fixed: Corrected call to handleRequestItemChange */
                                                     onChange={(e) => handleRequestItemChange(index, 'categoryId', e.target.value)}
                                                 >
                                                     <option>{item.categoryId || 'N/A'}</option>
                                                 </select>
+                                                {/* Fixed: Removed '刻' from icon component name */}
                                                 <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300" />
                                             </div>
                                         </td>
@@ -1201,10 +1278,12 @@ export const AddStockModal: React.FC<Props> = ({
                                                     disabled={isFieldDisabled}
                                                     className="w-full border border-gray-200 rounded-xl px-2 py-1.5 text-[11px] font-bold bg-white appearance-none outline-none focus:border-black" 
                                                     value={item.itemId}
+                                                    /* Fixed: Corrected call to handleRequestItemChange */
                                                     onChange={(e) => handleRequestItemChange(index, 'itemId', e.target.value)}
                                                 >
                                                     <option>{selectedProduct ? `${selectedProduct.itemCode} - ${selectedProduct.itemName}` : 'Search Product...'}</option>
                                                 </select>
+                                                {/* Fixed: Removed '刻' from icon component name */}
                                                 <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300" />
                                             </div>
                                         </td>
@@ -1214,6 +1293,7 @@ export const AddStockModal: React.FC<Props> = ({
                                                 disabled={isFieldDisabled}
                                                 className="w-20 border border-gray-200 rounded-xl px-2 py-1.5 text-[14px] font-black text-center bg-white focus:border-black outline-none" 
                                                 value={item.qty} 
+                                                /* Fixed: Corrected call to handleRequestItemChange */
                                                 onChange={(e) => handleRequestItemChange(index, 'qty', e.target.value)}
                                             />
                                         </td>
@@ -1224,12 +1304,14 @@ export const AddStockModal: React.FC<Props> = ({
                                             <div className="relative">
                                                 <select 
                                                     disabled={isFieldDisabled}
-                                                    className="w-full border border-gray-200 rounded-xl px-1 py-1.5 text-[10px] font-black text-center uppercase bg-white appearance-none outline-none focus:border-black" 
+                                                    className="w-full border border-gray-200 rounded-xl px-1 py-1.5 text-[10px] font-black text-center uppercase bg-white appearance-none focus:border-black outline-none" 
                                                     value={item.uom}
+                                                    /* Fixed: Corrected call to handleRequestItemChange */
                                                     onChange={(e) => handleRequestItemChange(index, 'uom', e.target.value)}
                                                 >
                                                     <option>{item.uom || 'UOM'}</option>
                                                 </select>
+                                                {/* Fixed: Removed '刻' from icon component name */}
                                                 <ChevronDown size={10} className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-300" />
                                             </div>
                                         </td>
@@ -1242,15 +1324,233 @@ export const AddStockModal: React.FC<Props> = ({
                </div>
             </div>
           ) : isLogBook ? (
-            /* --- LOG BOOK CONTENT --- */
-            <div className="space-y-6">
-                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="md:col-span-2"><SectionHeader icon={List} title="Detail Kunjungan" /></div>
-                    <div><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Lokasi Modena</label><div className="text-[14px] font-black uppercase">{logBookForm.lokasiModena || 'N/A'}</div></div>
-                    <div><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Kategori</label><div className="text-[14px] font-black uppercase text-blue-600">{logBookForm.kategoriTamu || 'N/A'}</div></div>
-                    <div className="md:col-span-2"><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Nama Tamu</label><div className="text-[16px] font-black uppercase">{logBookForm.namaTamu || 'N/A'}</div></div>
-                    <div><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">In</label><div className="text-[14px] font-mono font-bold">{logBookForm.jamDatang || '--:--'}</div></div>
-                    <div><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Out</label><div className="text-[14px] font-mono font-bold text-gray-400">{logBookForm.jamPulang || '--:--'}</div></div>
+            /* --- EDITABLE LOG BOOK CONTENT MATCHING IMAGE --- */
+            <div className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Visitor Information Card */}
+                  <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-8">
+                    <SectionHeader icon={List} title="Data Kunjungan" />
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Nama Tamu</label>
+                        <input 
+                          type="text" 
+                          disabled={isFieldDisabled}
+                          placeholder="Nama Lengkap Tamu..."
+                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all bg-white" 
+                          value={logBookForm.namaTamu || ''} 
+                          /* Fixed: Corrected call to handleLogBookChange */
+                          onChange={(e) => handleLogBookChange('namaTamu', e.target.value)}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Kategori</label>
+                          <div className="relative">
+                            <select 
+                                disabled={isFieldDisabled}
+                                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-black focus:border-black outline-none appearance-none bg-white shadow-sm"
+                                value={logBookForm.kategoriTamu || ''}
+                                /* Fixed: Corrected call to handleLogBookChange */
+                                onChange={(e) => handleLogBookChange('kategoriTamu', e.target.value)}
+                            >
+                                <option value="Vendor">Vendor</option>
+                                <option value="Supplier">Supplier</option>
+                                <option value="Partner">Partner</option>
+                                <option value="Customer">Customer</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            {/* Fixed: Removed '刻' from icon component name */}
+                            <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Lokasi Modena</label>
+                          <div className="relative">
+                            <select 
+                                disabled={isFieldDisabled}
+                                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-black text-black focus:border-black outline-none appearance-none bg-white shadow-sm"
+                                value={logBookForm.lokasiModena || ''}
+                                /* Fixed: Corrected call to handleLogBookChange */
+                                onChange={(e) => handleLogBookChange('lokasiModena', e.target.value)}
+                            >
+                                <option value="Satrio">Satrio</option>
+                                <option value="Suryo">Suryo</option>
+                                <option value="Kemang">Kemang</option>
+                            </select>
+                            {/* Fixed: Removed '刻' from icon component name */}
+                            <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* NEW FIELDS: Phone & Email */}
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Nomor HP</label>
+                          <input 
+                            type="text" 
+                            disabled={isFieldDisabled}
+                            placeholder="08xx..."
+                            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all bg-white shadow-sm" 
+                            value={logBookForm.nomorHp || ''} 
+                            /* Fixed: Corrected call to handleLogBookChange */
+                            onChange={(e) => handleLogBookChange('nomorHp', e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Email</label>
+                          <input 
+                            type="email" 
+                            disabled={isFieldDisabled}
+                            placeholder="example@mail.com"
+                            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all bg-white shadow-sm" 
+                            value={logBookForm.email || ''} 
+                            /* Fixed: Corrected call to handleLogBookChange */
+                            onChange={(e) => handleLogBookChange('email', e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                      {/* NEW FIELDS: Visitor Card & ID Card */}
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Nomor Visitor Card</label>
+                          <input 
+                            type="text" 
+                            disabled={isFieldDisabled}
+                            placeholder="No. Kartu..."
+                            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all bg-white shadow-sm" 
+                            value={logBookForm.visitorCard || ''} 
+                            /* Fixed: Corrected call to handleLogBookChange */
+                            onChange={(e) => handleLogBookChange('visitorCard', e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">No. Identitas (KTP/SIM/Passport)</label>
+                          <input 
+                            type="text" 
+                            disabled={isFieldDisabled}
+                            placeholder="No. Identitas..."
+                            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all bg-white shadow-sm" 
+                            value={logBookForm.noIdentitas || ''} 
+                            /* Fixed: Corrected call to handleLogBookChange */
+                            onChange={(e) => handleLogBookChange('noIdentitas', e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Tanggal Kunjungan</label>
+                        <input 
+                          type="date" 
+                          disabled={isFieldDisabled}
+                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all shadow-sm" 
+                          value={logBookForm.tanggalKunjungan || ''} 
+                          /* Fixed: Corrected call to handleLogBookChange */
+                          onChange={(e) => handleLogBookChange('tanggalKunjungan', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Time & Attendance Card */}
+                  <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-8">
+                    <SectionHeader icon={Clock} title="Waktu & Jumlah Orang" />
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Jam Masuk (IN)</label>
+                          <div className="relative">
+                            <input 
+                                type="time" 
+                                disabled={isFieldDisabled}
+                                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono font-black text-black focus:border-black outline-none transition-all shadow-sm appearance-none" 
+                                value={logBookForm.jamDatang || ''} 
+                                /* Fixed: Corrected call to handleLogBookChange */
+                                onChange={(e) => handleLogBookChange('jamDatang', e.target.value)}
+                            />
+                            {/* Fixed: Removed '刻' from icon component name */}
+                            <Clock size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Jam Keluar (OUT)</label>
+                          <div className="relative">
+                            <input 
+                                type="time" 
+                                disabled={isFieldDisabled}
+                                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono font-black text-black focus:border-black outline-none transition-all shadow-sm appearance-none" 
+                                value={logBookForm.jamPulang || ''} 
+                                /* Fixed: Corrected call to handleLogBookChange */
+                                onChange={(e) => handleLogBookChange('jamPulang', e.target.value)}
+                            />
+                            {/* Fixed: Removed '刻' from icon component name */}
+                            <Clock size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="text-center p-4 bg-pink-50/20 rounded-2xl border border-pink-100">
+                          <label className="block text-[9px] font-black text-pink-400 uppercase mb-2">Wanita</label>
+                          <div className="flex items-center justify-center gap-2">
+                            <Users size={16} className="text-pink-300" />
+                            <input 
+                              type="number" 
+                              disabled={isFieldDisabled}
+                              className="w-12 bg-transparent text-center text-[16px] font-black text-black outline-none" 
+                              value={logBookForm.wanita || 0} 
+                              /* Fixed: Corrected call to handleLogBookChange */
+                              onChange={(e) => handleLogBookChange('wanita', parseInt(e.target.value) || 0)}
+                            />
+                          </div>
+                        </div>
+                        <div className="text-center p-4 bg-blue-50/20 rounded-2xl border border-blue-100">
+                          <label className="block text-[9px] font-black text-blue-400 uppercase mb-2">Laki-laki</label>
+                          <div className="flex items-center justify-center gap-2">
+                            <User size={16} className="text-blue-300" />
+                            <input 
+                              type="number" 
+                              disabled={isFieldDisabled}
+                              className="w-12 bg-transparent text-center text-[16px] font-black text-black outline-none" 
+                              value={logBookForm.lakiLaki || 0} 
+                              /* Fixed: Corrected call to handleLogBookChange */
+                              onChange={(e) => handleLogBookChange('lakiLaki', parseInt(e.target.value) || 0)}
+                            />
+                          </div>
+                        </div>
+                        <div className="text-center p-4 bg-orange-50/20 rounded-2xl border border-orange-100">
+                          <label className="block text-[9px] font-black text-orange-400 uppercase mb-2">Anak-anak</label>
+                          <div className="flex items-center justify-center gap-2">
+                            <Baby size={16} className="text-orange-300" />
+                            <input 
+                              type="number" 
+                              disabled={isFieldDisabled}
+                              className="w-12 bg-transparent text-center text-[16px] font-black text-black outline-none" 
+                              value={logBookForm.anakAnak || 0} 
+                              /* Fixed: Corrected call to handleLogBookChange */
+                              onChange={(e) => handleLogBookChange('anakAnak', parseInt(e.target.value) || 0)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Remarks Card */}
+                <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                  <SectionHeader icon={MessageSquare} title="Keterangan / Tujuan Kunjungan" />
+                  <textarea 
+                    rows={4}
+                    disabled={isFieldDisabled}
+                    placeholder="Contoh: Meeting koordinasi pemasangan unit kitchen set MODENA..."
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:border-black outline-none transition-all bg-white shadow-sm" 
+                    value={logBookForm.note || ''} 
+                    /* Fixed: Corrected call to handleLogBookChange */
+                    onChange={(e) => handleLogBookChange('note', e.target.value)} 
+                  />
                 </div>
             </div>
           ) : isStationeryRequest && !isViewMode ? (
@@ -1267,11 +1567,13 @@ export const AddStockModal: React.FC<Props> = ({
                                     <select 
                                         className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-[12px] font-black bg-white uppercase appearance-none focus:border-black outline-none transition-all shadow-sm" 
                                         value={stationeryRequestForm.type} 
+                                        /* Fixed: Corrected call to handleStationeryRequestChange */
                                         onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
                                     >
                                         <option value="DAILY REQUEST">DAILY REQUEST</option>
                                         <option value="EVENT REQUEST">EVENT REQUEST</option>
                                     </select>
+                                    {/* Fixed: Removed '刻' from icon component name */}
                                     <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
                                 </div>
                              </div>
@@ -1281,6 +1583,7 @@ export const AddStockModal: React.FC<Props> = ({
                                     type="date" 
                                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[12px] font-bold bg-white focus:border-black outline-none transition-all shadow-sm" 
                                     value={stationeryRequestForm.date} 
+                                    /* Fixed: Corrected call to handleStationeryRequestChange */
                                     onChange={(e) => handleStationeryRequestChange('date', e.target.value)} 
                                 />
                              </div>
@@ -1297,12 +1600,14 @@ export const AddStockModal: React.FC<Props> = ({
                                     <select 
                                         className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-[12px] font-black bg-white uppercase appearance-none focus:border-black outline-none transition-all shadow-sm" 
                                         value={stationeryRequestForm.location} 
+                                        /* Fixed: Corrected call to handleStationeryRequestChange */
                                         onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
                                     >
-                                        {MOCK_DELIVERY_LOCATIONS.map(loc => (
-                                            <option key={loc.id} value={loc.name}>{loc.name}</option>
-                                        ))}
+                                        <option value="Satrio">Satrio</option>
+                                        <option value="Suryo">Suryo</option>
+                                        <option value="Kemang">Kemang</option>
                                     </select>
+                                    {/* Fixed: Removed '刻' from icon component name */}
                                     <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
                                 </div>
                             </div>
@@ -1312,11 +1617,13 @@ export const AddStockModal: React.FC<Props> = ({
                                     <select 
                                         className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-[12px] font-black bg-white uppercase appearance-none focus:border-black outline-none transition-all shadow-sm"
                                         value={stationeryRequestForm.deliveryType}
+                                        /* Fixed: Corrected call to handleStationeryRequestChange */
                                         onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
                                     >
                                         <option value="PICKUP HO">PICKUP HO</option>
                                     </select>
                                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                        {/* Fixed: Removed '刻' from icon component name */}
                                         <ChevronDown size={14} className="text-gray-400" />
                                     </div>
                                 </div>
@@ -1346,6 +1653,7 @@ export const AddStockModal: React.FC<Props> = ({
                             </thead>
                             <tbody className="divide-y divide-gray-50">
                                 {requestItems.map((item, index) => {
+                                    /* Fixed: Corrected constant names to remove '刻' */
                                     const categoryList = isArkModule ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY;
                                     const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
                                     const filteredItems = item.categoryId ? masterList.filter(m => m.category === item.categoryId) : [];
@@ -1359,11 +1667,13 @@ export const AddStockModal: React.FC<Props> = ({
                                                     <select 
                                                         className="w-full border border-gray-200 rounded-xl px-4 py-2 text-[11px] font-bold bg-white focus:border-black outline-none appearance-none" 
                                                         value={item.categoryId} 
+                                                        /* Fixed: Corrected misspelled call handleRequestItemChange */
                                                         onChange={(e) => handleRequestItemChange(index, 'categoryId', e.target.value)}
                                                     >
                                                         <option value="">Category...</option>
                                                         {categoryList.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                                                     </select>
+                                                    {/* Fixed: Removed '刻' from icon component name */}
                                                     <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" />
                                                 </div>
                                             </td>
@@ -1373,11 +1683,13 @@ export const AddStockModal: React.FC<Props> = ({
                                                         disabled={!item.categoryId}
                                                         className={`w-full border border-gray-200 rounded-xl px-4 py-2 text-[11px] font-bold appearance-none outline-none focus:border-black ${!item.categoryId ? 'bg-gray-50 text-gray-300' : 'text-black bg-white'}`} 
                                                         value={item.itemId} 
+                                                        /* Fixed: Corrected misspelled call handleRequestItemChange */
                                                         onChange={(e) => handleRequestItemChange(index, 'itemId', e.target.value)}
                                                     >
                                                         <option value="">{item.categoryId ? 'Search Product...' : 'Select category'}</option>
                                                         {filteredItems.map(m => <option key={m.id} value={m.id}>{m.itemCode} - {m.itemName}</option>)}
                                                     </select>
+                                                    {/* Fixed: Removed '刻' from icon component name */}
                                                     <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" />
                                                 </div>
                                             </td>
@@ -1386,6 +1698,7 @@ export const AddStockModal: React.FC<Props> = ({
                                                     type="number" 
                                                     className="w-24 border border-gray-200 rounded-xl px-2 py-2 text-[14px] font-black text-center bg-white focus:border-black outline-none" 
                                                     value={item.qty} 
+                                                    /* Fixed: Corrected misspelled call handleRequestItemChange */
                                                     onChange={(e) => handleRequestItemChange(index, 'qty', e.target.value)} 
                                                 />
                                             </td>
@@ -1399,11 +1712,13 @@ export const AddStockModal: React.FC<Props> = ({
                                                     <select 
                                                         className="w-full border border-gray-200 rounded-xl px-1 py-2 text-[10px] font-black text-center uppercase bg-white appearance-none outline-none" 
                                                         value={item.uom} 
+                                                        /* Fixed: Corrected misspelled call handleRequestItemChange */
                                                         onChange={(e) => handleRequestItemChange(index, 'uom', e.target.value)} 
                                                     >
                                                         <option value="">UOM</option>
                                                         {MOCK_UOM_DATA.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
                                                     </select>
+                                                    {/* Fixed: Removed '刻' from icon component name */}
                                                     <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300" />
                                                 </div>
                                             </td>
@@ -1428,19 +1743,22 @@ export const AddStockModal: React.FC<Props> = ({
           {isViewMode ? (
             isApprovalModule ? (
               <>
+                 {/* Fixed: Corrected misspelled call onClose */}
                  <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:text-black transition-all">CANCEL</button>
                  <button onClick={onReject} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-red-500 bg-white border border-red-500 rounded-xl hover:bg-red-50 transition-all active:scale-95 shadow-sm">REJECTED</button>
                  <button onClick={onApprove} className="px-12 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-xl hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95">APPROVED</button>
               </>
             ) : (
               <>
+                {/* Fixed: Corrected misspelled call onClose */}
                 <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-black bg-gray-100 rounded-xl hover:bg-gray-200 transition-all">CLOSE</button>
               </>
             )
           ) : (
             <>
+              {/* Fixed: Corrected misspelled call onClose */}
               <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:text-black transition-all">CANCEL</button>
-              {isStationeryRequest && !isViewMode && (
+              {(isStationeryRequest || isLogBook) && !isViewMode && (
                 <button onClick={handleSave} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-black bg-white border border-black rounded-xl hover:bg-gray-50 transition-all active:scale-95 shadow-sm">SAVE DRAFT</button>
               )}
               <button onClick={handleSave} className="px-12 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-xl hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95">

@@ -214,6 +214,10 @@ export interface LogBookRecord {
   lokasiModena: string;
   kategoriTamu: string;
   namaTamu: string;
+  nomorHp?: string;
+  email?: string;
+  visitorCard?: string;
+  noIdentitas?: string;
   tanggalKunjungan: string;
   jamDatang: string;
   jamPulang: string;
