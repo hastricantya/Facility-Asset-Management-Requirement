@@ -91,7 +91,10 @@ export const ModenaPodTable: React.FC<Props> = ({ data, onEdit, onView }) => {
                             <div className="w-8 h-8 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400">
                                 <User size={14} />
                             </div>
-                            <span className="font-black text-black text-[13px] uppercase tracking-tight italic">{item.namaPenghuni}</span>
+                            <div className="flex flex-col">
+                                <span className="font-black text-black text-[13px] uppercase tracking-tight italic">{item.namaPenghuni}</span>
+                                {item.isExpat && <span className="text-[8px] font-black text-blue-500 uppercase tracking-[0.1em] mt-0.5">(Expat)</span>}
+                            </div>
                         </div>
                     </td>
                     <td className="p-5">

@@ -251,6 +251,7 @@ export interface LockerRecord {
 export interface PodHistory {
   id: number;
   namaPenghuni: string;
+  isExpat?: boolean;
   posisi?: string;
   departemen?: string;
   nomorKamar: string;
@@ -267,6 +268,7 @@ export interface ModenaPodRecord {
   jenisKamar: 'Single Bed' | 'Double Bed' | 'Quadruple Bed';
   nomorKamar: string;
   namaPenghuni: string;
+  isExpat?: boolean;
   posisi?: string;
   departemen?: string;
   statusLokerBarang: 'Terpakai' | 'Tidak Terpakai' | 'Belum Dapat' | 'Extra Loker Terpakai';

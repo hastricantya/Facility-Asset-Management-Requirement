@@ -125,7 +125,7 @@ export const AddStockModal: React.FC<Props> = ({
            }
         } else {
             if (isStockOpname) setStockOpnameForm({ opnameNumber: 'SO-NEW', date: new Date().toISOString().split('T')[0], status: 'Draft' });
-            if (isPod) setPodForm({ lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', statusLokerBarang: 'Tidak Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Tidak ada' });
+            if (isPod) setPodForm({ lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', statusLokerBarang: 'Tidak Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Tidak ada', isExpat: false });
             if (isStationeryRequest) {
                 setStationeryRequestForm({ type: 'DAILY REQUEST', deliveryType: 'PICKUP HO', location: 'Satrio', date: new Date().toISOString().split('T')[0] });
                 setRequestItems([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
@@ -242,7 +242,7 @@ export const AddStockModal: React.FC<Props> = ({
                    {isViewMode && (
                      <div className="mt-4">
                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Application Status</label>
-                       <span className={`inline-block px-3 py-1 text-white text-[10px] font-black rounded uppercase ${initialAssetData?.status === 'Approved' ? 'bg-green-500' : 'bg-orange-500'}`}>
+                       <span className={`inline-block px-3 py-1 text-white text-[10px] font-black rounded uppercase ${initialAssetData?.status === 'Approved' ? 'bg-green-50 text-green-500' : 'bg-orange-500'}`}>
                         {initialAssetData?.status}
                        </span>
                      </div>
@@ -319,9 +319,30 @@ export const AddStockModal: React.FC<Props> = ({
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Nomor Kamar</label>
                       <input type="text" disabled={isFieldDisabled} placeholder="e.g. 217 A" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono font-bold text-black outline-none focus:border-black shadow-sm transition-all" value={podForm.nomorKamar || ''} onChange={(e) => setPodForm({...podForm, nomorKamar: e.target.value})} />
                     </div>
-                    <div>
-                      <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Nama Penghuni</label>
-                      <input type="text" disabled={isFieldDisabled} placeholder="Masukkan nama lengkap..." className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black outline-none focus:border-black shadow-sm transition-all" value={podForm.namaPenghuni || ''} onChange={(e) => setPodForm({...podForm, namaPenghuni: e.target.value})} />
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Nama Penghuni</label>
+                        <input type="text" disabled={isFieldDisabled} placeholder="Masukkan nama lengkap..." className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black outline-none focus:border-black shadow-sm transition-all" value={podForm.namaPenghuni || ''} onChange={(e) => setPodForm({...podForm, namaPenghuni: e.target.value})} />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 tracking-widest">Expat Status</label>
+                        <div className="flex gap-2">
+                          <button 
+                            disabled={isFieldDisabled}
+                            onClick={() => setPodForm({...podForm, isExpat: true})}
+                            className={`flex-1 py-2 text-[10px] font-black rounded-lg border transition-all uppercase tracking-widest ${podForm.isExpat ? 'bg-black text-white' : 'bg-white text-gray-400 border-gray-200 hover:border-black'}`}
+                          >
+                            Expat
+                          </button>
+                          <button 
+                            disabled={isFieldDisabled}
+                            onClick={() => setPodForm({...podForm, isExpat: false})}
+                            className={`flex-1 py-2 text-[10px] font-black rounded-lg border transition-all uppercase tracking-widest ${!podForm.isExpat ? 'bg-black text-white' : 'bg-white text-gray-400 border-gray-200 hover:border-black'}`}
+                          >
+                            Not Expat
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -376,6 +397,9 @@ export const AddStockModal: React.FC<Props> = ({
                            <tr key={h.id} className="hover:bg-gray-50/50 transition-colors">
                              <td className="p-4 pl-8">
                                <div className="text-[12px] font-black text-black uppercase">{h.namaPenghuni}</div>
+                               <span className={`text-[8px] font-black uppercase tracking-widest ${h.isExpat ? 'text-blue-500' : 'text-gray-400'}`}>
+                                 {h.isExpat ? 'Expatriate' : 'Non-Expat'}
+                               </span>
                              </td>
                              <td className="p-4">
                                <div className="flex flex-col">
