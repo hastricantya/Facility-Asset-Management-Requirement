@@ -20,6 +20,7 @@ import { LockerTable } from './components/LockerTable';
 import { LockerRequestTable } from './components/LockerRequestTable';
 import { ModenaPodTable } from './components/ModenaPodTable';
 import { MasterModenaPodTable } from './components/MasterModenaPodTable';
+import { MasterLockerTable } from './components/MasterLockerTable';
 import { PodRequestTable } from './components/PodRequestTable';
 import { VehicleModal } from './components/VehicleModal';
 import { BuildingModal } from './components/BuildingModal';
@@ -49,6 +50,8 @@ import {
   MOCK_LOCKER_REQUEST_DATA,
   MOCK_POD_DATA,
   MOCK_MASTER_POD_DATA,
+  MOCK_MASTER_LOCKER_GOODS_DATA,
+  MOCK_MASTER_LOCKER_PANTRY_DATA,
   MOCK_POD_REQUEST_DATA,
   MOCK_UOM_DATA,
   MOCK_ATK_CATEGORY,
@@ -72,7 +75,8 @@ import {
   LockerRequestRecord,
   PodRequestRecord,
   ModenaPodRecord,
-  MasterPodRecord
+  MasterPodRecord,
+  MasterLockerRecord
 } from './types';
 import { useLanguage } from './contexts/LanguageContext';
 
@@ -100,6 +104,8 @@ const App: React.FC = () => {
   const [lockerRequestData, setLockerRequestData] = useState<LockerRequestRecord[]>(MOCK_LOCKER_REQUEST_DATA);
   const [podData, setPodData] = useState<ModenaPodRecord[]>(MOCK_POD_DATA);
   const [masterPodData, setMasterPodData] = useState<MasterPodRecord[]>(MOCK_MASTER_POD_DATA);
+  const [masterLockerGoodsData, setMasterLockerGoodsData] = useState<MasterLockerRecord[]>(MOCK_MASTER_LOCKER_GOODS_DATA);
+  const [masterLockerPantryData, setMasterLockerPantryData] = useState<MasterLockerRecord[]>(MOCK_MASTER_LOCKER_PANTRY_DATA);
   const [podRequestData, setPodRequestData] = useState<PodRequestRecord[]>(MOCK_POD_REQUEST_DATA);
   
   const [vehicleData] = useState<VehicleRecord[]>(MOCK_VEHICLE_DATA);
@@ -127,6 +133,7 @@ const App: React.FC = () => {
   const [selectedLockerRequest, setSelectedLockerRequest] = useState<LockerRequestRecord | null>(null);
   const [selectedPod, setSelectedPod] = useState<ModenaPodRecord | null>(null);
   const [selectedMasterPod, setSelectedMasterPod] = useState<MasterPodRecord | null>(null);
+  const [selectedMasterLocker, setSelectedMasterLocker] = useState<MasterLockerRecord | null>(null);
   const [selectedPodRequest, setSelectedPodRequest] = useState<PodRequestRecord | null>(null);
   const [selectedStockOpname, setSelectedStockOpname] = useState<StockOpnameRecord | null>(null);
 
@@ -150,6 +157,7 @@ const App: React.FC = () => {
     setSelectedLockerRequest(null);
     setSelectedPod(null);
     setSelectedMasterPod(null);
+    setSelectedMasterLocker(null);
     setSelectedPodRequest(null);
     setIsStockModalOpen(true);
   };
@@ -174,6 +182,27 @@ const App: React.FC = () => {
         setPodData([newRecord, ...podData]);
     } else {
         setPodData(podData.map(item => item.id === data.id ? { ...item, ...data } : item));
+    }
+    setIsStockModalOpen(false);
+  };
+
+  const handleSaveMasterLocker = (data: Partial<MasterLockerRecord>) => {
+    const isGoods = activeTab === 'Loker Barang';
+    const targetSet = isGoods ? setMasterLockerGoodsData : setMasterLockerPantryData;
+    const targetData = isGoods ? masterLockerGoodsData : masterLockerPantryData;
+
+    if (modalMode === 'create') {
+        const newRecord: MasterLockerRecord = {
+            id: Date.now(),
+            lockerNumber: data.lockerNumber || 'NEW',
+            floor: data.floor || 'Lt 2 Pria',
+            type: isGoods ? 'Goods' : 'Pantry',
+            status: data.status || 'Active',
+            remarks: data.remarks
+        };
+        targetSet([newRecord, ...targetData]);
+    } else {
+        targetSet(targetData.map(item => item.id === data.id ? { ...item, ...data } : item));
     }
     setIsStockModalOpen(false);
   };
@@ -212,7 +241,10 @@ const App: React.FC = () => {
          case 'Daftar Loker': return <LockerTable data={filteredLockerData} onView={(item) => { setSelectedLocker(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedLocker(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
          case 'Request Locker': return <LockerRequestTable data={lockerRequestData} onView={(item) => { setSelectedLockerRequest(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Pod Census': return <ModenaPodTable data={filteredPodData} onView={(item) => { setSelectedPod(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedPod(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
-         case 'Master MODENA Pod': return <MasterModenaPodTable data={masterPodData} onEdit={(item) => { setSelectedMasterPod(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
+         case 'Master MODENA Pod': 
+            if (activeTab === 'Loker Barang') return <MasterLockerTable data={masterLockerGoodsData} title="GOODS LOCKER CATALOG" onEdit={(item) => { setSelectedMasterLocker(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
+            if (activeTab === 'Loker Pantry') return <MasterLockerTable data={masterLockerPantryData} title="PANTRY LOCKER CATALOG" onEdit={(item) => { setSelectedMasterLocker(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
+            return <MasterModenaPodTable data={masterPodData} onEdit={(item) => { setSelectedMasterPod(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
          case 'Request MODENA Pod': return <PodRequestTable data={podRequestData} onView={(item) => { setSelectedPodRequest(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Stock Opname': return <StockOpnameTable data={stockOpnameData.filter(item => activeTab === 'Semua' || activeTab === '' || item.status === currentTargetStatus)} onView={(item) => { setSelectedStockOpname(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Stock Opname Approval': return <StockOpnameTable data={stockOpnameData.filter(item => item.status === 'Draft')} onView={(item) => { setSelectedStockOpname(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
@@ -235,6 +267,7 @@ const App: React.FC = () => {
   const mainTabs = useMemo(() => {
     if (activeModule === 'Pod Census') return ['Semua', 'Lt 2 Pria', 'Lt 2 Perempuan', 'Lt 3 Pria', 'Lt 3 Perempuan'];
     if (activeModule === 'Daftar Loker') return ['Semua', 'Terisi', 'Kosong', 'Kunci Hilang'];
+    if (activeModule === 'Master MODENA Pod') return ['Semua', 'Loker Barang', 'Loker Pantry'];
     if (activeModule.includes('Daftar') || activeModule.includes('Approval') || activeModule.includes('Request')) {
         if (!activeModule.includes('Master')) {
            return ['Semua', 'Draft', 'Waiting Approval', 'Approved', 'Rejected', 'Closed'];
@@ -319,16 +352,18 @@ const App: React.FC = () => {
       <AddStockModal 
         isOpen={isStockModalOpen}
         onClose={() => setIsStockModalOpen(false)}
-        moduleName={activeModule}
+        moduleName={activeModule === 'Master MODENA Pod' ? (activeTab === 'Semua' ? 'Master MODENA Pod' : (activeTab === 'Loker Barang' ? 'Master Loker Barang' : 'Master Loker Pantry')) : activeModule}
         mode={modalMode}
         initialLogBookData={selectedLogBook || undefined}
         initialLockerData={selectedLocker || undefined}
         initialLockerRequestData={selectedLockerRequest || undefined}
         initialPodData={selectedPod || undefined}
         initialMasterPodData={selectedMasterPod || undefined}
+        initialMasterLockerData={selectedMasterLocker || undefined}
         initialPodRequestData={selectedPodRequest || undefined}
         initialStockOpnameData={selectedStockOpname || undefined}
         onSavePod={handleSavePod}
+        onSaveMasterLocker={handleSaveMasterLocker}
         onSaveLogBook={(data) => setLogBookData([data as LogBookRecord, ...logBookData])}
         onSaveStockOpname={(data) => setStockOpnameData([data as StockOpnameRecord, ...stockOpnameData])}
         onSaveLockerRequest={(data) => setLockerRequestData([data as LockerRequestRecord, ...lockerRequestData])}

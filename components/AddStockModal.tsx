@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 /* Added Settings to imports from lucide-react to fix missing import error on line 471 */
 import { X, Save, List, Calendar, CheckCircle, CheckCircle2, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid, ChevronDown, Layers, ClipboardCheck, Clock, Baby, Trash2, UploadCloud, Plus, Settings } from 'lucide-react';
-import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord, PodHistory, LockerHistoryEntry, MasterPodRecord } from '../types';
+import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord, PodHistory, LockerHistoryEntry, MasterPodRecord, MasterLockerRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_DELIVERY_LOCATIONS, MOCK_POD_DATA } from '../constants';
 
@@ -27,6 +27,7 @@ interface Props {
   onSavePodRequest?: (request: Partial<PodRequestRecord>) => void;
   onSavePod?: (pod: Partial<ModenaPodRecord>) => void;
   onSaveMasterPod?: (pod: Partial<MasterPodRecord>) => void;
+  onSaveMasterLocker?: (pod: Partial<MasterLockerRecord>) => void;
   onRevise?: () => void;
   onApprove?: () => void;
   onReject?: () => void;
@@ -48,6 +49,7 @@ interface Props {
   initialPodRequestData?: PodRequestRecord;
   initialPodData?: ModenaPodRecord;
   initialMasterPodData?: MasterPodRecord;
+  initialMasterLockerData?: MasterLockerRecord;
   
   mode?: 'create' | 'edit' | 'view';
   vehicleList?: VehicleRecord[];
@@ -66,6 +68,7 @@ export const AddStockModal: React.FC<Props> = ({
     onSavePodRequest,
     onSavePod,
     onSaveMasterPod,
+    onSaveMasterLocker,
     onApprove,
     onReject,
     initialAssetData,
@@ -75,6 +78,7 @@ export const AddStockModal: React.FC<Props> = ({
     initialLockerRequestData,
     initialPodData,
     initialMasterPodData,
+    initialMasterLockerData,
     initialPodRequestData,
     mode = 'create'
 }) => {
@@ -87,6 +91,7 @@ export const AddStockModal: React.FC<Props> = ({
   const [podRequestForm, setPodRequestForm] = useState<Partial<PodRequestRecord>>({});
   const [podForm, setPodForm] = useState<Partial<ModenaPodRecord>>({});
   const [masterPodForm, setMasterPodForm] = useState<Partial<MasterPodRecord>>({});
+  const [masterLockerForm, setMasterLockerForm] = useState<Partial<MasterLockerRecord>>({});
   const [stationeryRequestForm, setStationeryRequestForm] = useState<Partial<StationeryRequestRecord>>({});
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
   
@@ -98,6 +103,7 @@ export const AddStockModal: React.FC<Props> = ({
   const isLockerRequest = moduleName === 'Request Locker';
   const isPod = moduleName === 'Pod Census';
   const isMasterPod = moduleName === 'Master MODENA Pod';
+  const isMasterLocker = moduleName === 'Master Loker Barang' || moduleName === 'Master Loker Pantry';
   const isPodRequest = moduleName === 'Request MODENA Pod';
   const isViewMode = mode === 'view';
   const isFieldDisabled = isViewMode;
@@ -113,6 +119,7 @@ export const AddStockModal: React.FC<Props> = ({
            if (initialPodRequestData) setPodRequestForm(initialPodRequestData);
            if (initialPodData) setPodForm(initialPodData);
            if (initialMasterPodData) setMasterPodForm(initialMasterPodData);
+           if (initialMasterLockerData) setMasterLockerForm(initialMasterLockerData);
            
            if (initialAssetData) {
                const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
@@ -135,13 +142,14 @@ export const AddStockModal: React.FC<Props> = ({
             if (isStockOpname) setStockOpnameForm({ opnameNumber: 'SO-NEW', date: new Date().toISOString().split('T')[0], status: 'Draft' });
             if (isPod) setPodForm({ lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', statusLokerBarang: 'Tidak Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Tidak ada', isExpat: false });
             if (isMasterPod) setMasterPodForm({ lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', kapasitas: 1, status: 'Active', fasilitas: [] });
+            if (isMasterLocker) setMasterLockerForm({ floor: 'Lt 2 Pria', status: 'Active', type: moduleName.includes('Goods') ? 'Goods' : 'Pantry' });
             if (isStationeryRequest) {
                 setStationeryRequestForm({ type: 'DAILY REQUEST', deliveryType: 'PICKUP HO', location: 'Satrio', date: new Date().toISOString().split('T')[0] });
                 setRequestItems([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
             }
         }
     }
-  }, [isOpen, initialAssetData, initialLogBookData, initialStockOpnameData, initialLockerData, initialLockerRequestData, initialPodData, initialMasterPodData, initialPodRequestData, mode, isArkModule, isStationeryRequest, isStockOpname, isPod, isMasterPod]);
+  }, [isOpen, initialAssetData, initialLogBookData, initialStockOpnameData, initialLockerData, initialLockerRequestData, initialPodData, initialMasterPodData, initialMasterLockerData, initialPodRequestData, mode, isArkModule, isStationeryRequest, isStockOpname, isPod, isMasterPod, isMasterLocker, moduleName]);
 
   const handleSave = () => {
       if (isStationeryRequest && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
@@ -152,6 +160,7 @@ export const AddStockModal: React.FC<Props> = ({
       if (isPodRequest && onSavePodRequest) onSavePodRequest(podRequestForm);
       if (isPod && onSavePod) onSavePod(podForm);
       if (isMasterPod && onSaveMasterPod) onSaveMasterPod(masterPodForm);
+      if (isMasterLocker && onSaveMasterLocker) onSaveMasterLocker(masterLockerForm);
       onClose();
   };
 
@@ -198,6 +207,7 @@ export const AddStockModal: React.FC<Props> = ({
                 {isStationeryRequest ? (isViewMode ? 'Stationery Request Details' : `Create ${isArkModule ? 'Household' : 'Stationery'} Request`) :
                  isPod ? (isViewMode ? 'Pod Occupancy Detail' : 'Register New Room Assignment') : 
                  isMasterPod ? (isViewMode ? 'Master Pod Detail' : 'Define Pod Configuration') :
+                 isMasterLocker ? (isViewMode ? 'Master Locker Detail' : 'Catalog New Locker') :
                  isLocker ? (isViewMode ? 'Locker Management Details' : 'Register Locker') : moduleName}
               </h2>
               {isViewMode && (initialAssetData?.transactionNumber || initialLockerData?.lockerNumber) && (
@@ -529,6 +539,53 @@ export const AddStockModal: React.FC<Props> = ({
                          </label>
                       ))}
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : isMasterLocker ? (
+            /* MASTER LOCKER CONFIGURATION FORM */
+            <div className="space-y-8">
+              <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm max-w-2xl mx-auto space-y-6">
+                <SectionHeader icon={Settings} title="Locker Definitions" />
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Locker Number</label>
+                    <input 
+                      type="text" 
+                      disabled={isFieldDisabled} 
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono font-bold text-black outline-none focus:border-black shadow-sm" 
+                      value={masterLockerForm.lockerNumber || ''} 
+                      onChange={(e) => setMasterLockerForm({...masterLockerForm, lockerNumber: e.target.value})} 
+                      placeholder="e.g. B-001"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Lantai</label>
+                    <select disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white appearance-none outline-none focus:border-black shadow-sm" value={masterLockerForm.floor || ''} onChange={(e) => setMasterLockerForm({...masterLockerForm, floor: e.target.value})}>
+                      <option value="Lt 2 Pria">Lt 2 Pria</option><option value="Lt 2 Perempuan">Lt 2 Perempuan</option><option value="Lt 3 Pria">Lt 3 Pria</option><option value="Lt 3 Perempuan">Lt 3 Perempuan</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Operational Status</label>
+                    <div className="flex gap-2">
+                      {['Active', 'Maintenance', 'Inactive'].map(s => (
+                        <button key={s} disabled={isFieldDisabled} onClick={() => setMasterLockerForm({...masterLockerForm, status: s as any})} className={`flex-1 py-3 text-[10px] font-black rounded-xl border transition-all uppercase tracking-widest ${masterLockerForm.status === s ? 'bg-black text-white' : 'bg-white text-gray-400 border-gray-200 hover:border-black'}`}>
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Remarks</label>
+                    <textarea 
+                      rows={2} 
+                      disabled={isFieldDisabled} 
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white outline-none focus:border-black shadow-sm transition-all" 
+                      value={masterLockerForm.remarks || ''} 
+                      onChange={(e) => setMasterLockerForm({...masterLockerForm, remarks: e.target.value})} 
+                      placeholder="Catatan teknis locker..."
+                    />
                   </div>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord, MasterPodRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord, MasterPodRecord, MasterLockerRecord } from './types';
 
 // Helper function to generate mock data for ATK/ARK
 const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] => {
@@ -276,6 +276,18 @@ export const MOCK_MASTER_POD_DATA: MasterPodRecord[] = [
   { id: 1, lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', nomorKamar: '201', kapasitas: 1, fasilitas: ['Wifi', 'AC', 'Meja Kerja'], status: 'Active' },
   { id: 2, lantai: 'Lt 2 Pria', jenisKamar: 'Double Bed', nomorKamar: '202', kapasitas: 2, fasilitas: ['Wifi', 'AC'], status: 'Active' },
   { id: 3, lantai: 'Lt 3 Perempuan', jenisKamar: 'Quadruple Bed', nomorKamar: '317', kapasitas: 4, fasilitas: ['Wifi', 'AC', 'Loker'], status: 'Active' },
+];
+
+export const MOCK_MASTER_LOCKER_GOODS_DATA: MasterLockerRecord[] = [
+  { id: 1, lockerNumber: 'B-001', floor: 'Lt 2 Pria', type: 'Goods', status: 'Active', remarks: 'Good condition' },
+  { id: 2, lockerNumber: 'B-002', floor: 'Lt 2 Pria', type: 'Goods', status: 'Active' },
+  { id: 3, lockerNumber: 'B-101', floor: 'Lt 3 Perempuan', type: 'Goods', status: 'Maintenance', remarks: 'Broken lock' },
+];
+
+export const MOCK_MASTER_LOCKER_PANTRY_DATA: MasterLockerRecord[] = [
+  { id: 1, lockerNumber: 'P-001', floor: 'Lt 2 Pria', type: 'Pantry', status: 'Active' },
+  { id: 2, lockerNumber: 'P-002', floor: 'Lt 2 Pria', type: 'Pantry', status: 'Active' },
+  { id: 3, lockerNumber: 'P-101', floor: 'Lt 3 Perempuan', type: 'Pantry', status: 'Active' },
 ];
 
 export const MOCK_POD_REQUEST_DATA: PodRequestRecord[] = [

@@ -288,6 +288,15 @@ export interface MasterPodRecord {
   status: 'Active' | 'Maintenance' | 'Inactive';
 }
 
+export interface MasterLockerRecord {
+  id: number;
+  lockerNumber: string;
+  floor: string;
+  type: 'Goods' | 'Pantry';
+  status: 'Active' | 'Maintenance' | 'Inactive';
+  remarks?: string;
+}
+
 export interface MasterItem {
   id: string | number;
   category: string;
