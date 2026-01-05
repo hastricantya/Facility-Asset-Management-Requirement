@@ -1,4 +1,3 @@
-
 import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord, MasterPodRecord, MasterLockerRecord } from './types';
 
 // Helper function to generate mock data for ATK/ARK
@@ -17,24 +16,27 @@ const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] 
 
   const itemsATK = [
       { name: 'HP Laserjet 204A Black', cat: 'Tinta Printer', code: 'TP-HP0048' },
-      { name: 'Kertas A4 70gr', cat: 'Kertas', code: 'KRT-A4-70' },
+      { name: 'Kertas A4 70gr Sinar Dunia', cat: 'Kertas', code: 'KRT-A4-70' },
+      { name: 'Kertas F4 80gr PaperOne', cat: 'Kertas', code: 'KRT-F4-80' },
+      { name: 'Epson Ink 003 Black', cat: 'Tinta Printer', code: 'TP-EPS-003' },
+      { name: 'Printer HP LaserJet Pro M15w', cat: 'Elektronik', code: 'EL-PRN-HP' },
       { name: 'Pulpen Standard AE7', cat: 'Alat Tulis', code: 'ATK-PEN-01' },
-      { name: 'Baterai AA Alkaline', cat: 'Elektronik', code: 'EL-BAT-AA' },
       { name: 'Map Plastik Clear', cat: 'Filing', code: 'FIL-MAP-01' }
   ];
 
   const itemsARK = [
-      { name: 'Wipol Karbol', cat: 'Pembersih', code: 'CL-WPL-01' },
-      { name: 'Tisu Nice 250s', cat: 'Tisu', code: 'TS-NICE-250' },
-      { name: 'Sabun Cuci Tangan', cat: 'Kebersihan', code: 'SOAP-HW-01' },
-      { name: 'Pengharum Ruangan', cat: 'Kebersihan', code: 'AIR-FRESH-01' },
-      { name: 'Lampu LED 10W', cat: 'Elektronik', code: 'LMP-LED-10' }
+      { name: 'Wipol Karbol Wangi 750ml', cat: 'Pembersih', code: 'CL-WPL-01' },
+      { name: 'Sunlight Jeruk Nipis 700ml', cat: 'Pembersih', code: 'CL-SUN-01' },
+      { name: 'Rinso Liquid Deterjen', cat: 'Pembersih', code: 'CL-RIN-01' },
+      { name: 'Tisu Nice 250s Facial', cat: 'Tisu', code: 'TS-NICE-250' },
+      { name: 'Sabun Cuci Tangan Lifebuoy', cat: 'Kebersihan', code: 'SOAP-HW-01' },
+      { name: 'Lampu LED Phillips 10W', cat: 'Elektronik', code: 'LMP-LED-10' }
   ];
 
   const items = type === 'ATK' ? itemsATK : itemsARK;
 
   // Create records
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 20; i++) {
     const emp = employees[i % employees.length];
     const item = items[i % items.length];
     const status = statuses[i % statuses.length];
@@ -48,7 +50,7 @@ const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] 
       },
       category: item.cat,
       itemName: item.name,
-      itemDescription: `Permintaan rutin ${type} untuk operasional kantor.`,
+      itemDescription: `Permintaan rutin ${type} untuk operasional kantor unit ${emp.department}.`,
       qty: Math.floor(Math.random() * 10) + 1,
       date: new Date(Date.now() - i * 86400000).toISOString().split('T')[0].split('-').reverse().join('/'),
       remainingStock: Math.floor(Math.random() * 50) + 5,
@@ -114,162 +116,9 @@ export const MOCK_POD_DATA: ModenaPodRecord[] = [
         { id: 2, namaPenghuni: 'Andi Wijaya', isExpat: false, posisi: 'Staff Admin', departemen: 'Supply Chain', nomorKamar: '211', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Terpakai', jadwalLaundry: 'Selasa & Jumat', startDate: '2023-09-10', endDate: '2023-11-25' }
       ]
     },
-    // Data dari gambar - Lt 3 Pria
-    {
-      id: 34,
-      lantai: 'Lt 3 Pria',
-      jenisKamar: 'Quadruple Bed',
-      nomorKamar: '317 B',
-      namaPenghuni: 'Sung Yong Hong',
-      isExpat: true,
-      posisi: 'Expert Engineer',
-      departemen: 'Production',
-      statusLokerBarang: 'Extra Loker Tidak Terpakai' as any,
-      statusLokerPantry: 'Extra Loker Tidak Terpakai' as any,
-      jadwalLaundry: 'Tidak ada',
-      keterangan: 'kosong kunci gada'
-    },
-    {
-      id: 37,
-      lantai: 'Lt 3 Pria',
-      jenisKamar: 'Quadruple Bed',
-      nomorKamar: '318 A',
-      namaPenghuni: 'Dani Rizky Nugraha',
-      isExpat: false,
-      posisi: 'Staff',
-      departemen: 'After Sales',
-      statusLokerBarang: 'Terpakai',
-      statusLokerPantry: 'Belum Dapat',
-      jadwalLaundry: 'Selasa & Jumat',
-      keterangan: 'isi'
-    },
-    {
-      id: 38,
-      lantai: 'Lt 3 Pria',
-      jenisKamar: 'Quadruple Bed',
-      nomorKamar: '318 B',
-      namaPenghuni: 'Ibnu Faisal Abbas',
-      isExpat: false,
-      posisi: 'Technician',
-      departemen: 'After Sales',
-      statusLokerBarang: 'Tidak Terpakai',
-      statusLokerPantry: 'Tidak Terpakai',
-      jadwalLaundry: 'Selasa & Jumat',
-      keterangan: 'isi'
-    },
-    {
-      id: 39,
-      lantai: 'Lt 3 Pria',
-      jenisKamar: 'Quadruple Bed',
-      nomorKamar: '318 C',
-      namaPenghuni: 'Muhammad Irfan Setyawan',
-      isExpat: false,
-      posisi: 'Junior Staff',
-      departemen: 'Operation',
-      statusLokerBarang: 'Terpakai',
-      statusLokerPantry: 'Terpakai',
-      jadwalLaundry: 'Senin & Kamis',
-      keterangan: 'butuh extra loker pantry'
-    },
-    {
-      id: 41,
-      lantai: 'Lt 3 Pria',
-      jenisKamar: 'Double Bed',
-      nomorKamar: '319 A',
-      namaPenghuni: 'Muhammad Reval Revanza',
-      isExpat: false,
-      posisi: 'Intern',
-      departemen: 'Marketing',
-      statusLokerBarang: 'Terpakai',
-      statusLokerPantry: 'Terpakai',
-      jadwalLaundry: 'Selasa & Jumat',
-      keterangan: 'isi gada lockset'
-    },
-    // Data dari gambar - Lt 3 Perempuan
-    {
-      id: 43,
-      lantai: 'Lt 3 Perempuan',
-      jenisKamar: 'Single Bed',
-      nomorKamar: '321',
-      namaPenghuni: 'Handrian Taufik',
-      isExpat: false,
-      posisi: 'Supervisor',
-      departemen: 'Logistic',
-      statusLokerBarang: 'Tidak Terpakai',
-      statusLokerPantry: 'Tidak Terpakai',
-      jadwalLaundry: 'Tidak ada',
-      keterangan: 'kosong gada kunci'
-    },
-    {
-      id: 44,
-      lantai: 'Lt 3 Perempuan',
-      jenisKamar: 'Single Bed',
-      nomorKamar: '322',
-      namaPenghuni: 'R.A Putri Minang Permatasari',
-      isExpat: false,
-      posisi: 'Senior Staff',
-      departemen: 'Finance',
-      statusLokerBarang: 'Terpakai',
-      statusLokerPantry: 'Terpakai',
-      jadwalLaundry: 'Senin & Kamis',
-      keterangan: 'isi'
-    },
-    {
-      id: 45,
-      lantai: 'Lt 3 Perempuan',
-      jenisKamar: 'Single Bed',
-      nomorKamar: '325',
-      namaPenghuni: '-',
-      isExpat: false,
-      posisi: '-',
-      departemen: '-',
-      statusLokerBarang: 'Belum Dapat',
-      statusLokerPantry: 'Belum Dapat',
-      jadwalLaundry: 'Rabu & Sabtu',
-      keterangan: 'kosong kunci gada gntungan hafele 0051'
-    },
-    {
-      id: 47,
-      lantai: 'Lt 3 Perempuan',
-      jenisKamar: 'Quadruple Bed',
-      nomorKamar: '327 A',
-      namaPenghuni: 'Diah Valentin',
-      isExpat: false,
-      posisi: 'Staff',
-      departemen: 'HR',
-      statusLokerBarang: 'Terpakai',
-      statusLokerPantry: 'Terpakai',
-      jadwalLaundry: 'Selasa & Jumat',
-      keterangan: 'isi'
-    },
-    {
-      id: 53,
-      lantai: 'Lt 3 Perempuan',
-      jenisKamar: 'Quadruple Bed',
-      nomorKamar: '328 C',
-      namaPenghuni: 'Fitria Sisco',
-      isExpat: false,
-      posisi: 'Staff',
-      departemen: 'Accounting',
-      statusLokerBarang: 'Terpakai',
-      statusLokerPantry: 'Belum Dapat',
-      jadwalLaundry: 'Selasa & Jumat',
-      keterangan: 'isi'
-    },
-    {
-      id: 55,
-      lantai: 'Lt 3 Perempuan',
-      jenisKamar: 'Double Bed',
-      nomorKamar: '329 A',
-      namaPenghuni: 'Galuh Sekar Mulatsih',
-      isExpat: false,
-      posisi: 'Technician',
-      departemen: 'After Sales',
-      statusLokerBarang: 'Terpakai',
-      statusLokerPantry: 'Terpakai',
-      jadwalLaundry: 'Senin & Kamis',
-      keterangan: 'isi'
-    }
+    { id: 34, lantai: 'Lt 3 Pria', jenisKamar: 'Quadruple Bed', nomorKamar: '317 B', namaPenghuni: 'Sung Yong Hong', isExpat: true, posisi: 'Expert Engineer', departemen: 'Production', statusLokerBarang: 'Extra Loker Terpakai', statusLokerPantry: 'Extra Loker Terpakai', jadwalLaundry: 'Tidak ada', keterangan: 'kosong kunci gada' },
+    { id: 37, lantai: 'Lt 3 Pria', jenisKamar: 'Quadruple Bed', nomorKamar: '318 A', namaPenghuni: 'Dani Rizky Nugraha', isExpat: false, posisi: 'Staff', departemen: 'After Sales', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Belum Dapat', jadwalLaundry: 'Selasa & Jumat', keterangan: 'isi' },
+    { id: 44, lantai: 'Lt 3 Perempuan', jenisKamar: 'Single Bed', nomorKamar: '322', namaPenghuni: 'R.A Putri Minang Permatasari', isExpat: false, posisi: 'Senior Staff', departemen: 'Finance', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Terpakai', jadwalLaundry: 'Senin & Kamis', keterangan: 'isi' }
 ];
 
 export const MOCK_MASTER_POD_DATA: MasterPodRecord[] = [
@@ -304,15 +153,24 @@ export const MOCK_POD_REQUEST_DATA: PodRequestRecord[] = [
 ];
 
 export const MOCK_MASTER_DATA: MasterItem[] = [
-  { id: 1, category: 'Tinta Printer', itemName: 'HP Laserjet 204A Black', itemCode: 'TP-HP0048', uom: 'Pcs', remainingStock: 5, minimumStock: 2, maximumStock: 10, requestedStock: 0, purchaseDate: '27/08/2008', lastPurchasePrice: 'Rp. 22.000', averagePrice: 'Rp. 21.082' },
+  { id: 1, category: 'Tinta Printer', itemName: 'HP Laserjet 204A Black', itemCode: 'TP-HP0048', uom: 'Pcs', remainingStock: 5, minimumStock: 2, maximumStock: 10, requestedStock: 0, purchaseDate: '27/08/2024', lastPurchasePrice: 'Rp. 22.000', averagePrice: 'Rp. 21.082' },
+  { id: 2, category: 'Tinta Printer', itemName: 'Epson Ink 003 Magenta', itemCode: 'TP-EPS-M', uom: 'Pcs', remainingStock: 8, minimumStock: 3, maximumStock: 15, requestedStock: 2, purchaseDate: '15/03/2024', lastPurchasePrice: 'Rp. 85.000', averagePrice: 'Rp. 82.500' },
+  { id: 3, category: 'Kertas', itemName: 'Kertas A4 70gr Sinar Dunia', itemCode: 'KRT-A4-70', uom: 'Rim', remainingStock: 45, minimumStock: 10, maximumStock: 100, requestedStock: 0, purchaseDate: '01/03/2024', lastPurchasePrice: 'Rp. 48.000', averagePrice: 'Rp. 47.200' },
+  { id: 4, category: 'Kertas', itemName: 'Kertas F4 80gr PaperOne', itemCode: 'KRT-F4-80', uom: 'Rim', remainingStock: 12, minimumStock: 15, maximumStock: 50, requestedStock: 10, purchaseDate: '10/02/2024', lastPurchasePrice: 'Rp. 55.000', averagePrice: 'Rp. 54.500' },
+  { id: 5, category: 'Elektronik', itemName: 'Printer HP LaserJet Pro M15w', itemCode: 'EL-PRN-HP', uom: 'Unit', remainingStock: 2, minimumStock: 1, maximumStock: 5, requestedStock: 0, purchaseDate: '20/01/2024', lastPurchasePrice: 'Rp. 1.850.000', averagePrice: 'Rp. 1.850.000' },
 ];
 
 export const MOCK_MASTER_ARK_DATA: MasterItem[] = [
-  { id: 1, category: 'Pembersih', itemName: 'Wipol Karbol', itemCode: 'CL-WPL-01', uom: 'Pcs', remainingStock: 10, minimumStock: 5, maximumStock: 20, requestedStock: 0, purchaseDate: '10/03/2024', lastPurchasePrice: 'Rp. 15.000', averagePrice: 'Rp. 14.800' },
+  { id: 1, category: 'Pembersih', itemName: 'Wipol Karbol Wangi 750ml', itemCode: 'CL-WPL-01', uom: 'Pcs', remainingStock: 10, minimumStock: 5, maximumStock: 20, requestedStock: 0, purchaseDate: '10/03/2024', lastPurchasePrice: 'Rp. 15.000', averagePrice: 'Rp. 14.800' },
+  { id: 2, category: 'Pembersih', itemName: 'Sunlight Jeruk Nipis 700ml', itemCode: 'CL-SUN-01', uom: 'Pcs', remainingStock: 24, minimumStock: 10, maximumStock: 50, requestedStock: 0, purchaseDate: '12/03/2024', lastPurchasePrice: 'Rp. 18.500', averagePrice: 'Rp. 17.900' },
+  { id: 3, category: 'Pembersih', itemName: 'Stella Matic Refill Green', itemCode: 'CL-STL-01', uom: 'Pcs', remainingStock: 4, minimumStock: 5, maximumStock: 15, requestedStock: 5, purchaseDate: '05/03/2024', lastPurchasePrice: 'Rp. 32.000', averagePrice: 'Rp. 31.500' },
+  { id: 4, category: 'Tisu', itemName: 'Tisu Nice 250s Facial', itemCode: 'TS-NICE-250', uom: 'Pack', remainingStock: 60, minimumStock: 20, maximumStock: 100, requestedStock: 0, purchaseDate: '20/02/2024', lastPurchasePrice: 'Rp. 12.000', averagePrice: 'Rp. 11.500' },
 ];
 
 export const MOCK_STOCK_OPNAME_DATA: StockOpnameRecord[] = [
   { id: 1, opnameNumber: 'SO/ATK/2024/0001', itemCode: 'TP-HP0048', itemName: 'HP Laserjet 204A Black', category: 'Tinta Printer', systemQty: 5, physicalQty: 5, difference: 0, date: '2024-03-20', performedBy: 'Aan Junaidi', status: 'Matched' },
+  { id: 2, opnameNumber: 'SO/ATK/2024/0002', itemCode: 'KRT-A4-70', itemName: 'Kertas A4 70gr Sinar Dunia', category: 'Kertas', systemQty: 45, physicalQty: 42, difference: -3, date: '2024-03-21', performedBy: 'Budi Santoso', status: 'Discrepancy' },
+  { id: 3, opnameNumber: 'SO/ARK/2024/0001', itemCode: 'CL-STL-01', itemName: 'Stella Matic Refill Green', category: 'Pembersih', systemQty: 4, physicalQty: 5, difference: 1, date: '2024-03-22', performedBy: 'Citra Lestari', status: 'Discrepancy' },
 ];
 
 export const MOCK_UOM_DATA: GeneralMasterItem[] = [
