@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-/* Added CheckCircle2 to the import list from lucide-react */
+/* Added CheckCircle2 and AlertTriangle to the import list from lucide-react */
 import { X, Save, List, Calendar, CheckCircle, CheckCircle2, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid, ChevronDown, Layers, ClipboardCheck } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -134,7 +134,8 @@ export const AddStockModal: React.FC<Props> = ({
   const isStationeryRequest = moduleName.includes('ATK') || moduleName.includes('ARK') || moduleName.includes('Stationery') || moduleName.includes('Household');
   const isApprovalModule = moduleName.includes('Approval');
   const isLogBook = moduleName === 'Log Book';
-  const isStockOpname = moduleName === 'Stock Opname';
+  /* Fixed logic to include 'Stock Opname Approval' */
+  const isStockOpname = moduleName.includes('Stock Opname');
   const isLocker = moduleName === 'Daftar Loker';
   const isLockerRequest = moduleName === 'Request Locker';
   const isPod = moduleName === 'Pod Census';
@@ -437,7 +438,7 @@ export const AddStockModal: React.FC<Props> = ({
         <div className="px-8 py-5 bg-white border-b border-gray-100 flex items-center justify-between shrink-0">
           <div>
               <h2 className="text-[14px] font-black text-black uppercase tracking-widest">
-                {isStockOpname ? (isViewMode ? 'Stock Opname Records Detail' : 'Create New Stock Opname') :
+                {isStockOpname ? (isViewMode ? (isApprovalModule ? 'Stock Opname Approval' : 'Stock Opname Records Detail') : 'Create New Stock Opname') :
                  isLocker ? (isViewMode ? 'Locker Management Details' : 'Register New Locker') :
                  isLockerRequest ? (isViewMode ? 'Locker Request Details' : 'Submit Locker Request') :
                  isPodRequest ? (isViewMode ? 'Pod Request Details' : 'Submit Pod Assignment Request') :
@@ -968,11 +969,11 @@ export const AddStockModal: React.FC<Props> = ({
               </div>
               
               {/* Opname Multi-Item Table - Dynamic based on category */}
-              {opnameSelectedCategory && (
+              {(opnameSelectedCategory || isViewMode) && (
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
                     <div className="p-5 border-b border-gray-100 flex items-center gap-2 bg-gray-50/50">
                         <ClipboardCheck size={16} className="text-blue-500" />
-                        <h4 className="text-[10px] font-black text-black uppercase tracking-widest">Audit List for {opnameSelectedCategory}</h4>
+                        <h4 className="text-[10px] font-black text-black uppercase tracking-widest">Audit List for {opnameSelectedCategory || stockOpnameForm.category}</h4>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
@@ -1000,7 +1001,7 @@ export const AddStockModal: React.FC<Props> = ({
                                             <input 
                                                 type="number"
                                                 disabled={isFieldDisabled}
-                                                className="w-24 bg-white border border-gray-200 rounded-lg px-3 py-2 text-center text-base font-black text-black focus:border-black outline-none shadow-sm transition-all"
+                                                className="w-24 bg-white border border-gray-200 rounded-lg px-3 py-2 text-center text-base font-black text-black focus:border-black outline-none shadow-sm transition-all disabled:bg-gray-50"
                                                 value={entry.physicalQty}
                                                 onChange={(e) => handleOpnamePhysicalChange(index, parseInt(e.target.value) || 0)}
                                             />
@@ -1306,7 +1307,7 @@ export const AddStockModal: React.FC<Props> = ({
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-white border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">
+                                <tr className="bg-white border-b border-gray-200 text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">
                                     <th className="px-8 py-4 w-12 text-center">#</th>
                                     <th className="px-8 py-4 w-56">CATEGORY</th>
                                     <th className="px-8 py-4">ITEM NAME / DESCRIPTION</th>

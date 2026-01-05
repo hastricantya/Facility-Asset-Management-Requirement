@@ -207,7 +207,8 @@ const App: React.FC = () => {
          case 'Request Locker': return <LockerRequestTable data={lockerRequestData} onView={(item) => { setSelectedLockerRequest(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Pod Census': return <ModenaPodTable data={filteredPodData} onView={(item) => { setSelectedPod(item); setModalMode('view'); setIsStockModalOpen(true); }} onEdit={(item) => { setSelectedPod(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
          case 'Request MODENA Pod': return <PodRequestTable data={podRequestData} onView={(item) => { setSelectedPodRequest(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
-         case 'Stock Opname': return <StockOpnameTable data={stockOpnameData} onView={(item) => { setSelectedStockOpname(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
+         case 'Stock Opname': return <StockOpnameTable data={stockOpnameData.filter(item => activeTab === 'Semua' || activeTab === '' || item.status === currentTargetStatus)} onView={(item) => { setSelectedStockOpname(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
+         case 'Stock Opname Approval': return <StockOpnameTable data={stockOpnameData.filter(item => item.status === 'Draft')} onView={(item) => { setSelectedStockOpname(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Request ATK':
          case 'Stationery Request Approval':
             const filteredAtk = atkData.filter(item => activeTab === 'Semua' || activeTab === '' || item.status === currentTargetStatus);
@@ -233,6 +234,7 @@ const App: React.FC = () => {
         }
     }
     if (activeModule === 'Stock Opname') return ['Semua', 'Matched', 'Discrepancy'];
+    if (activeModule === 'Stock Opname Approval') return ['Pending'];
     if (activeModule.includes('Master')) return ['Semua'];
     return ['Semua'];
   }, [activeModule]);
@@ -293,7 +295,7 @@ const App: React.FC = () => {
                 onImportExcelClick={handleImportExcelClick}
                 moduleName={activeModule}
                 searchPlaceholder={`Search ${activeModule}...`}
-                hideAdd={false}
+                hideAdd={activeModule === 'Stock Opname Approval'}
                 podFilters={podFilters}
                 onPodFilterChange={(field, value) => setPodFilters(prev => ({ ...prev, [field]: value }))}
                 stationeryFilters={stationeryFilters}

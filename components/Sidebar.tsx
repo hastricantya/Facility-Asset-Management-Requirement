@@ -28,7 +28,8 @@ import {
   House,
   ClipboardList,
   Lock,
-  LayoutGrid
+  LayoutGrid,
+  ClipboardCheck
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -56,7 +57,7 @@ export const Sidebar: React.FC<Props> = ({
   onCloseMobile 
 }) => {
   const { t } = useLanguage();
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Gedung', 'ATK', 'ARK', 'Locker', 'MODENA Pod', 'Master Data']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Kendaraan', 'Gedung', 'ATK', 'ARK', 'Locker', 'MODENA Pod', 'Stock Opname', 'Master Data']);
 
   const toggleMenu = (label: string) => {
     if (isCollapsed) {
@@ -91,7 +92,6 @@ export const Sidebar: React.FC<Props> = ({
         subItems: [
             { label: 'Request ATK', icon: <Database size={18} /> },
             { label: 'Stationery Request Approval', icon: <UserCheck size={18} /> },
-            { label: 'Stock Opname', icon: <ClipboardList size={18} /> },
         ]
     },
     { 
@@ -100,6 +100,14 @@ export const Sidebar: React.FC<Props> = ({
         subItems: [
             { label: 'Daftar ARK', icon: <Database size={18} /> },
             { label: 'Household Request Approval', icon: <UserCheck size={18} /> },
+        ]
+    },
+    { 
+        label: 'Stock Opname', 
+        icon: <ClipboardList size={20} />,
+        subItems: [
+            { label: 'Stock Opname', icon: <Database size={18} /> },
+            { label: 'Stock Opname Approval', icon: <UserCheck size={18} /> },
         ]
     },
     { label: 'Log Book', icon: <BookOpen size={20} /> },
