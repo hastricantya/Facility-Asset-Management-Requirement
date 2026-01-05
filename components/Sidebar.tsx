@@ -125,7 +125,6 @@ export const Sidebar: React.FC<Props> = ({
         subItems: [
             { label: 'Pod Census', icon: <Database size={18} /> },
             { label: 'Request MODENA Pod', icon: <Send size={18} /> },
-            { label: 'Master MODENA Pod', icon: <Settings size={18} /> },
         ]
     },
     { 
@@ -154,6 +153,7 @@ export const Sidebar: React.FC<Props> = ({
         { label: 'Master Vendor', icon: <Users size={18} /> },
         { label: 'Master ATK', icon: <Settings size={18} /> },
         { label: 'Master ARK', icon: <Settings size={18} /> },
+        { label: 'Master MODENA Pod', icon: <Settings size={18} /> },
       ]
     },
   ];
