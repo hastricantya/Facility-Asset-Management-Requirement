@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 /* Added CheckCircle2 to the import list from lucide-react */
-import { X, Save, List, Calendar, CheckCircle, CheckCircle2, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid, ChevronDown } from 'lucide-react';
+import { X, Save, List, Calendar, CheckCircle, CheckCircle2, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid, ChevronDown, Layers, ClipboardCheck } from 'lucide-react';
 import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_DELIVERY_LOCATIONS } from '../constants';
@@ -50,6 +50,15 @@ interface Props {
   mode?: 'create' | 'edit' | 'view';
   vehicleList?: VehicleRecord[];
   masterData?: Record<string, GeneralMasterItem[]>;
+}
+
+// Internal state for multiple items in stock opname
+interface OpnameItemEntry {
+    itemCode: string;
+    itemName: string;
+    systemQty: number;
+    physicalQty: number;
+    difference: number;
 }
 
 export const AddStockModal: React.FC<Props> = ({ 
@@ -116,7 +125,10 @@ export const AddStockModal: React.FC<Props> = ({
   const [podForm, setPodForm] = useState<Partial<ModenaPodRecord>>({});
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
   const [showApprovalHistory, setShowApprovalHistory] = useState(false);
+  
   const [opnameInventoryType, setOpnameInventoryType] = useState<'ATK' | 'ARK'>('ATK');
+  const [opnameSelectedCategory, setOpnameSelectedCategory] = useState<string>('');
+  const [opnameEntries, setOpnameEntries] = useState<OpnameItemEntry[]>([]);
 
   const isArkModule = moduleName.includes('ARK') || moduleName.includes('Household');
   const isStationeryRequest = moduleName.includes('ATK') || moduleName.includes('ARK') || moduleName.includes('Stationery') || moduleName.includes('Household');
@@ -129,7 +141,6 @@ export const AddStockModal: React.FC<Props> = ({
   const isPodRequest = moduleName === 'Request MODENA Pod';
   const isViewMode = mode === 'view';
   
-  // Logic: Fields remain editable if it's the approval module, even if in view mode
   const isFieldDisabled = isViewMode && !isApprovalModule;
 
   useEffect(() => {
@@ -145,6 +156,14 @@ export const AddStockModal: React.FC<Props> = ({
               setStockOpnameForm(initialStockOpnameData);
               const isArk = MOCK_MASTER_ARK_DATA.some(m => m.itemCode === initialStockOpnameData.itemCode);
               setOpnameInventoryType(isArk ? 'ARK' : 'ATK');
+              setOpnameSelectedCategory(initialStockOpnameData.category || '');
+              setOpnameEntries([{
+                  itemCode: initialStockOpnameData.itemCode,
+                  itemName: initialStockOpnameData.itemName,
+                  systemQty: initialStockOpnameData.systemQty,
+                  physicalQty: initialStockOpnameData.physicalQty,
+                  difference: initialStockOpnameData.difference
+              }]);
            }
            if (initialLockerData) setLockerForm(initialLockerData);
            if (initialLockerRequestData) setLockerRequestForm(initialLockerRequestData);
@@ -181,13 +200,12 @@ export const AddStockModal: React.FC<Props> = ({
         } else {
             if (isStockOpname) {
               setOpnameInventoryType('ATK');
+              setOpnameSelectedCategory('');
+              setOpnameEntries([]);
               setStockOpnameForm({
                 opnameNumber: `SO/CAT/${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`,
                 date: new Date().toISOString().split('T')[0],
                 performedBy: 'Aan Junaidi',
-                systemQty: 0,
-                physicalQty: 0,
-                difference: 0,
                 status: 'Draft'
               });
             }
@@ -242,6 +260,39 @@ export const AddStockModal: React.FC<Props> = ({
     }
   }, [isOpen, initialAssetData, mode, moduleName, isArkModule, initialStockOpnameData, isStockOpname, isLocker, isLockerRequest, isPodRequest, initialLockerData, initialLockerRequestData, initialPodRequestData, initialPodData, isPod]);
 
+  // Handle Category Change for Stock Opname
+  useEffect(() => {
+    if (isStockOpname && opnameSelectedCategory && mode === 'create') {
+        const masterList = opnameInventoryType === 'ARK' ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
+        const filtered = masterList.filter(m => m.category === opnameSelectedCategory);
+        setOpnameEntries(filtered.map(m => ({
+            itemCode: m.itemCode,
+            itemName: m.itemName,
+            systemQty: m.remainingStock,
+            physicalQty: 0,
+            difference: -m.remainingStock
+        })));
+    } else if (isStockOpname && !opnameSelectedCategory && mode === 'create') {
+        setOpnameEntries([]);
+    }
+  }, [opnameSelectedCategory, opnameInventoryType, isStockOpname, mode]);
+
+  const handleOpnamePhysicalChange = (index: number, val: number) => {
+    const nextEntries = [...opnameEntries];
+    const item = nextEntries[index];
+    item.physicalQty = val;
+    item.difference = val - item.systemQty;
+    setOpnameEntries(nextEntries);
+  };
+
+  const opnameTotals = useMemo(() => {
+    return opnameEntries.reduce((acc, curr) => ({
+        system: acc.system + curr.systemQty,
+        physical: acc.physical + curr.physicalQty,
+        diff: acc.diff + curr.difference
+    }), { system: 0, physical: 0, diff: 0 });
+  }, [opnameEntries]);
+
   const handleSave = () => {
       if (isLogBook && onSaveLogBook) onSaveLogBook(logBookForm);
       if (isStationeryRequest && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
@@ -255,16 +306,7 @@ export const AddStockModal: React.FC<Props> = ({
 
   const handleLogBookChange = (field: keyof LogBookRecord, value: any) => setLogBookForm(prev => ({ ...prev, [field]: value }));
   const handleStockOpnameChange = (field: keyof StockOpnameRecord, value: any) => {
-    setStockOpnameForm(prev => {
-      const next = { ...prev, [field]: value };
-      if (field === 'physicalQty' || field === 'systemQty' || field === 'itemCode') {
-        const sys = next.systemQty || 0;
-        const phys = next.physicalQty || 0;
-        next.difference = phys - sys;
-        next.status = next.difference === 0 ? 'Matched' : 'Discrepancy';
-      }
-      return next;
-    });
+    setStockOpnameForm(prev => ({ ...prev, [field]: value }));
   };
 
   const handleLockerChange = (field: string, value: any) => {
@@ -883,7 +925,7 @@ export const AddStockModal: React.FC<Props> = ({
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Inventory Category</label>
                       <div className="flex bg-gray-100 p-1 rounded-xl border border-gray-200 shadow-inner">
                         <button 
-                           onClick={() => setOpnameInventoryType('ATK')}
+                           onClick={() => { setOpnameInventoryType('ATK'); setOpnameSelectedCategory(''); }}
                            disabled={isFieldDisabled}
                            className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all uppercase tracking-widest flex items-center justify-center gap-2
                              ${opnameInventoryType === 'ATK' ? 'bg-black text-white shadow-lg' : 'text-gray-400 hover:text-black'}`}
@@ -891,7 +933,7 @@ export const AddStockModal: React.FC<Props> = ({
                           <Box size={14} /> ATK Stationery
                         </button>
                         <button 
-                           onClick={() => setOpnameInventoryType('ARK')}
+                           onClick={() => { setOpnameInventoryType('ARK'); setOpnameSelectedCategory(''); }}
                            disabled={isFieldDisabled}
                            className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all uppercase tracking-widest flex items-center justify-center gap-2
                              ${opnameInventoryType === 'ARK' ? 'bg-black text-white shadow-lg' : 'text-gray-400 hover:text-black'}`}
@@ -900,61 +942,106 @@ export const AddStockModal: React.FC<Props> = ({
                         </button>
                       </div>
                     </div>
+                    
+                    {/* Item Category Dropdown */}
                     <div>
-                      <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Select Item</label>
-                      <select 
-                        disabled={isFieldDisabled}
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
-                        value={stockOpnameForm.itemCode || ''}
-                        onChange={(e) => {
-                          const masterList = opnameInventoryType === 'ARK' ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
-                          const found = masterList.find(m => m.itemCode === e.target.value);
-                          if (found) {
-                            handleStockOpnameChange('itemCode', found.itemCode);
-                            handleStockOpnameChange('itemName', found.itemName);
-                            handleStockOpnameChange('category', found.category);
-                            handleStockOpnameChange('systemQty', found.remainingStock);
-                          }
-                        }}
-                      >
-                        <option value="">(Select Item from {opnameInventoryType})</option>
-                        {(opnameInventoryType === 'ARK' ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA).map(m => (
-                          <option key={m.id} value={m.itemCode}>{m.itemCode} - {m.itemName}</option>
-                        ))}
-                      </select>
+                      <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Item Category</label>
+                      <div className="relative">
+                        <select 
+                          disabled={isFieldDisabled}
+                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none shadow-sm transition-all"
+                          value={opnameSelectedCategory}
+                          onChange={(e) => {
+                            setOpnameSelectedCategory(e.target.value);
+                          }}
+                        >
+                          <option value="">(Select Category)</option>
+                          {(opnameInventoryType === 'ARK' ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY).map(c => (
+                            <option key={c.id} value={c.name}>{c.name}</option>
+                          ))}
+                        </select>
+                        <Layers size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+              
+              {/* Opname Multi-Item Table - Dynamic based on category */}
+              {opnameSelectedCategory && (
+                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="p-5 border-b border-gray-100 flex items-center gap-2 bg-gray-50/50">
+                        <ClipboardCheck size={16} className="text-blue-500" />
+                        <h4 className="text-[10px] font-black text-black uppercase tracking-widest">Audit List for {opnameSelectedCategory}</h4>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead>
+                                <tr className="bg-white border-b border-gray-100 text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                                    <th className="px-8 py-4 w-12 text-center">#</th>
+                                    <th className="px-8 py-4">Item Code / Name</th>
+                                    <th className="px-8 py-4 text-center">System Qty</th>
+                                    <th className="px-8 py-4 text-center">Physical Qty</th>
+                                    <th className="px-8 py-4 text-center">Difference</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {opnameEntries.map((entry, index) => (
+                                    <tr key={entry.itemCode} className="hover:bg-gray-50/30 transition-colors">
+                                        <td className="px-8 py-4 text-center text-gray-300 font-bold text-[11px]">{index + 1}</td>
+                                        <td className="px-8 py-4">
+                                            <div className="font-mono text-[10px] text-gray-400 font-bold">{entry.itemCode}</div>
+                                            <div className="text-[13px] font-black text-black uppercase">{entry.itemName}</div>
+                                        </td>
+                                        <td className="px-8 py-4 text-center">
+                                            <span className="font-mono text-base font-black text-gray-300">{entry.systemQty}</span>
+                                        </td>
+                                        <td className="px-8 py-4 text-center">
+                                            <input 
+                                                type="number"
+                                                disabled={isFieldDisabled}
+                                                className="w-24 bg-white border border-gray-200 rounded-lg px-3 py-2 text-center text-base font-black text-black focus:border-black outline-none shadow-sm transition-all"
+                                                value={entry.physicalQty}
+                                                onChange={(e) => handleOpnamePhysicalChange(index, parseInt(e.target.value) || 0)}
+                                            />
+                                        </td>
+                                        <td className="px-8 py-4 text-center">
+                                            <div className={`text-base font-black ${entry.difference === 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                                {entry.difference > 0 ? `+${entry.difference}` : entry.difference}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+              )}
+
+              {/* Total Summary Footer */}
               <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-full bg-black"></div>
-                <SectionHeader icon={Hash} title="Quantity Audit" />
+                <SectionHeader icon={Hash} title="Audit Summary (Category Total)" />
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center mt-8">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">System Qty</label>
-                    <div className="text-[42px] font-black text-gray-300">{stockOpnameForm.systemQty || 0}</div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total System Qty</label>
+                    <div className="text-[42px] font-black text-gray-300">{opnameTotals.system}</div>
                     <p className="text-[9px] font-bold text-gray-400 uppercase">Existing in Database</p>
                   </div>
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">Physical Qty</label>
-                    <input 
-                      type="number"
-                      disabled={isFieldDisabled}
-                      className="w-32 mx-auto border-b-4 border-black text-center text-[42px] font-black focus:outline-none bg-transparent transition-all"
-                      value={stockOpnameForm.physicalQty}
-                      onChange={(e) => handleStockOpnameChange('physicalQty', parseInt(e.target.value) || 0)}
-                    />
-                    <p className="text-[9px] font-bold text-black uppercase">Counted Manually</p>
+                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">Total Physical Qty</label>
+                    <div className="text-[42px] font-black text-black">{opnameTotals.physical}</div>
+                    <p className="text-[9px] font-bold text-black uppercase">Aggregate count</p>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Difference</label>
-                    <div className={`text-[42px] font-black ${(stockOpnameForm.difference || 0) === 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      {(stockOpnameForm.difference || 0) > 0 ? `+${stockOpnameForm.difference}` : stockOpnameForm.difference || 0}
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total Difference</label>
+                    <div className={`text-[42px] font-black ${opnameTotals.diff === 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      {opnameTotals.diff > 0 ? `+${opnameTotals.diff}` : opnameTotals.diff}
                     </div>
                     <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border
-                      ${(stockOpnameForm.difference || 0) === 0 ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
-                      {(stockOpnameForm.difference || 0) === 0 ? <CheckCircle2 size={10} /> : <AlertTriangle size={10} />}
-                      {stockOpnameForm.status}
+                      ${opnameTotals.diff === 0 ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
+                      {opnameTotals.diff === 0 ? <CheckCircle2 size={10} /> : <AlertTriangle size={10} />}
+                      {opnameTotals.diff === 0 ? 'Matched' : 'Discrepancy'}
                     </div>
                   </div>
                 </div>
