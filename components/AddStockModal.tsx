@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, Save, Calendar, User, Package, MessageSquare, Plus, Trash2, Send, Layers, ClipboardCheck, Clock, Archive, Settings, History, Lock, Home, LayoutGrid, Baby, Users, Activity, Briefcase, Building2, Key, Hash, ShieldCheck, DollarSign, Landmark, ShoppingCart, AlertCircle, UploadCloud, Check, XCircle, MapPin } from 'lucide-react';
+import { X, Save, Calendar, User, Package, MessageSquare, Plus, Trash2, Send, Layers, ClipboardCheck, Clock, Archive, Settings, History, Lock, Home, LayoutGrid, Baby, Users, Activity, Briefcase, Building2, Key, Hash, ShieldCheck, DollarSign, Landmark, ShoppingCart, AlertCircle, UploadCloud, Check, XCircle, MapPin, Search, Filter, ClipboardList, Info, Smartphone, Mail, CreditCard, Contact } from 'lucide-react';
 import { AssetRecord, LogBookRecord, StockOpnameRecord, LockerRecord, LockerRequestRecord, PodRequestRecord, ModenaPodRecord, MasterPodRecord, MasterLockerRecord, StationeryRequestRecord, StationeryRequestItem } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_POD_DATA } from '../constants';
@@ -73,6 +72,9 @@ export const AddStockModal: React.FC<Props> = ({
   const [stationeryRequestForm, setStationeryRequestForm] = useState<Partial<StationeryRequestRecord>>({});
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
   
+  const [soCategory, setSoCategory] = useState<'ATK' | 'ARK'>('ATK');
+  const [soItems, setSoItems] = useState<Array<{id: string | number, itemCode: string, itemName: string, category: string, systemQty: number, physicalQty: number, difference: number}>>([]);
+
   const isArkModule = moduleName.includes('ARK') || moduleName.includes('Household');
   const isStationeryRequest = moduleName.includes('ATK') || moduleName.includes('ARK') || moduleName.includes('Stationery') || moduleName.includes('Household');
   const isApprovalModule = moduleName.includes('Approval');
@@ -117,7 +119,42 @@ export const AddStockModal: React.FC<Props> = ({
                }]);
            }
         } else {
-            if (isStockOpname) setStockOpnameForm({ opnameNumber: 'SO-NEW', date: new Date().toISOString().split('T')[0], status: 'Draft' });
+            if (isLogBook) {
+              setLogBookForm({
+                lokasiModena: 'Satrio',
+                kategoriTamu: 'Customer',
+                namaTamu: '',
+                nomorHp: '',
+                email: '',
+                visitorCard: '',
+                noIdentitas: '',
+                tanggalKunjungan: new Date().toISOString().split('T')[0],
+                jamDatang: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                jamPulang: '',
+                wanita: 0,
+                lakiLaki: 1,
+                anakAnak: 0,
+                note: ''
+              });
+            }
+            if (isStockOpname) {
+                setStockOpnameForm({ 
+                  opnameNumber: `SO/${soCategory}/${new Date().getFullYear()}/${Math.floor(Math.random()*9999)}`, 
+                  date: new Date().toISOString().split('T')[0], 
+                  status: 'Draft',
+                  performedBy: 'Current User'
+                });
+                const master = soCategory === 'ATK' ? MOCK_MASTER_DATA : MOCK_MASTER_ARK_DATA;
+                setSoItems(master.map(m => ({
+                  id: m.id,
+                  itemCode: m.itemCode,
+                  itemName: m.itemName,
+                  category: m.category,
+                  systemQty: m.remainingStock,
+                  physicalQty: m.remainingStock,
+                  difference: 0
+                })));
+            }
             if (isPod) setPodForm({ lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', statusLokerBarang: 'Tidak Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Tidak ada', isExpat: false });
             if (isMasterPod) setMasterPodForm({ lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', kapasitas: 1, status: 'Active', fasilitas: [] });
             if (isMasterLocker) setMasterLockerForm({ floor: 'Lt 2 Pria', status: 'Active', type: moduleName.includes('Goods') ? 'Goods' : 'Pantry' });
@@ -135,7 +172,7 @@ export const AddStockModal: React.FC<Props> = ({
             }
         }
     }
-  }, [isOpen, initialAssetData, initialLogBookData, initialStockOpnameData, initialLockerData, initialLockerRequestData, initialPodData, initialMasterPodData, initialMasterLockerData, initialPodRequestData, mode, isArkModule, isStationeryRequest, isStockOpname, isPod, isMasterPod, isMasterLocker, isLockerRequest, moduleName]);
+  }, [isOpen, initialAssetData, initialLogBookData, initialStockOpnameData, initialLockerData, initialLockerRequestData, initialPodData, initialMasterPodData, initialMasterLockerData, initialPodRequestData, mode, isArkModule, isStationeryRequest, isStockOpname, isPod, isMasterPod, isMasterLocker, isLockerRequest, isLogBook, moduleName, soCategory]);
 
   const handleSave = () => {
       if (isStationeryRequest && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
@@ -182,11 +219,16 @@ export const AddStockModal: React.FC<Props> = ({
       setRequestItems(newItems);
   };
 
-  const roomHistory = useMemo(() => {
-    if (!isPod || !podForm.nomorKamar) return [];
-    const matchedRecord = MOCK_POD_DATA.find(p => p.nomorKamar === podForm.nomorKamar);
-    return matchedRecord?.history || [];
-  }, [isPod, podForm.nomorKamar]);
+  const handleSoPhysicalQtyChange = (index: number, value: string) => {
+    const qty = parseInt(value) || 0;
+    const newItems = [...soItems];
+    newItems[index] = {
+      ...newItems[index],
+      physicalQty: qty,
+      difference: qty - newItems[index].systemQty
+    };
+    setSoItems(newItems);
+  };
 
   const SectionHeader = ({ icon: Icon, title }: { icon: any, title: string }) => (
     <div className="flex items-center gap-3 mb-6">
@@ -210,6 +252,8 @@ export const AddStockModal: React.FC<Props> = ({
                  isMasterLocker ? (isViewMode ? 'Master Locker Detail' : 'Catalog New Locker') :
                  isLocker ? (isViewMode ? 'Locker Management Details' : 'Register Locker') : 
                  isLockerRequest ? (isViewMode ? 'Locker Request Details' : 'Create New Locker Request') :
+                 isStockOpname ? (isViewMode ? 'Stock Opname Details' : 'Initiate New Stock Opname') :
+                 isLogBook ? (isViewMode ? 'Guest Log Detail' : 'Check-in New Guest') :
                  moduleName}
               </h2>
           </div>
@@ -220,230 +264,226 @@ export const AddStockModal: React.FC<Props> = ({
         
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          {isStationeryRequest ? (
-            /* STATIONERY REQUEST FORM (Logic Preserved) */
+          {isLogBook ? (
+            /* --- UPDATED LOG BOOK FORM --- */
             <div className="space-y-8">
                <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-                 {/* APPLICATION INFO */}
-                 <div className="md:col-span-7 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
-                    <SectionHeader icon={Send} title="Application Info" />
-                    <div className="grid grid-cols-2 gap-6">
-                        <div>
-                           <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Request Date</label>
-                           <div className="relative">
-                               <input type="date" disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm" value={stationeryRequestForm.date || ''} onChange={(e) => handleStationeryRequestChange('date', e.target.value)} />
-                           </div>
-                        </div>
-                        <div>
-                           <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Request Type</label>
-                           <div className="relative">
-                               <select disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm appearance-none" value={stationeryRequestForm.type || 'DAILY REQUEST'} onChange={(e) => handleStationeryRequestChange('type', e.target.value)}>
-                                  <option value="DAILY REQUEST">Daily Request</option>
-                                  <option value="EVENT REQUEST">Event Request</option>
-                               </select>
-                           </div>
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Delivery Method</label>
-                        <div className="flex gap-2">
-                           {['PICKUP HO', 'DELIVERY'].map(m => (
-                               <button key={m} disabled={isFieldDisabled} onClick={() => handleStationeryRequestChange('deliveryType', m)} className={`flex-1 py-3 text-[10px] font-black rounded-xl border transition-all uppercase tracking-widest ${stationeryRequestForm.deliveryType === m ? 'bg-black text-white' : 'bg-white text-gray-400 border-gray-200 hover:border-black'}`}>
-                                   {m}
-                               </button>
-                           ))}
-                        </div>
-                    </div>
-                 </div>
-
-                 {/* REQUESTER INFO */}
-                 <div className="md:col-span-5 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
-                   <SectionHeader icon={User} title="Requester Info" />
-                   <div className="flex items-center gap-4 p-5 bg-gray-50/50 rounded-xl border border-gray-100">
-                       <img src={initialAssetData?.employee.avatar || 'https://i.pravatar.cc/150?u=current_user'} className="w-14 h-14 rounded-full border-2 border-white shadow-sm" />
+                  {/* Left Column: Guest & Visit Details */}
+                  <div className="md:col-span-8 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                    <SectionHeader icon={Contact} title="Guest Profile & Visit Details" />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                       {/* Location & Category */}
                        <div>
-                           <div className="text-[14px] font-black text-black uppercase tracking-tight">{initialAssetData?.employee.name || 'Current User'}</div>
-                           <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{initialAssetData?.employee.role || 'Staff'}</div>
-                       </div>
-                   </div>
-                 </div>
-               </div>
-
-               {/* REQUESTED ITEMS */}
-               <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                 <SectionHeader icon={Package} title="Requested Items" />
-                 <div className="overflow-hidden border border-gray-100 rounded-xl">
-                    <table className="w-full text-left">
-                        <thead className="bg-gray-50/80 border-b border-gray-100">
-                            <tr>
-                                <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest pl-6">Kategori</th>
-                                <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Item Name</th>
-                                <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Item Code</th>
-                                <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">In Stock</th>
-                                <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Qty</th>
-                                <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest pl-10">UOM</th>
-                                {!isViewMode && <th className="p-4 w-16 pr-6"></th>}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {requestItems.map((item, idx) => {
-                                const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
-                                const catList = isArkModule ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY;
-                                const filteredMasterList = item.categoryId 
-                                    ? masterList.filter(m => m.category === item.categoryId)
-                                    : masterList;
-                                
-                                const selectedItemFull = masterList.find(m => m.id.toString() === item.itemId);
-
-                                return (
-                                    <tr key={idx} className="hover:bg-gray-50/30 transition-colors">
-                                        <td className="p-4 pl-6">
-                                            <select 
-                                                disabled={isFieldDisabled} 
-                                                className="w-full bg-transparent border-0 font-bold text-[13px] text-black focus:ring-0 appearance-none outline-none" 
-                                                value={item.categoryId} 
-                                                onChange={(e) => handleRequestItemChange(idx, 'categoryId', e.target.value)}
-                                            >
-                                                <option value="">Select Category</option>
-                                                {catList.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                                            </select>
-                                        </td>
-                                        <td className="p-4">
-                                            <select 
-                                                disabled={isFieldDisabled || !item.categoryId} 
-                                                className={`w-full bg-transparent border-0 font-bold text-[13px] focus:ring-0 appearance-none outline-none ${!item.categoryId ? 'text-gray-300' : 'text-black'}`}
-                                                value={item.itemId} 
-                                                onChange={(e) => handleRequestItemChange(idx, 'itemId', e.target.value)}
-                                            >
-                                                <option value="">{item.categoryId ? 'Select Item' : 'Select category first'}</option>
-                                                {filteredMasterList.map(m => <option key={m.id} value={m.id}>{m.itemName}</option>)}
-                                            </select>
-                                        </td>
-                                        <td className="p-4">
-                                            <span className={`text-[12px] font-mono font-bold ${selectedItemFull ? 'text-blue-600' : 'text-gray-300'}`}>
-                                                {selectedItemFull?.itemCode || '-'}
-                                            </span>
-                                        </td>
-                                        <td className="p-4 text-center">
-                                            <span className={`text-[13px] font-black ${selectedItemFull ? (selectedItemFull.remainingStock > 5 ? 'text-green-600' : 'text-red-500') : 'text-gray-300'}`}>
-                                                {selectedItemFull ? selectedItemFull.remainingStock : '-'}
-                                            </span>
-                                        </td>
-                                        <td className="p-4">
-                                            <div className="flex justify-center">
-                                                <input type="number" disabled={isFieldDisabled} className="w-16 h-10 border border-gray-200 rounded-lg text-center font-black text-sm outline-none focus:border-black shadow-sm" value={item.qty} onChange={(e) => handleRequestItemChange(idx, 'qty', e.target.value)} />
-                                            </div>
-                                        </td>
-                                        <td className="p-4 pl-10 text-[11px] font-black text-gray-400 uppercase">{item.uom || '-'}</td>
-                                        {!isViewMode && (
-                                            <td className="p-4 pr-6 text-right">
-                                                <button onClick={() => setRequestItems(requestItems.filter((_, i) => i !== idx))} className="text-red-200 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
-                                            </td>
-                                        )}
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                 </div>
-                 {!isViewMode && (
-                     <button onClick={() => setRequestItems([...requestItems, { itemId: '', qty: '', categoryId: '', uom: '' }])} className="mt-6 text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] flex items-center gap-2 hover:underline">
-                        <Plus size={14} className="stroke-[3]" /> ADD MORE ITEM
-                     </button>
-                 )}
-               </div>
-
-               {/* REMARKS */}
-               <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                 <SectionHeader icon={MessageSquare} title="Keterangan / Remarks" />
-                 <textarea rows={3} disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white outline-none focus:border-black transition-all placeholder:text-gray-300" value={stationeryRequestForm.remarks || ''} onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)} placeholder="Tulis catatan tambahan di sini..." />
-               </div>
-            </div>
-          ) : isLockerRequest ? (
-            /* LOCKER REQUEST FORM - NEWLY IMPLEMENTED */
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-                {/* Section 1: Requester Details */}
-                <div className="md:col-span-6 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
-                   <SectionHeader icon={User} title="Requester Information" />
-                   <div className="space-y-6">
-                      <div className="p-5 bg-gray-50/50 rounded-2xl border border-gray-100 flex items-center gap-4">
-                          <img src={initialLockerRequestData?.employee.avatar || 'https://i.pravatar.cc/150?u=current_user'} className="w-16 h-16 rounded-full border-4 border-white shadow-md" />
-                          <div>
-                              <div className="text-[16px] font-black text-black uppercase tracking-tight leading-none mb-1">{initialLockerRequestData?.employee.name || 'Gian Nanda Pratama'}</div>
-                              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{initialLockerRequestData?.employee.role || 'Staff Admin'}</div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">MODENA Location</label>
+                          <div className="relative">
+                              <MapPin size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                              <select 
+                                disabled={isFieldDisabled} 
+                                className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-bold text-black focus:border-black outline-none appearance-none transition-all shadow-sm"
+                                value={logBookForm.lokasiModena || ''}
+                                onChange={(e) => setLogBookForm({...logBookForm, lokasiModena: e.target.value})}
+                              >
+                                <option value="Satrio">Satrio (Head Office)</option>
+                                <option value="Kemang">Kemang (Showroom)</option>
+                                <option value="Suryo">Suryo (Showroom)</option>
+                                <option value="Cakung">Cakung (Warehouse)</option>
+                              </select>
                           </div>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Department</label>
-                        <input 
-                          type="text" 
-                          disabled={isFieldDisabled} 
-                          className="w-full bg-gray-50/30 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all shadow-sm"
-                          value={initialLockerRequestData?.employee.department || 'After Sales'}
-                          readOnly
-                        />
-                      </div>
-                   </div>
-                </div>
+                       </div>
+                       <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Guest Category</label>
+                          <div className="relative">
+                              <Layers size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                              <select 
+                                disabled={isFieldDisabled} 
+                                className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-bold text-black focus:border-black outline-none appearance-none transition-all shadow-sm"
+                                value={logBookForm.kategoriTamu || ''}
+                                onChange={(e) => setLogBookForm({...logBookForm, kategoriTamu: e.target.value})}
+                              >
+                                <option value="Customer">Customer</option>
+                                <option value="Supplier">Supplier / Vendor</option>
+                                <option value="Partner">Business Partner</option>
+                                <option value="Personal">Personal / Family</option>
+                                <option value="Courier">Courier / Delivery</option>
+                              </select>
+                          </div>
+                       </div>
 
-                {/* Section 2: Request Details */}
-                <div className="md:col-span-6 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
-                  <SectionHeader icon={Send} title="Request Specifications" />
-                  <div className="space-y-6">
-                      <div className="grid grid-cols-2 gap-6">
-                         <div>
-                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Request Date</label>
-                            <div className="relative">
-                                <Calendar size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
-                                <input 
-                                  type="text" 
-                                  disabled={true} 
-                                  className="w-full bg-gray-50/30 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-black text-gray-400 outline-none"
-                                  value={lockerRequestForm.date || ''}
-                                />
-                            </div>
+                       {/* Guest Name - Full width in its row */}
+                       <div className="md:col-span-2">
+                         <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Full Name / Representative</label>
+                         <div className="relative">
+                             <User size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                             <input 
+                               type="text" 
+                               disabled={isFieldDisabled} 
+                               placeholder="Input guest full name..."
+                               className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all shadow-sm"
+                               value={logBookForm.namaTamu || ''}
+                               onChange={(e) => setLogBookForm({...logBookForm, namaTamu: e.target.value})}
+                             />
                          </div>
-                         <div>
-                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Preferred Floor</label>
-                            <div className="relative">
-                                <MapPin size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
-                                <select 
-                                  disabled={isFieldDisabled}
-                                  className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-bold text-black focus:border-black outline-none appearance-none transition-all shadow-sm"
-                                  value={lockerRequestForm.preferredLocation || ''}
-                                  onChange={(e) => setLockerRequestForm({...lockerRequestForm, preferredLocation: e.target.value})}
-                                >
-                                  <option value="Lantai 1">Lantai 1</option>
-                                  <option value="Lantai 2 Satrio">Lantai 2 Satrio</option>
-                                  <option value="Lantai 3 Satrio">Lantai 3 Satrio</option>
-                                  <option value="Lantai 2 Kr. Asem">Lantai 2 Kr. Asem</option>
-                                  <option value="Lantai 3 Kr. Asem">Lantai 3 Kr. Asem</option>
-                                </select>
-                            </div>
-                         </div>
-                      </div>
+                       </div>
 
-                      <div>
-                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Reason for Request</label>
-                        <textarea 
-                          rows={4}
-                          disabled={isFieldDisabled}
-                          placeholder="Please provide details for the locker allocation request..."
-                          className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:border-black outline-none transition-all placeholder:text-gray-300 shadow-sm"
-                          value={lockerRequestForm.reason || ''}
-                          onChange={(e) => setLockerRequestForm({...lockerRequestForm, reason: e.target.value})}
-                        />
-                      </div>
+                       {/* NEW FIELDS: Phone & Email */}
+                       <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Phone Number (WhatsApp)</label>
+                          <div className="relative">
+                              <Smartphone size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                              <input 
+                                type="tel" 
+                                disabled={isFieldDisabled} 
+                                placeholder="08xx-xxxx-xxxx"
+                                className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all shadow-sm"
+                                value={logBookForm.nomorHp || ''}
+                                onChange={(e) => setLogBookForm({...logBookForm, nomorHp: e.target.value})}
+                              />
+                          </div>
+                       </div>
+                       <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Email Address</label>
+                          <div className="relative">
+                              <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                              <input 
+                                type="email" 
+                                disabled={isFieldDisabled} 
+                                placeholder="example@mail.com"
+                                className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all shadow-sm"
+                                value={logBookForm.email || ''}
+                                onChange={(e) => setLogBookForm({...logBookForm, email: e.target.value})}
+                              />
+                          </div>
+                       </div>
+
+                       {/* Identity & Visitor Card */}
+                       <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Identity No (KTP / SIM / PASSPORT)</label>
+                          <div className="relative">
+                              <CreditCard size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                              <input 
+                                type="text" 
+                                disabled={isFieldDisabled} 
+                                placeholder="Enter ID number..."
+                                className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all shadow-sm"
+                                value={logBookForm.noIdentitas || ''}
+                                onChange={(e) => setLogBookForm({...logBookForm, noIdentitas: e.target.value})}
+                              />
+                          </div>
+                       </div>
+                       <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Visitor Card Number</label>
+                          <div className="relative">
+                              <Hash size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                              <input 
+                                type="text" 
+                                disabled={isFieldDisabled} 
+                                placeholder="Ex: VC-001"
+                                className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all shadow-sm"
+                                value={logBookForm.visitorCard || ''}
+                                onChange={(e) => setLogBookForm({...logBookForm, visitorCard: e.target.value})}
+                              />
+                          </div>
+                       </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+
+                  {/* Right Column: Time Tracking & Group Size */}
+                  <div className="md:col-span-4 space-y-8">
+                    {/* Time Tracking */}
+                    <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                      <SectionHeader icon={Clock} title="Check-in Log" />
+                      <div className="space-y-4">
+                        <div>
+                           <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Date of Visit</label>
+                           <input 
+                            type="date" 
+                            disabled={isFieldDisabled} 
+                            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm" 
+                            value={logBookForm.tanggalKunjungan || ''} 
+                            onChange={(e) => setLogBookForm({...logBookForm, tanggalKunjungan: e.target.value})} 
+                           />
+                        </div>
+                        <div>
+                           <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Arrival Time</label>
+                           <input 
+                            type="time" 
+                            disabled={isFieldDisabled} 
+                            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm" 
+                            value={logBookForm.jamDatang || ''} 
+                            onChange={(e) => setLogBookForm({...logBookForm, jamDatang: e.target.value})} 
+                           />
+                        </div>
+                        {/* ADDED TIME OUT FIELD AS REQUESTED */}
+                        <div>
+                           <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Departure Time (Time Out)</label>
+                           <input 
+                            type="time" 
+                            disabled={isFieldDisabled} 
+                            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm" 
+                            value={logBookForm.jamPulang || ''} 
+                            onChange={(e) => setLogBookForm({...logBookForm, jamPulang: e.target.value})} 
+                           />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* People Tracking */}
+                    <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                      <SectionHeader icon={Users} title="Group Size" />
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="text-center">
+                           <label className="block text-[9px] font-black text-gray-400 uppercase mb-2">Male</label>
+                           <input 
+                            type="number" 
+                            disabled={isFieldDisabled} 
+                            className="w-full border-2 border-gray-100 rounded-xl py-2.5 text-center text-md font-black text-black outline-none focus:border-black shadow-inner" 
+                            value={logBookForm.lakiLaki || 0} 
+                            onChange={(e) => setLogBookForm({...logBookForm, lakiLaki: parseInt(e.target.value) || 0})} 
+                           />
+                        </div>
+                        <div className="text-center">
+                           <label className="block text-[9px] font-black text-gray-400 uppercase mb-2">Female</label>
+                           <input 
+                            type="number" 
+                            disabled={isFieldDisabled} 
+                            className="w-full border-2 border-gray-100 rounded-xl py-2.5 text-center text-md font-black text-black outline-none focus:border-black shadow-inner" 
+                            value={logBookForm.wanita || 0} 
+                            onChange={(e) => setLogBookForm({...logBookForm, wanita: parseInt(e.target.value) || 0})} 
+                           />
+                        </div>
+                        <div className="text-center">
+                           <label className="block text-[9px] font-black text-gray-400 uppercase mb-2">Kids</label>
+                           <input 
+                            type="number" 
+                            disabled={isFieldDisabled} 
+                            className="w-full border-2 border-gray-100 rounded-xl py-2.5 text-center text-md font-black text-black outline-none focus:border-black shadow-inner" 
+                            value={logBookForm.anakAnak || 0} 
+                            onChange={(e) => setLogBookForm({...logBookForm, anakAnak: parseInt(e.target.value) || 0})} 
+                           />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Full Width Purpose Section */}
+                  <div className="md:col-span-12 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                    <SectionHeader icon={MessageSquare} title="Purpose of Visit" />
+                    <textarea 
+                      rows={3} 
+                      disabled={isFieldDisabled} 
+                      placeholder="Input visitor notes, meeting agenda, or host person name here..."
+                      className="w-full border border-gray-200 rounded-2xl px-6 py-4 text-sm font-medium bg-white outline-none focus:border-black transition-all placeholder:text-gray-300 shadow-sm"
+                      value={logBookForm.note || ''}
+                      onChange={(e) => setLogBookForm({...logBookForm, note: e.target.value})}
+                    />
+                  </div>
+               </div>
             </div>
           ) : (
             <div className="bg-white p-20 rounded-2xl border border-gray-100 text-center flex flex-col items-center">
                 <Archive size={48} className="text-gray-200 mb-4" />
-                <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">Module detail View</p>
+                <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">Other module views</p>
                 <p className="text-gray-300 text-xs mt-2 italic uppercase">Content logic for {moduleName} module.</p>
             </div>
           )}
@@ -473,7 +513,7 @@ export const AddStockModal: React.FC<Props> = ({
 
             {!isViewMode && (
                 <button onClick={handleSave} className="px-12 py-3 text-[11px] font-black text-white bg-black rounded-xl uppercase tracking-widest shadow-xl shadow-black/10 active:scale-95 transition-all hover:bg-gray-900">
-                  {isLockerRequest ? 'Submit Request' : 'Save Data'}
+                  {isLockerRequest ? 'Submit Request' : isStockOpname ? 'Save Audit Result' : isLogBook ? 'Check-in Guest' : 'Save Data'}
                 </button>
             )}
         </div>

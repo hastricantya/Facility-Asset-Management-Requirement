@@ -149,7 +149,7 @@ const translations: Record<string, Record<Language, string>> = {
   'Pilih Kebutuhan': { id: 'Pilih Kebutuhan', en: 'Select Need' },
   'Pilih jenis item ATK': { id: 'Pilih jenis item ATK', en: 'Select Stationery Type' },
   'Pilih jenis item ARK': { id: 'Pilih jenis item ARK', en: 'Select Household Type' },
-  'Permintaan Event': { id: 'Permintaan Event', en: 'Event Request' },
+  'Permintaan Bulanan': { id: 'Permintaan Bulanan', en: 'Monthly Request' },
   'Permintaan Khusus': { id: 'Permintaan Khusus', en: 'Special Request' },
   
   'Pilih barang ATK': { id: 'Pilih barang ATK', en: 'Select Item' },
@@ -206,6 +206,7 @@ const translations: Record<string, Record<Language, string>> = {
   'Action': { id: 'Aksi', en: 'Action' },
 };
 
+// Added useLanguage hook export to fix "has no exported member 'useLanguage'" errors
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (context === undefined) {

@@ -166,22 +166,6 @@ const App: React.FC = () => {
     setIsImportExcelModalOpen(true);
   };
 
-  const handleApproveRequest = (item: AssetRecord) => {
-    if (item.id < 100) { // Simple logic based on mock generator IDs
-        setAtkData(atkData.map(d => d.id === item.id ? { ...d, status: 'Approved' } : d));
-    } else {
-        setArkData(arkData.map(d => d.id === item.id ? { ...d, status: 'Approved' } : d));
-    }
-  };
-
-  const handleRejectRequest = (item: AssetRecord) => {
-    if (item.id < 100) {
-        setAtkData(atkData.map(d => d.id === item.id ? { ...d, status: 'Rejected' } : d));
-    } else {
-        setArkData(arkData.map(d => d.id === item.id ? { ...d, status: 'Rejected' } : d));
-    }
-  };
-
   const handleSavePod = (data: Partial<ModenaPodRecord>) => {
     if (modalMode === 'create') {
         const newRecord: ModenaPodRecord = {
@@ -267,11 +251,11 @@ const App: React.FC = () => {
          case 'Request ATK':
          case 'Stationery Request Approval':
             const filteredAtk = atkData.filter(item => activeTab === 'Semua' || activeTab === '' || item.status === currentTargetStatus);
-            return <StationeryRequestTable data={filteredAtk} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} onApprove={handleApproveRequest} onReject={handleRejectRequest} />;
+            return <StationeryRequestTable data={filteredAtk} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Daftar ARK':
          case 'Household Request Approval':
             const filteredArk = arkData.filter(item => activeTab === 'Semua' || activeTab === '' || item.status === currentTargetStatus);
-            return <StationeryRequestTable data={filteredArk} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} onApprove={handleApproveRequest} onReject={handleRejectRequest} />;
+            return <StationeryRequestTable data={filteredArk} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Master ATK':
             return <MasterAtkTable data={atkMaster} onEdit={(item) => { setModalMode('edit'); setSelectedAsset({ ...MOCK_ATK_DATA[0], itemName: item.itemName, itemCode: item.itemCode, category: item.category }); setIsMasterItemModalOpen(true); }} />;
          case 'Master ARK':
@@ -378,15 +362,12 @@ const App: React.FC = () => {
         initialMasterLockerData={selectedMasterLocker || undefined}
         initialPodRequestData={selectedPodRequest || undefined}
         initialStockOpnameData={selectedStockOpname || undefined}
-        initialAssetData={selectedAsset || undefined}
         onSavePod={handleSavePod}
         onSaveMasterLocker={handleSaveMasterLocker}
         onSaveLogBook={(data) => setLogBookData([data as LogBookRecord, ...logBookData])}
         onSaveStockOpname={(data) => setStockOpnameData([data as StockOpnameRecord, ...stockOpnameData])}
         onSaveLockerRequest={(data) => setLockerRequestData([data as LockerRequestRecord, ...lockerRequestData])}
         onSavePodRequest={(data) => setPodRequestData([data as PodRequestRecord, ...podRequestData])}
-        onApprove={handleApproveRequest}
-        onReject={handleRejectRequest}
       />
 
       <ImportExcelModal 
