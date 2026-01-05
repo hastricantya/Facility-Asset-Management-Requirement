@@ -72,15 +72,6 @@ export const MOCK_LOCKER_REQUEST_DATA: LockerRequestRecord[] = [
     status: 'Pending',
     reason: 'New employee joining technical team.',
     preferredLocation: 'Lantai 2 Satrio'
-  },
-  {
-    id: 2,
-    transactionNumber: 'REQ/LCK/2024/002',
-    employee: { name: 'Eko Prasetyo', role: 'Staff', phone: '0815', avatar: 'https://i.pravatar.cc/150?u=5' },
-    date: '21/03/2024',
-    status: 'Approved',
-    reason: 'Existing locker lock broken.',
-    preferredLocation: 'Lantai 1'
   }
 ];
 
@@ -94,270 +85,119 @@ export const MOCK_POD_REQUEST_DATA: PodRequestRecord[] = [
     reason: 'Temporary housing for project duration.',
     preferredFloor: 'Lt 2 Pria',
     preferredRoomType: 'Single Bed'
-  },
-  {
-    id: 2,
-    transactionNumber: 'REQ/POD/2024/002',
-    employee: { name: 'Dewi Putri', role: 'Finance', phone: '0814', avatar: 'https://i.pravatar.cc/150?u=4' },
-    date: '19/03/2024',
-    status: 'Approved',
-    reason: 'Assigned to head office from regional.',
-    preferredFloor: 'Lt 3 Perempuan',
-    preferredRoomType: 'Double Bed'
   }
 ];
 
 export const MOCK_MASTER_DATA: MasterItem[] = [
   { id: 1, category: 'Tinta Printer', itemName: 'HP Laserjet 204A Black', itemCode: 'TP-HP0048', uom: 'Pcs', remainingStock: 5, minimumStock: 2, maximumStock: 10, requestedStock: 0, purchaseDate: '27/08/2008', lastPurchasePrice: 'Rp. 22.000', averagePrice: 'Rp. 21.082' },
-  { id: 2, category: 'Kertas', itemName: 'Kertas A4 70gr', itemCode: 'KRT-A4-70', uom: 'Rim', remainingStock: 50, minimumStock: 10, maximumStock: 100, requestedStock: 5, purchaseDate: '01/03/2024', lastPurchasePrice: 'Rp. 45.000', averagePrice: 'Rp. 44.500' },
-  { id: 3, category: 'Alat Tulis', itemName: 'Pulpen Standard AE7', itemCode: 'ATK-PEN-01', uom: 'Pcs', remainingStock: 120, minimumStock: 20, maximumStock: 200, requestedStock: 0, purchaseDate: '15/02/2024', lastPurchasePrice: 'Rp. 2.500', averagePrice: 'Rp. 2.400' }
 ];
 
 export const MOCK_MASTER_ARK_DATA: MasterItem[] = [
   { id: 1, category: 'Pembersih', itemName: 'Wipol Karbol', itemCode: 'CL-WPL-01', uom: 'Pcs', remainingStock: 10, minimumStock: 5, maximumStock: 20, requestedStock: 0, purchaseDate: '10/03/2024', lastPurchasePrice: 'Rp. 15.000', averagePrice: 'Rp. 14.800' },
-  { id: 2, category: 'Tisu', itemName: 'Tisu Nice 250s', itemCode: 'TS-NICE-250', uom: 'Pack', remainingStock: 30, minimumStock: 10, maximumStock: 50, requestedStock: 10, purchaseDate: '12/03/2024', lastPurchasePrice: 'Rp. 8.000', averagePrice: 'Rp. 7.900' }
 ];
 
 export const MOCK_STOCK_OPNAME_DATA: StockOpnameRecord[] = [
   { id: 1, opnameNumber: 'SO/ATK/2024/0001', itemCode: 'TP-HP0048', itemName: 'HP Laserjet 204A Black', category: 'Tinta Printer', systemQty: 5, physicalQty: 5, difference: 0, date: '2024-03-20', performedBy: 'Aan Junaidi', status: 'Matched' },
-  { id: 2, opnameNumber: 'SO/ATK/2024/0002', itemCode: 'KRT-A4-70', itemName: 'Kertas A4 70gr', category: 'Kertas', systemQty: 50, physicalQty: 48, difference: -2, date: '2024-03-20', performedBy: 'Budi Santoso', status: 'Discrepancy' },
-  { id: 3, opnameNumber: 'SO/ATK/2024/0003', itemCode: 'ATK-PEN-01', itemName: 'Pulpen Standard AE7', category: 'Alat Tulis', systemQty: 120, physicalQty: 120, difference: 0, date: '2024-03-20', performedBy: 'Citra Lestari', status: 'Matched' },
-  { id: 4, opnameNumber: 'SO/ATK/2024/0004', itemCode: 'EL-BAT-AA', itemName: 'BATERAI AA ALKALINE', category: 'Elektronik', systemQty: 24, physicalQty: 24, difference: 0, date: '2024-03-22', performedBy: 'Aan Junaidi', status: 'Draft' },
-  { id: 5, opnameNumber: 'SO/ATK/2024/0005', itemCode: 'FIL-MAP-01', itemName: 'Map Plastik Clear', category: 'Filing', systemQty: 200, physicalQty: 195, difference: -5, date: '2024-03-22', performedBy: 'Dewi Putri', status: 'Draft' },
-  { id: 6, opnameNumber: 'SO/ATK/2024/0006', itemCode: 'CL-WPL-01', itemName: 'Wipol Karbol', category: 'Pembersih', systemQty: 10, physicalQty: 12, difference: 2, date: '2024-03-22', performedBy: 'Eko Prasetyo', status: 'Draft' }
 ];
 
 export const MOCK_LOCKER_DATA: LockerRecord[] = [
-    // Lantai 1: 1 - 70
-    { id: 1, lockerNumber: '001', location: 'Lantai 1', subLocation: '-', status: 'Terisi', employee: { name: 'Aan Junaidi', role: 'Technician', position: 'Team Leader', department: 'After Sales', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=1' }, spareKey: 'Ada', lastUpdate: '2024-03-20', remarks: 'Good condition' },
+    { 
+      id: 1, 
+      lockerNumber: '001', 
+      location: 'Lantai 1', 
+      subLocation: '-', 
+      status: 'Terisi', 
+      employee: { name: 'Aan Junaidi', role: 'Technician', position: 'Team Leader', department: 'After Sales', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=1' }, 
+      spareKey: 'Ada', 
+      lastUpdate: '2024-03-20', 
+      remarks: 'Good condition',
+      history: [
+        { id: 101, date: '2024-03-20', name: 'Aan Junaidi', department: 'After Sales', status: 'Terisi' },
+        { id: 102, date: '2024-01-10', name: 'Budi Santoso', department: 'Supply Chain', status: 'Selesai Pinjam' },
+        { id: 103, date: '2023-11-05', name: 'Citra Lestari', department: 'HRGA', status: 'Selesai Pinjam' }
+      ]
+    },
     { id: 2, lockerNumber: '002', location: 'Lantai 1', subLocation: '-', status: 'Kosong', spareKey: 'Ada', lastUpdate: '2024-03-10', remarks: '' },
-    { id: 3, lockerNumber: '070', location: 'Lantai 1', subLocation: '-', status: 'Kunci Hilang', spareKey: 'Tidak Ada', lastUpdate: '2024-02-15', remarks: 'Needs lock replacement' },
-    
-    // Lantai 2 Satrio: S-2001, S-2002
-    { id: 4, lockerNumber: 'S-2001', location: 'Lantai 2', subLocation: 'Satrio', status: 'Terisi', employee: { name: 'Citra Lestari', role: 'Manager', position: 'Operations Manager', department: 'HQ', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=3' }, spareKey: 'Ada', lastUpdate: '2024-03-15', remarks: '' },
-    { id: 5, lockerNumber: 'S-2002', location: 'Lantai 2', subLocation: 'Satrio', status: 'Kosong', spareKey: 'Ada', lastUpdate: '2024-03-22', remarks: 'Deep cleaned' },
-    
-    // Lantai 2 Karang Asem: K-2001, K-2002
-    { id: 6, lockerNumber: 'K-2001', location: 'Lantai 2', subLocation: 'Karang Asem', status: 'Terisi', employee: { name: 'Budi Santoso', role: 'Staff', position: 'Inventory Control', department: 'Supply Chain', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=2' }, spareKey: 'Ada', lastUpdate: '2024-03-18', remarks: '' },
-    
-    // Lantai 3 Satrio: S-3001, S-3002
-    { id: 7, lockerNumber: 'S-3001', location: 'Lantai 3', subLocation: 'Satrio', status: 'Kosong', spareKey: 'Tidak Ada', lastUpdate: '2024-03-01', remarks: 'Spare key missing since move' },
-    
-    // Lantai 3 Karang Asem: K-3001
-    { id: 8, lockerNumber: 'K-3001', location: 'Lantai 3', subLocation: 'Karang Asem', status: 'Terisi', employee: { name: 'Dewi Putri', role: 'Staff', position: 'Finance Clerk', department: 'Finance', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=4' }, spareKey: 'Ada', lastUpdate: '2024-03-21', remarks: '' }
 ];
 
 export const MOCK_POD_DATA: ModenaPodRecord[] = [
-    { id: 1, lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', nomorKamar: '211', namaPenghuni: 'Gian Nanda Pratama', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: '-', keterangan: 'isi' },
-    { id: 2, lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', nomorKamar: '212', namaPenghuni: 'Yogi Danis Fermana', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Belum Dapat', jadwalLaundry: '-', keterangan: 'isi' },
-    { id: 3, lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', nomorKamar: '215', namaPenghuni: 'Aditya Raka Pradana', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Selasa dan Jumat', keterangan: 'isi' },
-    { id: 4, lantai: 'Lt 2 Pria', jenisKamar: 'Quadruple Bed', nomorKamar: '217 A', namaPenghuni: 'Mr. Kim Il Dong (Expat)', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Terpakai', jadwalLaundry: 'Tidak ada', keterangan: '-' },
-    { id: 5, lantai: 'Lt 2 Pria', jenisKamar: 'Quadruple Bed', nomorKamar: '217 B', namaPenghuni: 'Mr. Kim Il Dong (Expat)', statusLokerBarang: 'Extra Loker Terpakai', statusLokerPantry: 'Extra Loker Terpakai', jadwalLaundry: 'Tidak ada', keterangan: 'Loker barang dipakai Pak Bambang' },
-    { id: 6, lantai: 'Lt 2 Perempuan', jenisKamar: 'Single Bed', nomorKamar: '221', namaPenghuni: 'Achmad Fachriza Putra', statusLokerBarang: 'Tidak Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Selasa dan Jumat', keterangan: 'kosong blm ada org' },
-    { id: 7, lantai: 'Lt 3 Pria', jenisKamar: 'Quadruple Bed', nomorKamar: '317 A', namaPenghuni: 'Mr. Sung Yong Hong (Expat)', statusLokerBarang: 'Extra Loker Terpakai', statusLokerPantry: 'Extra Loker Terpakai', jadwalLaundry: '-', keterangan: 'Loker barang terpakai untuk tempat tissue' },
-    { id: 8, lantai: 'Lt 3 Perempuan', jenisKamar: 'Double Bed', nomorKamar: '329 A', namaPenghuni: 'Galuh Sekar Mulatsih', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Senin dan Kamis', keterangan: 'isi' }
+    { 
+      id: 1, 
+      lantai: 'Lt 2 Pria', 
+      jenisKamar: 'Single Bed', 
+      nomorKamar: '211', 
+      namaPenghuni: 'Gian Nanda Pratama', 
+      posisi: 'Technician', 
+      departemen: 'After Sales', 
+      statusLokerBarang: 'Terpakai', 
+      statusLokerPantry: 'Tidak Terpakai', 
+      jadwalLaundry: '-', 
+      keterangan: 'isi',
+      history: [
+        { id: 1, namaPenghuni: 'Yudi Saputra', nomorKamar: '211', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Senin & Kamis', startDate: '2023-12-01', endDate: '2024-02-15' },
+        { id: 2, namaPenghuni: 'Andi Wijaya', nomorKamar: '211', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Terpakai', jadwalLaundry: 'Selasa & Jumat', startDate: '2023-09-10', endDate: '2023-11-25' }
+      ]
+    },
 ];
 
 export const MOCK_UOM_DATA: GeneralMasterItem[] = [
-    { id: 1, name: 'PCS' },
-    { id: 2, name: 'RIM' },
-    { id: 3, name: 'BOX' },
-    { id: 4, name: 'PACK' },
-    { id: 5, name: 'UNIT' }
+    { id: 1, name: 'PCS' }, { id: 2, name: 'RIM' }, { id: 3, name: 'BOX' }, { id: 4, name: 'PACK' }, { id: 5, name: 'UNIT' }
 ];
 
 export const MOCK_ATK_CATEGORY: GeneralMasterItem[] = [
-    { id: 1, name: 'Tinta Printer' },
-    { id: 2, name: 'Kertas' },
-    { id: 3, name: 'Alat Tulis' },
-    { id: 4, name: 'Filing' },
-    { id: 5, name: 'Elektronik' }
+    { id: 1, name: 'Tinta Printer' }, { id: 2, name: 'Kertas' }, { id: 3, name: 'Alat Tulis' }, { id: 4, name: 'Filing' }, { id: 5, name: 'Elektronik' }
 ];
 
 export const MOCK_ARK_CATEGORY: GeneralMasterItem[] = [
-    { id: 1, name: 'Pembersih' },
-    { id: 2, name: 'Tisu' },
-    { id: 3, name: 'Kebersihan' },
-    { id: 4, name: 'Elektronik' }
+    { id: 1, name: 'Pembersih' }, { id: 2, name: 'Tisu' }, { id: 3, name: 'Kebersihan' }, { id: 4, name: 'Elektronik' }
 ];
 
 export const MOCK_DELIVERY_LOCATIONS: DeliveryLocationRecord[] = [
-    { id: 1, name: 'Satrio', address: 'Jl. Prof. DR. Satrio No. 84', type: 'HO' },
-    { id: 2, name: 'Suryo', address: 'Jl. Suryo No. 123', type: 'Office' },
-    { id: 3, name: 'Kemang', address: 'Jl. Kemang Selatan No. 150', type: 'Showroom' }
+    { id: 1, name: 'Satrio', address: 'Jl. Prof. DR. Satrio No. 84', type: 'HO' }
 ];
 
 export const MOCK_BUILDING_DATA: BuildingRecord[] = [
-    {
-        id: '1',
-        name: 'Gedung Satrio',
-        assetNo: 'BDG-JKT-009',
-        type: 'Head Office',
-        ownership: 'Own',
-        location: 'Jakarta',
-        address: 'Jl. Prof. DR. Satrio No. 84',
-        status: 'Close',
-        certificateNo: 'SHM/123/JKT',
-        acquisitionValue: '50000000000'
-    },
-    {
-        id: '2',
-        name: 'Branch Suryo',
-        assetNo: 'BDG-JKT-010',
-        type: 'Office',
-        ownership: 'Rent',
-        location: 'Jakarta',
-        address: 'Jl. Suryo No. 123',
-        status: 'Open',
-        landlordName: 'PT Properti Makmur',
-        rentalCost: '250000000',
-        startDate: '2024-01-01',
-        endDate: '2025-01-01'
-    }
+    { id: '1', name: 'Gedung Satrio', assetNo: 'BDG-JKT-009', type: 'Head Office', ownership: 'Own', location: 'Jakarta', address: 'Jl. Prof. DR. Satrio No. 84', status: 'Close', certificateNo: 'SHM/123/JKT', acquisitionValue: '50000000000' }
 ];
 
 export const MOCK_REMINDER_DATA: ReminderRecord[] = [
-    {
-        id: 'REM-001',
-        documentName: 'Kontrak Sewa Lantai 5',
-        buildingName: 'Gedung Satrio',
-        assetNo: 'BDG-JKT-009',
-        expiryDate: '2024-12-31',
-        daysRemaining: 15,
-        status: 'Urgent'
-    }
+    { id: 'REM-001', documentName: 'Kontrak Sewa Lantai 5', buildingName: 'Gedung Satrio', assetNo: 'BDG-JKT-009', expiryDate: '2024-12-31', daysRemaining: 15, status: 'Urgent' }
 ];
 
 export const MOCK_GENERAL_MASTER_DATA = {
-    jenisPajak: [{ id: 1, name: 'Pajak STNK 1 Tahun' }, { id: 2, name: 'Pajak STNK 5 Tahun' }],
-    jenisPembayaran: [{ id: 1, name: 'Kasbon' }, { id: 2, name: 'Reimbursement' }],
-    jenisServis: [{ id: 1, name: 'Servis Rutin' }, { id: 2, name: 'Perbaikan Mesin' }],
-    statusMutasi: [{ id: 1, name: 'Draft' }, { id: 2, name: 'Pending Approval' }],
-    statusPenjualan: [{ id: 1, name: 'Open for Bidding' }, { id: 2, name: 'Sold' }],
-    statusRequest: [{ id: 1, name: 'New' }, { id: 2, name: 'Verified' }],
-    tipeMutasi: [{ id: 1, name: 'Antar Cabang' }, { id: 2, name: 'Antar Departemen' }],
-    tipeVendor: [{ id: 1, name: 'Bengkel Resmi' }, { id: 2, name: 'Asuransi' }],
-    peran: [{ id: 1, name: 'Super Admin' }, { id: 2, name: 'Fleet Coordinator' }]
+    jenisPajak: [{ id: 1, name: 'Pajak STNK 1 Tahun' }],
+    jenisPembayaran: [{ id: 1, name: 'Kasbon' }],
+    jenisServis: [{ id: 1, name: 'Servis Rutin' }],
+    statusMutasi: [{ id: 1, name: 'Draft' }],
+    statusPenjualan: [{ id: 1, name: 'Open for Bidding' }],
+    statusRequest: [{ id: 1, name: 'New' }],
+    tipeMutasi: [{ id: 1, name: 'Antar Cabang' }],
+    tipeVendor: [{ id: 1, name: 'Bengkel Resmi' }],
+    peran: [{ id: 1, name: 'Super Admin' }]
 };
 
+export const MOCK_MASTER_VENDOR_DATA: MasterVendorRecord[] = [
+  { id: 1, nama: 'PT Jaya Rental Indonesia', merek: 'Toyota', alamat: 'Jl. Jend. Sudirman No. 1, Jakarta', noTelp: '021-1234567', tipe: 'Rental', cabang: 'Jakarta', aktif: true }
+];
+
 export const MOCK_VEHICLE_DATA: VehicleRecord[] = [
-    { id: 1, noRegistrasi: 'REG/2023/001', nama: 'Grand Max Blind Van', noPolisi: 'B 1234 CD', channel: 'HCO', cabang: 'Jakarta', status: 'Aktif', tahunPembuatan: '2020' },
-    { id: 2, noRegistrasi: 'REG/2023/002', nama: 'Toyota Avanza', noPolisi: 'B 5678 EF', channel: 'Management', cabang: 'Bandung', status: 'Aktif', tahunPembuatan: '2021' }
+    { id: 1, noRegistrasi: 'REG/2023/001', nama: 'Grand Max Blind Van', noPolisi: 'B 1234 CD', channel: 'HCO', cabang: 'Jakarta', status: 'Aktif', tahunPembuatan: '2020' }
 ];
 
 export const MOCK_VEHICLE_CONTRACT_DATA: VehicleContractRecord[] = [
-    {
-        id: 'CON/VEH/001',
-        noPolisi: 'B 1234 CD',
-        aset: 'Grand Max Blind Van',
-        noKontrak: 'KTR/2023/X-091',
-        vendor: 'PT Jaya Rental Indonesia',
-        tglMulai: '2023-01-01',
-        tglBerakhir: '2025-01-01',
-        biayaSewa: '4500000',
-        status: 'Aktif'
-    }
+    { id: 'CON/VEH/001', noPolisi: 'B 1234 CD', aset: 'Grand Max Blind Van', noKontrak: 'KTR/2023/X-091', vendor: 'PT Jaya Rental Indonesia', tglMulai: '2023-01-01', tglBerakhir: '2025-01-01', biayaSewa: '4500000', status: 'Aktif' }
 ];
 
 export const MOCK_SERVICE_DATA: ServiceRecord[] = [
-    {
-        id: 'SRV/2024/001',
-        noPolisi: 'B 1234 CD',
-        aset: 'Grand Max Blind Van',
-        tglRequest: '2024-02-10',
-        tglStnk: '2025-04-12',
-        channel: 'HCO',
-        cabang: 'Jakarta',
-        status: 'Selesai',
-        statusApproval: 'Approved',
-        jenisServis: 'Servis Rutin',
-        vendor: 'Daihatsu Service Center',
-        targetSelesai: '2024-02-12',
-        kmKendaraan: '45000',
-        masalah: 'Suara mesin kasar dan tarikan berat pada tanjakan',
-        penyebab: 'Oli mesin kotor and filter udara tersumbat debu pekat',
-        estimasiBiaya: '1250000',
-        jenisPembayaran: 'Kasbon',
-        namaBank: 'Bank BCA',
-        nomorRekening: '0981234455',
-        spareParts: []
-    }
+    { id: 'SRV/2024/001', noPolisi: 'B 1234 CD', aset: 'Grand Max Blind Van', tglRequest: '2024-02-10', channel: 'HCO', cabang: 'Jakarta', status: 'Selesai', statusApproval: 'Approved', estimasiBiaya: '1250000', jenisPembayaran: 'Kasbon', spareParts: [] }
 ];
 
 export const MOCK_TAX_KIR_DATA: TaxKirRecord[] = [
-    {
-        id: 'REQ/KIR/2024/001',
-        noPolisi: 'B 1234 CD',
-        tglRequest: '2024-03-15',
-        jenis: 'KIR',
-        channel: 'HCO',
-        cabang: 'Jakarta',
-        status: 'Draft',
-        statusApproval: '-',
-        aset: 'Grand Max Blind Van',
-        tahunPembuatan: '2020',
-        vendor: 'Bengkel Resmi Daihatsu',
-        estimasiBiaya: '1500000',
-        jenisPembayaran: 'Kasbon'
-    }
+    { id: 'REQ/KIR/2024/001', noPolisi: 'B 1234 CD', tglRequest: '2024-03-15', jenis: 'KIR', channel: 'HCO', cabang: 'Jakarta', status: 'Draft', statusApproval: '-', estimasiBiaya: '1500000', jenisPembayaran: 'Kasbon' }
 ];
 
-export const MOCK_MUTATION_DATA: MutationRecord[] = [];
-export const MOCK_SALES_DATA: SalesRecord[] = [];
-export const MOCK_MASTER_VENDOR_DATA: MasterVendorRecord[] = [];
-
 export const MOCK_LOGBOOK_DATA: LogBookRecord[] = [
-  {
-    id: 1,
-    lokasiModena: 'Satrio',
-    kategoriTamu: 'Customer',
-    namaTamu: 'Budi Santoso',
-    nomorHp: '081234567890',
-    email: 'budi.santoso@email.com',
-    visitorCard: 'VC-001',
-    noIdentitas: '3171234567890001',
-    tanggalKunjungan: '2024-03-20',
-    jamDatang: '09:00',
-    jamPulang: '11:30',
-    wanita: 0,
-    lakiLaki: 1,
-    anakAnak: 0,
-    note: 'Meeting regarding kitchen set installation.'
-  },
-  {
-    id: 2,
-    lokasiModena: 'Kemang',
-    kategoriTamu: 'Supplier',
-    namaTamu: 'Siti Aminah',
-    nomorHp: '081299887766',
-    email: 'siti.aminah@supplier.co.id',
-    visitorCard: 'VC-012',
-    noIdentitas: '3171221100998877',
-    tanggalKunjungan: '2024-03-20',
-    jamDatang: '10:15',
-    jamPulang: '12:00',
-    wanita: 1,
-    lakiLaki: 0,
-    anakAnak: 0,
-    note: 'Delivery of spare parts.'
-  },
-  {
-    id: 3,
-    lokasiModena: 'Suryo',
-    kategoriTamu: 'Partner',
-    namaTamu: 'Bambang Irawan',
-    nomorHp: '081122334455',
-    email: 'bambang@partner.com',
-    visitorCard: 'VC-045',
-    noIdentitas: '3171334455667788',
-    tanggalKunjungan: '2024-03-22',
-    jamDatang: '14:00',
-    jamPulang: '15:30',
-    wanita: 0,
-    lakiLaki: 1,
-    anakAnak: 0,
-    note: 'Discussion on new project.'
-  }
+  { id: 1, lokasiModena: 'Satrio', kategoriTamu: 'Customer', namaTamu: 'Budi Santoso', tanggalKunjungan: '2024-03-20', jamDatang: '09:00', jamPulang: '11:30', wanita: 0, lakiLaki: 1, anakAnak: 0, note: 'Meeting' }
 ];
 
 export const MOCK_TIMESHEET_DATA: TimesheetRecord[] = [];

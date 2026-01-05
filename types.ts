@@ -227,6 +227,14 @@ export interface LogBookRecord {
   note: string;
 }
 
+export interface LockerHistoryEntry {
+  id: number;
+  date: string;
+  name: string;
+  department: string;
+  status: string;
+}
+
 export interface LockerRecord {
   id: number;
   lockerNumber: string;
@@ -237,6 +245,18 @@ export interface LockerRecord {
   spareKey: 'Ada' | 'Tidak Ada';
   lastUpdate: string;
   remarks: string;
+  history?: LockerHistoryEntry[];
+}
+
+export interface PodHistory {
+  id: number;
+  namaPenghuni: string;
+  nomorKamar: string;
+  statusLokerBarang: string;
+  statusLokerPantry: string;
+  jadwalLaundry: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface ModenaPodRecord {
@@ -245,10 +265,13 @@ export interface ModenaPodRecord {
   jenisKamar: 'Single Bed' | 'Double Bed' | 'Quadruple Bed';
   nomorKamar: string;
   namaPenghuni: string;
+  posisi?: string;
+  departemen?: string;
   statusLokerBarang: 'Terpakai' | 'Tidak Terpakai' | 'Belum Dapat' | 'Extra Loker Terpakai';
   statusLokerPantry: 'Terpakai' | 'Tidak Terpakai' | 'Belum Dapat' | 'Extra Loker Terpakai';
   jadwalLaundry: string;
   keterangan: string;
+  history?: PodHistory[];
 }
 
 export interface MasterItem {
