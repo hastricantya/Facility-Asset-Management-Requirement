@@ -128,6 +128,9 @@ export const AddStockModal: React.FC<Props> = ({
   const isPod = moduleName === 'Pod Census';
   const isPodRequest = moduleName === 'Request MODENA Pod';
   const isViewMode = mode === 'view';
+  
+  // Logic: Fields remain editable if it's the approval module, even if in view mode
+  const isFieldDisabled = isViewMode && !isApprovalModule;
 
   useEffect(() => {
     if (isOpen) {
@@ -427,7 +430,7 @@ export const AddStockModal: React.FC<Props> = ({
                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Request Date</label>
                        <input 
                          type="date" 
-                         disabled={isViewMode}
+                         disabled={isFieldDisabled}
                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
                          value={podRequestForm.date || ''} 
                          onChange={(e) => handlePodRequestChange('date', e.target.value)}
@@ -437,7 +440,7 @@ export const AddStockModal: React.FC<Props> = ({
                         <div>
                           <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Floor Preference</label>
                           <select 
-                            disabled={isViewMode}
+                            disabled={isFieldDisabled}
                             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                             value={podRequestForm.preferredFloor || ''}
                             onChange={(e) => handlePodRequestChange('preferredFloor', e.target.value)}
@@ -451,7 +454,7 @@ export const AddStockModal: React.FC<Props> = ({
                         <div>
                           <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Room Type</label>
                           <select 
-                            disabled={isViewMode}
+                            disabled={isFieldDisabled}
                             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                             value={podRequestForm.preferredRoomType || ''}
                             onChange={(e) => handlePodRequestChange('preferredRoomType', e.target.value)}
@@ -489,7 +492,7 @@ export const AddStockModal: React.FC<Props> = ({
                  <SectionHeader icon={MessageSquare} title="Reason for Stay" />
                  <textarea 
                    rows={4}
-                   disabled={isViewMode}
+                   disabled={isFieldDisabled}
                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white focus:border-black outline-none transition-all" 
                    placeholder="Briefly explain the reason for your pod request..." 
                    value={podRequestForm.reason || ''} 
@@ -508,7 +511,7 @@ export const AddStockModal: React.FC<Props> = ({
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Request Date</label>
                       <input 
                         type="date" 
-                        disabled={isViewMode}
+                        disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
                         value={lockerRequestForm.date || ''} 
                         onChange={(e) => handleLockerRequestChange('date', e.target.value)}
@@ -517,7 +520,7 @@ export const AddStockModal: React.FC<Props> = ({
                     <div>
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Preferred Location</label>
                       <select 
-                        disabled={isViewMode}
+                        disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                         value={lockerRequestForm.preferredLocation || ''}
                         onChange={(e) => handleLockerRequestChange('preferredLocation', e.target.value)}
@@ -557,7 +560,7 @@ export const AddStockModal: React.FC<Props> = ({
                 <SectionHeader icon={MessageSquare} title="Reason / Remarks" />
                 <textarea 
                   rows={4}
-                  disabled={isViewMode}
+                  disabled={isFieldDisabled}
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white focus:border-black outline-none transition-all" 
                   placeholder="Explain why you need a locker or replacement..." 
                   value={lockerRequestForm.reason || ''} 
@@ -576,7 +579,7 @@ export const AddStockModal: React.FC<Props> = ({
                       <div>
                         <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Lantai</label>
                         <select 
-                          disabled={isViewMode}
+                          disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                           value={podForm.lantai || ''}
                           onChange={(e) => handlePodChange('lantai', e.target.value)}
@@ -590,7 +593,7 @@ export const AddStockModal: React.FC<Props> = ({
                       <div>
                         <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Jenis Kamar</label>
                         <select 
-                          disabled={isViewMode}
+                          disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                           value={podForm.jenisKamar || ''}
                           onChange={(e) => handlePodChange('jenisKamar', e.target.value)}
@@ -605,7 +608,7 @@ export const AddStockModal: React.FC<Props> = ({
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Nomor Kamar</label>
                       <input 
                         type="text" 
-                        disabled={isViewMode}
+                        disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono font-bold text-black focus:border-black outline-none" 
                         value={podForm.nomorKamar || ''} 
                         onChange={(e) => handlePodChange('nomorKamar', e.target.value)}
@@ -616,7 +619,7 @@ export const AddStockModal: React.FC<Props> = ({
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Nama Penghuni</label>
                       <input 
                         type="text" 
-                        disabled={isViewMode}
+                        disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
                         value={podForm.namaPenghuni || ''} 
                         onChange={(e) => handlePodChange('namaPenghuni', e.target.value)}
@@ -632,7 +635,7 @@ export const AddStockModal: React.FC<Props> = ({
                     <div>
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Status Loker Barang</label>
                       <select 
-                        disabled={isViewMode}
+                        disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                         value={podForm.statusLokerBarang || ''}
                         onChange={(e) => handlePodChange('statusLokerBarang', e.target.value)}
@@ -646,7 +649,7 @@ export const AddStockModal: React.FC<Props> = ({
                     <div>
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Status Loker Pantry</label>
                       <select 
-                        disabled={isViewMode}
+                        disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                         value={podForm.statusLokerPantry || ''}
                         onChange={(e) => handlePodChange('statusLokerPantry', e.target.value)}
@@ -661,7 +664,7 @@ export const AddStockModal: React.FC<Props> = ({
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Jadwal Laundry</label>
                       <input 
                         type="text" 
-                        disabled={isViewMode}
+                        disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
                         value={podForm.jadwalLaundry || ''} 
                         onChange={(e) => handlePodChange('jadwalLaundry', e.target.value)}
@@ -675,7 +678,7 @@ export const AddStockModal: React.FC<Props> = ({
                 <SectionHeader icon={MessageSquare} title="Keterangan" />
                 <textarea 
                   rows={2}
-                  disabled={isViewMode}
+                  disabled={isFieldDisabled}
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white focus:border-black outline-none transition-all" 
                   placeholder="Catatan tambahan..." 
                   value={podForm.keterangan || ''} 
@@ -695,7 +698,7 @@ export const AddStockModal: React.FC<Props> = ({
                         <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Locker Number</label>
                         <input 
                           type="text" 
-                          disabled={isViewMode}
+                          disabled={isFieldDisabled}
                           placeholder="e.g. S-2001"
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono font-bold text-black focus:border-black outline-none" 
                           value={lockerForm.lockerNumber || ''} 
@@ -705,7 +708,7 @@ export const AddStockModal: React.FC<Props> = ({
                       <div>
                         <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Spare Key Status</label>
                         <select 
-                          disabled={isViewMode}
+                          disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                           value={lockerForm.spareKey || 'Ada'}
                           onChange={(e) => handleLockerChange('spareKey', e.target.value)}
@@ -719,7 +722,7 @@ export const AddStockModal: React.FC<Props> = ({
                       <div>
                         <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Floor Location</label>
                         <select 
-                          disabled={isViewMode}
+                          disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                           value={lockerForm.location || ''}
                           onChange={(e) => handleLockerChange('location', e.target.value)}
@@ -732,7 +735,7 @@ export const AddStockModal: React.FC<Props> = ({
                       <div>
                         <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Area / Sub Location</label>
                         <select 
-                          disabled={isViewMode || lockerForm.location === 'Lantai 1'}
+                          disabled={isFieldDisabled || lockerForm.location === 'Lantai 1'}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none disabled:bg-gray-50"
                           value={lockerForm.subLocation || ''}
                           onChange={(e) => handleLockerChange('subLocation', e.target.value)}
@@ -749,7 +752,7 @@ export const AddStockModal: React.FC<Props> = ({
                         {['Kosong', 'Terisi', 'Kunci Hilang'].map((s) => (
                           <button
                             key={s}
-                            disabled={isViewMode}
+                            disabled={isFieldDisabled}
                             onClick={() => handleLockerChange('status', s)}
                             className={`flex-1 py-2 text-[10px] font-black rounded-lg border transition-all uppercase tracking-widest
                               ${lockerForm.status === s 
@@ -772,7 +775,7 @@ export const AddStockModal: React.FC<Props> = ({
                           <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Employee Name</label>
                           <input 
                             type="text" 
-                            disabled={isViewMode}
+                            disabled={isFieldDisabled}
                             placeholder="Full name of employee"
                             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
                             value={lockerForm.employee?.name || ''} 
@@ -784,7 +787,7 @@ export const AddStockModal: React.FC<Props> = ({
                             <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Position</label>
                             <input 
                               type="text" 
-                              disabled={isViewMode}
+                              disabled={isFieldDisabled}
                               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
                               value={lockerForm.employee?.position || ''} 
                               onChange={(e) => handleLockerEmployeeChange('position', e.target.value)}
@@ -794,7 +797,7 @@ export const AddStockModal: React.FC<Props> = ({
                             <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Department</label>
                             <input 
                               type="text" 
-                              disabled={isViewMode}
+                              disabled={isFieldDisabled}
                               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none" 
                               value={lockerForm.employee?.department || ''} 
                               onChange={(e) => handleLockerEmployeeChange('department', e.target.value)}
@@ -818,7 +821,7 @@ export const AddStockModal: React.FC<Props> = ({
                     <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Last Audit / Update</label>
                     <input 
                       type="date" 
-                      disabled={isViewMode}
+                      disabled={isFieldDisabled}
                       className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
                       value={lockerForm.lastUpdate || ''} 
                       onChange={(e) => handleLockerChange('lastUpdate', e.target.value)}
@@ -828,7 +831,7 @@ export const AddStockModal: React.FC<Props> = ({
                     <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Remarks</label>
                     <textarea 
                       rows={1}
-                      disabled={isViewMode}
+                      disabled={isFieldDisabled}
                       className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white focus:border-black outline-none transition-all" 
                       placeholder="Maintenance notes, damage, or other info..." 
                       value={lockerForm.remarks || ''} 
@@ -854,7 +857,7 @@ export const AddStockModal: React.FC<Props> = ({
                         <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Date</label>
                         <input 
                           type="date" 
-                          disabled={isViewMode}
+                          disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
                           value={stockOpnameForm.date || ''} 
                           onChange={(e) => handleStockOpnameChange('date', e.target.value)}
@@ -864,7 +867,7 @@ export const AddStockModal: React.FC<Props> = ({
                         <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Performed By</label>
                         <input 
                           type="text" 
-                          disabled={isViewMode}
+                          disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
                           value={stockOpnameForm.performedBy || ''} 
                           onChange={(e) => handleStockOpnameChange('performedBy', e.target.value)}
@@ -881,7 +884,7 @@ export const AddStockModal: React.FC<Props> = ({
                       <div className="flex bg-gray-100 p-1 rounded-xl border border-gray-200 shadow-inner">
                         <button 
                            onClick={() => setOpnameInventoryType('ATK')}
-                           disabled={isViewMode}
+                           disabled={isFieldDisabled}
                            className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all uppercase tracking-widest flex items-center justify-center gap-2
                              ${opnameInventoryType === 'ATK' ? 'bg-black text-white shadow-lg' : 'text-gray-400 hover:text-black'}`}
                         >
@@ -889,7 +892,7 @@ export const AddStockModal: React.FC<Props> = ({
                         </button>
                         <button 
                            onClick={() => setOpnameInventoryType('ARK')}
-                           disabled={isViewMode}
+                           disabled={isFieldDisabled}
                            className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all uppercase tracking-widest flex items-center justify-center gap-2
                              ${opnameInventoryType === 'ARK' ? 'bg-black text-white shadow-lg' : 'text-gray-400 hover:text-black'}`}
                         >
@@ -900,7 +903,7 @@ export const AddStockModal: React.FC<Props> = ({
                     <div>
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Select Item</label>
                       <select 
-                        disabled={isViewMode}
+                        disabled={isFieldDisabled}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none"
                         value={stockOpnameForm.itemCode || ''}
                         onChange={(e) => {
@@ -936,7 +939,7 @@ export const AddStockModal: React.FC<Props> = ({
                     <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">Physical Qty</label>
                     <input 
                       type="number"
-                      disabled={isViewMode}
+                      disabled={isFieldDisabled}
                       className="w-32 mx-auto border-b-4 border-black text-center text-[42px] font-black focus:outline-none bg-transparent transition-all"
                       value={stockOpnameForm.physicalQty}
                       onChange={(e) => handleStockOpnameChange('physicalQty', parseInt(e.target.value) || 0)}
@@ -981,6 +984,7 @@ export const AddStockModal: React.FC<Props> = ({
                             <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Category</label>
                             <div className="relative">
                                 <select 
+                                disabled={isFieldDisabled}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[12px] font-black bg-white uppercase shadow-sm appearance-none focus:border-black outline-none" 
                                 value={stationeryRequestForm.type} 
                                 onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
@@ -995,6 +999,7 @@ export const AddStockModal: React.FC<Props> = ({
                             <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Submit Date</label>
                             <input 
                               type="date" 
+                              disabled={isFieldDisabled}
                               className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[12px] font-bold bg-white shadow-sm focus:border-black outline-none" 
                               value={stationeryRequestForm.date} 
                               onChange={(e) => handleStationeryRequestChange('date', e.target.value)} 
@@ -1009,6 +1014,7 @@ export const AddStockModal: React.FC<Props> = ({
                             <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Location</label>
                             <div className="relative">
                                 <select 
+                                disabled={isFieldDisabled}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[12px] font-black bg-white uppercase shadow-sm appearance-none focus:border-black outline-none" 
                                 value={stationeryRequestForm.location} 
                                 onChange={(e) => handleStationeryRequestChange('location', e.target.value)}
@@ -1024,6 +1030,7 @@ export const AddStockModal: React.FC<Props> = ({
                             <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Delivery Method</label>
                             <div className="relative">
                                 <select 
+                                disabled={isFieldDisabled}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[12px] font-black bg-white uppercase shadow-sm appearance-none focus:border-black outline-none" 
                                 value={stationeryRequestForm.deliveryType} 
                                 onChange={(e) => handleStationeryRequestChange('deliveryType', e.target.value)}
@@ -1062,7 +1069,12 @@ export const AddStockModal: React.FC<Props> = ({
                                         <td className="px-8 py-4 text-center text-gray-300 font-bold text-[11px]">{index + 1}</td>
                                         <td className="px-8 py-4">
                                             <div className="relative">
-                                                <select className="w-full border border-gray-200 rounded-xl px-2 py-1.5 text-[11px] font-bold bg-white appearance-none" value={item.categoryId} disabled>
+                                                <select 
+                                                    disabled={isFieldDisabled}
+                                                    className="w-full border border-gray-200 rounded-xl px-2 py-1.5 text-[11px] font-bold bg-white appearance-none outline-none focus:border-black" 
+                                                    value={item.categoryId}
+                                                    onChange={(e) => handleRequestItemChange(index, 'categoryId', e.target.value)}
+                                                >
                                                     <option>{item.categoryId || 'N/A'}</option>
                                                 </select>
                                                 <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300" />
@@ -1070,21 +1082,37 @@ export const AddStockModal: React.FC<Props> = ({
                                         </td>
                                         <td className="px-8 py-4">
                                             <div className="relative">
-                                                <select className="w-full border border-gray-200 rounded-xl px-2 py-1.5 text-[11px] font-bold bg-white appearance-none" value={item.itemId} disabled>
+                                                <select 
+                                                    disabled={isFieldDisabled}
+                                                    className="w-full border border-gray-200 rounded-xl px-2 py-1.5 text-[11px] font-bold bg-white appearance-none outline-none focus:border-black" 
+                                                    value={item.itemId}
+                                                    onChange={(e) => handleRequestItemChange(index, 'itemId', e.target.value)}
+                                                >
                                                     <option>{selectedProduct ? `${selectedProduct.itemCode} - ${selectedProduct.itemName}` : 'Search Product...'}</option>
                                                 </select>
                                                 <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300" />
                                             </div>
                                         </td>
                                         <td className="px-8 py-4 text-center">
-                                            <input type="text" readOnly className="w-20 border border-gray-200 rounded-xl px-2 py-1.5 text-[14px] font-black text-center bg-gray-50" value={item.qty} />
+                                            <input 
+                                                type="number" 
+                                                disabled={isFieldDisabled}
+                                                className="w-20 border border-gray-200 rounded-xl px-2 py-1.5 text-[14px] font-black text-center bg-white focus:border-black outline-none" 
+                                                value={item.qty} 
+                                                onChange={(e) => handleRequestItemChange(index, 'qty', e.target.value)}
+                                            />
                                         </td>
                                         <td className="px-8 py-4 text-center">
                                             <span className="font-mono font-black text-[14px] text-gray-400">{selectedProduct?.remainingStock ?? '-'}</span>
                                         </td>
                                         <td className="px-8 py-4 text-center">
                                             <div className="relative">
-                                                <select className="w-full border border-gray-200 rounded-xl px-1 py-1.5 text-[10px] font-black text-center uppercase bg-white appearance-none" value={item.uom} disabled>
+                                                <select 
+                                                    disabled={isFieldDisabled}
+                                                    className="w-full border border-gray-200 rounded-xl px-1 py-1.5 text-[10px] font-black text-center uppercase bg-white appearance-none outline-none focus:border-black" 
+                                                    value={item.uom}
+                                                    onChange={(e) => handleRequestItemChange(index, 'uom', e.target.value)}
+                                                >
                                                     <option>{item.uom || 'UOM'}</option>
                                                 </select>
                                                 <ChevronDown size={10} className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-300" />
@@ -1256,7 +1284,7 @@ export const AddStockModal: React.FC<Props> = ({
                                                     <select 
                                                         className="w-full border border-gray-200 rounded-xl px-1 py-2 text-[10px] font-black text-center uppercase bg-white appearance-none outline-none" 
                                                         value={item.uom} 
-                                                        onChange={(e) => handleRequestItemChange(index, 'uom', e.target.value)}
+                                                        onChange={(e) => handleRequestItemChange(index, 'uom', e.target.value)} 
                                                     >
                                                         <option value="">UOM</option>
                                                         {MOCK_UOM_DATA.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
@@ -1283,7 +1311,15 @@ export const AddStockModal: React.FC<Props> = ({
         {/* Footer Actions */}
         <div className="px-8 py-6 bg-white border-t border-gray-100 flex justify-end gap-3 shrink-0">
           {isViewMode ? (
-            <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-black bg-gray-100 rounded-xl hover:bg-gray-200 transition-all">Close</button>
+            isApprovalModule ? (
+              <>
+                 <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:text-black transition-all">CANCEL</button>
+                 <button onClick={onReject} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-red-500 bg-white border border-red-500 rounded-xl hover:bg-red-50 transition-all active:scale-95 shadow-sm">REJECTED</button>
+                 <button onClick={onApprove} className="px-12 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-xl hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95">APPROVED</button>
+              </>
+            ) : (
+              <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-black bg-gray-100 rounded-xl hover:bg-gray-200 transition-all">CLOSE</button>
+            )
           ) : (
             <>
               <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:text-black transition-all">CANCEL</button>
