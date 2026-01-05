@@ -113,6 +113,151 @@ export const MOCK_POD_DATA: ModenaPodRecord[] = [
         { id: 2, namaPenghuni: 'Andi Wijaya', posisi: 'Staff Admin', departemen: 'Supply Chain', nomorKamar: '211', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Terpakai', jadwalLaundry: 'Selasa & Jumat', startDate: '2023-09-10', endDate: '2023-11-25' }
       ]
     },
+    // Data dari gambar - Lt 3 Pria
+    {
+      id: 34,
+      lantai: 'Lt 3 Pria',
+      jenisKamar: 'Quadruple Bed',
+      nomorKamar: '317 B',
+      namaPenghuni: 'Sung Yong Hong (Expat)',
+      posisi: 'Expert Engineer',
+      departemen: 'Production',
+      statusLokerBarang: 'Extra Loker Tidak Terpakai' as any,
+      statusLokerPantry: 'Extra Loker Tidak Terpakai' as any,
+      jadwalLaundry: 'Tidak ada',
+      keterangan: 'kosong kunci gada'
+    },
+    {
+      id: 37,
+      lantai: 'Lt 3 Pria',
+      jenisKamar: 'Quadruple Bed',
+      nomorKamar: '318 A',
+      namaPenghuni: 'Dani Rizky Nugraha',
+      posisi: 'Staff',
+      departemen: 'After Sales',
+      statusLokerBarang: 'Terpakai',
+      statusLokerPantry: 'Belum Dapat',
+      jadwalLaundry: 'Selasa & Jumat',
+      keterangan: 'isi'
+    },
+    {
+      id: 38,
+      lantai: 'Lt 3 Pria',
+      jenisKamar: 'Quadruple Bed',
+      nomorKamar: '318 B',
+      namaPenghuni: 'Ibnu Faisal Abbas',
+      posisi: 'Technician',
+      departemen: 'After Sales',
+      statusLokerBarang: 'Tidak Terpakai',
+      statusLokerPantry: 'Tidak Terpakai',
+      jadwalLaundry: 'Selasa & Jumat',
+      keterangan: 'isi'
+    },
+    {
+      id: 39,
+      lantai: 'Lt 3 Pria',
+      jenisKamar: 'Quadruple Bed',
+      nomorKamar: '318 C',
+      namaPenghuni: 'Muhammad Irfan Setyawan',
+      posisi: 'Junior Staff',
+      departemen: 'Operation',
+      statusLokerBarang: 'Terpakai',
+      statusLokerPantry: 'Terpakai',
+      jadwalLaundry: 'Senin & Kamis',
+      keterangan: 'butuh extra loker pantry'
+    },
+    {
+      id: 41,
+      lantai: 'Lt 3 Pria',
+      jenisKamar: 'Double Bed',
+      nomorKamar: '319 A',
+      namaPenghuni: 'Muhammad Reval Revanza',
+      posisi: 'Intern',
+      departemen: 'Marketing',
+      statusLokerBarang: 'Terpakai',
+      statusLokerPantry: 'Terpakai',
+      jadwalLaundry: 'Selasa & Jumat',
+      keterangan: 'isi gada lockset'
+    },
+    // Data dari gambar - Lt 3 Perempuan
+    {
+      id: 43,
+      lantai: 'Lt 3 Perempuan',
+      jenisKamar: 'Single Bed',
+      nomorKamar: '321',
+      namaPenghuni: 'Handrian Taufik',
+      posisi: 'Supervisor',
+      departemen: 'Logistic',
+      statusLokerBarang: 'Tidak Terpakai',
+      statusLokerPantry: 'Tidak Terpakai',
+      jadwalLaundry: 'Tidak ada',
+      keterangan: 'kosong gada kunci'
+    },
+    {
+      id: 44,
+      lantai: 'Lt 3 Perempuan',
+      jenisKamar: 'Single Bed',
+      nomorKamar: '322',
+      namaPenghuni: 'R.A Putri Minang Permatasari',
+      posisi: 'Senior Staff',
+      departemen: 'Finance',
+      statusLokerBarang: 'Terpakai',
+      statusLokerPantry: 'Terpakai',
+      jadwalLaundry: 'Senin & Kamis',
+      keterangan: 'isi'
+    },
+    {
+      id: 45,
+      lantai: 'Lt 3 Perempuan',
+      jenisKamar: 'Single Bed',
+      nomorKamar: '325',
+      namaPenghuni: '-',
+      posisi: '-',
+      departemen: '-',
+      statusLokerBarang: 'Belum Dapat',
+      statusLokerPantry: 'Belum Dapat',
+      jadwalLaundry: 'Rabu & Sabtu',
+      keterangan: 'kosong kunci gada gntungan hafele 0051'
+    },
+    {
+      id: 47,
+      lantai: 'Lt 3 Perempuan',
+      jenisKamar: 'Quadruple Bed',
+      nomorKamar: '327 A',
+      namaPenghuni: 'Diah Valentin',
+      posisi: 'Staff',
+      departemen: 'HR',
+      statusLokerBarang: 'Terpakai',
+      statusLokerPantry: 'Terpakai',
+      jadwalLaundry: 'Selasa & Jumat',
+      keterangan: 'isi'
+    },
+    {
+      id: 53,
+      lantai: 'Lt 3 Perempuan',
+      jenisKamar: 'Quadruple Bed',
+      nomorKamar: '328 C',
+      namaPenghuni: 'Fitria Sisco',
+      posisi: 'Staff',
+      departemen: 'Accounting',
+      statusLokerBarang: 'Terpakai',
+      statusLokerPantry: 'Belum Dapat',
+      jadwalLaundry: 'Selasa & Jumat',
+      keterangan: 'isi'
+    },
+    {
+      id: 55,
+      lantai: 'Lt 3 Perempuan',
+      jenisKamar: 'Double Bed',
+      nomorKamar: '329 A',
+      namaPenghuni: 'Galuh Sekar Mulatsih',
+      posisi: 'Technician',
+      departemen: 'After Sales',
+      statusLokerBarang: 'Terpakai',
+      statusLokerPantry: 'Terpakai',
+      jadwalLaundry: 'Senin & Kamis',
+      keterangan: 'isi'
+    }
 ];
 
 export const MOCK_POD_REQUEST_DATA: PodRequestRecord[] = [
