@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, Save, Calendar, User, Package, MessageSquare, Plus, Trash2, Send, Layers, ClipboardCheck, Clock, Archive, Settings, History, Lock, Home, LayoutGrid, Baby, Users, Activity, Briefcase, Building2, Key, Hash, ShieldCheck, DollarSign, Landmark, ShoppingCart, AlertCircle, UploadCloud } from 'lucide-react';
+import { X, Save, Calendar, User, Package, MessageSquare, Plus, Trash2, Send, Layers, ClipboardCheck, Clock, Archive, Settings, History, Lock, Home, LayoutGrid, Baby, Users, Activity, Briefcase, Building2, Key, Hash, ShieldCheck, DollarSign, Landmark, ShoppingCart, AlertCircle, UploadCloud, Check, XCircle } from 'lucide-react';
 import { AssetRecord, LogBookRecord, StockOpnameRecord, LockerRecord, LockerRequestRecord, PodRequestRecord, ModenaPodRecord, MasterPodRecord, MasterLockerRecord, StationeryRequestRecord, StationeryRequestItem } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_POD_DATA } from '../constants';
@@ -18,6 +18,8 @@ interface Props {
   onSavePod?: (pod: Partial<ModenaPodRecord>) => void;
   onSaveMasterPod?: (pod: Partial<MasterPodRecord>) => void;
   onSaveMasterLocker?: (pod: Partial<MasterLockerRecord>) => void;
+  onApprove?: (item: AssetRecord) => void;
+  onReject?: (item: AssetRecord) => void;
   
   initialAssetData?: AssetRecord;
   initialLogBookData?: LogBookRecord;
@@ -45,6 +47,8 @@ export const AddStockModal: React.FC<Props> = ({
     onSavePod,
     onSaveMasterPod,
     onSaveMasterLocker,
+    onApprove,
+    onReject,
     initialAssetData,
     initialLogBookData,
     initialStockOpnameData,
@@ -71,6 +75,7 @@ export const AddStockModal: React.FC<Props> = ({
   
   const isArkModule = moduleName.includes('ARK') || moduleName.includes('Household');
   const isStationeryRequest = moduleName.includes('ATK') || moduleName.includes('ARK') || moduleName.includes('Stationery') || moduleName.includes('Household');
+  const isApprovalModule = moduleName.includes('Approval');
   const isLogBook = moduleName === 'Log Book';
   const isStockOpname = moduleName.includes('Stock Opname');
   const isLocker = moduleName === 'Daftar Loker';
@@ -135,6 +140,20 @@ export const AddStockModal: React.FC<Props> = ({
       if (isMasterPod && onSaveMasterPod) onSaveMasterPod(masterPodForm);
       if (isMasterLocker && onSaveMasterLocker) onSaveMasterLocker(masterLockerForm);
       onClose();
+  };
+
+  const handleApproveAction = () => {
+    if (onApprove && initialAssetData) {
+      onApprove(initialAssetData);
+      onClose();
+    }
+  };
+
+  const handleRejectAction = () => {
+    if (onReject && initialAssetData) {
+      onReject(initialAssetData);
+      onClose();
+    }
   };
 
   const handleStationeryRequestChange = (field: keyof StationeryRequestRecord, value: any) => {
@@ -340,8 +359,27 @@ export const AddStockModal: React.FC<Props> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end gap-3 shrink-0">
+        <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end items-center gap-3 shrink-0">
             <button onClick={onClose} className="px-10 py-3 text-[11px] font-black text-gray-400 bg-white border border-gray-200 rounded-xl uppercase tracking-widest hover:bg-gray-50 hover:text-black transition-all">{isViewMode ? 'Close' : 'Cancel'}</button>
+            
+            {/* Approval specific buttons for details modal */}
+            {isViewMode && isApprovalModule && initialAssetData?.status === 'Pending' && (
+              <>
+                <button 
+                  onClick={handleRejectAction} 
+                  className="px-10 py-3 text-[11px] font-black text-white bg-red-500 rounded-xl uppercase tracking-widest shadow-xl shadow-red-500/10 active:scale-95 transition-all hover:bg-red-600 flex items-center gap-2"
+                >
+                  <XCircle size={16} className="stroke-[3]" /> Reject
+                </button>
+                <button 
+                  onClick={handleApproveAction} 
+                  className="px-10 py-3 text-[11px] font-black text-white bg-green-500 rounded-xl uppercase tracking-widest shadow-xl shadow-green-500/10 active:scale-95 transition-all hover:bg-green-600 flex items-center gap-2"
+                >
+                  <Check size={16} className="stroke-[3]" /> Approve
+                </button>
+              </>
+            )}
+
             {!isViewMode && (
                 <button onClick={handleSave} className="px-12 py-3 text-[11px] font-black text-white bg-black rounded-xl uppercase tracking-widest shadow-xl shadow-black/10 active:scale-95 transition-all hover:bg-gray-900">Save Data</button>
             )}
