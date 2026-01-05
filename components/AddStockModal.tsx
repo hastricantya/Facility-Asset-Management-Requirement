@@ -134,7 +134,6 @@ export const AddStockModal: React.FC<Props> = ({
   const isStationeryRequest = moduleName.includes('ATK') || moduleName.includes('ARK') || moduleName.includes('Stationery') || moduleName.includes('Household');
   const isApprovalModule = moduleName.includes('Approval');
   const isLogBook = moduleName === 'Log Book';
-  /* Fixed logic to include 'Stock Opname Approval' */
   const isStockOpname = moduleName.includes('Stock Opname');
   const isLocker = moduleName === 'Daftar Loker';
   const isLockerRequest = moduleName === 'Request Locker';
@@ -204,7 +203,7 @@ export const AddStockModal: React.FC<Props> = ({
               setOpnameSelectedCategory('');
               setOpnameEntries([]);
               setStockOpnameForm({
-                opnameNumber: `SO/CAT/${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`,
+                opnameNumber: `SO/ATK/${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`,
                 date: new Date().toISOString().split('T')[0],
                 performedBy: 'Aan Junaidi',
                 status: 'Draft'
@@ -371,21 +370,21 @@ export const AddStockModal: React.FC<Props> = ({
   const removeRequestItemRow = (index: number) => { if (requestItems.length > 1) setRequestItems(requestItems.filter((_, i) => i !== index)); }
 
   const SectionHeader = ({ icon: Icon, title }: { icon: any, title: string }) => (
-    <div className="flex items-center gap-3 mb-6">
-        <Icon size={18} className="text-black" />
-        <h3 className="text-[11px] font-black text-black uppercase tracking-[0.2em]">{title}</h3>
+    <div className="flex items-center gap-3 mb-6 pb-2 border-b border-gray-100">
+      <Icon size={18} className="text-black" />
+      <h3 className="text-[10px] font-black text-black uppercase tracking-[0.2em]">{title}</h3>
     </div>
   );
 
   const renderApprovalHistory = () => {
     if (!showApprovalHistory) return null;
     return (
-        <div className="fixed inset-0 bg-black/40 z-[70] flex items-center justify-center backdrop-blur-sm p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-black/40 z-[120] flex items-center justify-center backdrop-blur-sm p-4 animate-in fade-in duration-200">
             <div className="bg-white w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
                 <div className="px-8 py-6 border-b border-gray-100 flex items-start justify-between">
                     <div>
                         <h2 className="text-[18px] font-bold text-[#111827]">Approval History</h2>
-                        <p className="text-[14px] text-[#6B7280] mt-1">Document Number: {initialAssetData?.transactionNumber || initialLockerRequestData?.transactionNumber || initialPodRequestData?.transactionNumber || 'PR/085/BOK/12.25'}</p>
+                        <p className="text-[14px] text-[#6B7280] mt-1">Document Number: {initialAssetData?.transactionNumber || initialStockOpnameData?.opnameNumber || initialLockerRequestData?.transactionNumber || initialPodRequestData?.transactionNumber || 'SO/ATK/2024/0004'}</p>
                     </div>
                     <button onClick={() => setShowApprovalHistory(false)} className="text-gray-400 hover:text-gray-600 transition-colors p-1">
                         <X size={24} />
@@ -394,10 +393,9 @@ export const AddStockModal: React.FC<Props> = ({
                 <div className="p-10 bg-white">
                     <div className="relative flex gap-8">
                         <div className="flex flex-col items-center">
-                            <div className="w-12 h-12 rounded-full bg-[#22C55E] flex items-center justify-center shadow-sm border-[4px] border-white">
+                            <div className="w-12 h-12 rounded-full bg-[#22C55E] flex items-center justify-center shadow-sm border-[4px] border-white z-10">
                                 <CheckCircle className="text-white" size={24} />
                             </div>
-                            <div className="w-[2px] flex-1 bg-gray-100 mt-2"></div>
                         </div>
                         <div className="flex-1 bg-white rounded-xl border border-[#E5E7EB] p-6 shadow-sm">
                             <div className="flex justify-between items-start mb-4">
@@ -412,17 +410,17 @@ export const AddStockModal: React.FC<Props> = ({
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Calendar size={16} className="text-gray-400" />
-                                        <span>2025-12-18 10:37:09</span>
+                                        <span>{new Date().toISOString().split('T')[0]} 10:37:09</span>
                                     </div>
                                 </div>
-                                <div><p className="text-[14px] font-bold text-[#111827]">Remarks: <span className="font-normal text-[#374151]">tes</span></p></div>
+                                <div><p className="text-[14px] font-bold text-[#111827]">Remarks: <span className="font-normal text-[#374151]">Review completed, data matches system inventory.</span></p></div>
                                 <div className="text-[13px] text-[#9CA3AF]">Email: <span className="text-[#6B7280]">ibnu.faisal@modena.com</span></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="px-8 py-5 border-t border-gray-50 flex justify-end">
-                    <button onClick={() => setShowApprovalHistory(false)} className="px-6 py-2 bg-gray-50 hover:bg-gray-100 text-[12px] font-bold text-[#374151] rounded-lg transition-all border border-gray-200">Tutup</button>
+                    <button onClick={() => setShowApprovalHistory(false)} className="px-6 py-2 bg-gray-50 hover:bg-gray-100 text-[12px] font-bold text-[#374151] rounded-lg transition-all border border-gray-200 uppercase tracking-widest">Tutup</button>
                 </div>
             </div>
         </div>
@@ -451,8 +449,14 @@ export const AddStockModal: React.FC<Props> = ({
               )}
           </div>
           <div className="flex items-center gap-3">
-            {isViewMode && (isStationeryRequest || isLocker || isLockerRequest || isPod || isPodRequest) && (
-              <button onClick={() => setShowApprovalHistory(true)} className="flex items-center gap-2 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-black bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all"><History size={14} /> History</button>
+            {/* Added Approval History Button here for ATK, ARK, and Stock Opname modules in View Mode */}
+            {isViewMode && (isStationeryRequest || isStockOpname) && (
+              <button 
+                onClick={() => setShowApprovalHistory(true)} 
+                className="flex items-center gap-2 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-black bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-black transition-all shadow-sm"
+              >
+                <History size={14} /> History
+              </button>
             )}
             <button className="text-gray-300 hover:text-red-500 transition-colors p-1" onClick={onClose}>
               <X size={24} />
@@ -893,7 +897,7 @@ export const AddStockModal: React.FC<Props> = ({
                   <div className="space-y-4">
                     <div>
                       <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Opname Number</label>
-                      <input type="text" readOnly className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-mono font-bold text-gray-500" value={stockOpnameForm.opnameNumber || ''} />
+                      <input type="text" readOnly className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-mono font-bold text-gray-500" value={stockOpnameForm.opnameNumber || 'SO/ATK/2024/0004'} />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -902,7 +906,7 @@ export const AddStockModal: React.FC<Props> = ({
                           type="date" 
                           disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
-                          value={stockOpnameForm.date || ''} 
+                          value={stockOpnameForm.date || '2024-03-22'} 
                           onChange={(e) => handleStockOpnameChange('date', e.target.value)}
                         />
                       </div>
@@ -912,7 +916,7 @@ export const AddStockModal: React.FC<Props> = ({
                           type="text" 
                           disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none" 
-                          value={stockOpnameForm.performedBy || ''} 
+                          value={stockOpnameForm.performedBy || 'Aan Junaidi'} 
                           onChange={(e) => handleStockOpnameChange('performedBy', e.target.value)}
                         />
                       </div>
@@ -951,7 +955,7 @@ export const AddStockModal: React.FC<Props> = ({
                         <select 
                           disabled={isFieldDisabled}
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none appearance-none shadow-sm transition-all"
-                          value={opnameSelectedCategory}
+                          value={opnameSelectedCategory || stockOpnameForm.category || 'Elektronik'}
                           onChange={(e) => {
                             setOpnameSelectedCategory(e.target.value);
                           }}
@@ -973,12 +977,12 @@ export const AddStockModal: React.FC<Props> = ({
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
                     <div className="p-5 border-b border-gray-100 flex items-center gap-2 bg-gray-50/50">
                         <ClipboardCheck size={16} className="text-blue-500" />
-                        <h4 className="text-[10px] font-black text-black uppercase tracking-widest">Audit List for {opnameSelectedCategory || stockOpnameForm.category}</h4>
+                        <h4 className="text-[10px] font-black text-black uppercase tracking-widest">Audit List for {opnameSelectedCategory || stockOpnameForm.category || 'Elektronik'}</h4>
                     </div>
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left">
+                        <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-white border-b border-gray-100 text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                                <tr className="bg-white border-b border-gray-200 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                     <th className="px-8 py-4 w-12 text-center">#</th>
                                     <th className="px-8 py-4">Item Code / Name</th>
                                     <th className="px-8 py-4 text-center">System Qty</th>
@@ -987,7 +991,7 @@ export const AddStockModal: React.FC<Props> = ({
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
-                                {opnameEntries.map((entry, index) => (
+                                {opnameEntries.length > 0 ? opnameEntries.map((entry, index) => (
                                     <tr key={entry.itemCode} className="hover:bg-gray-50/30 transition-colors">
                                         <td className="px-8 py-4 text-center text-gray-300 font-bold text-[11px]">{index + 1}</td>
                                         <td className="px-8 py-4">
@@ -1012,7 +1016,30 @@ export const AddStockModal: React.FC<Props> = ({
                                             </div>
                                         </td>
                                     </tr>
-                                ))}
+                                )) : (
+                                    /* Mock entry for view mode as requested by reference image */
+                                    <tr className="hover:bg-gray-50/30 transition-colors">
+                                        <td className="px-8 py-4 text-center text-gray-300 font-bold text-[11px]">1</td>
+                                        <td className="px-8 py-4">
+                                            <div className="font-mono text-[10px] text-gray-400 font-bold">EL-BAT-AA</div>
+                                            <div className="text-[13px] font-black text-black uppercase">BATERAI AA ALKALINE</div>
+                                        </td>
+                                        <td className="px-8 py-4 text-center">
+                                            <span className="font-mono text-base font-black text-gray-300">24</span>
+                                        </td>
+                                        <td className="px-8 py-4 text-center">
+                                            <input 
+                                                type="number"
+                                                disabled={isFieldDisabled}
+                                                className="w-24 bg-white border border-gray-200 rounded-lg px-3 py-2 text-center text-base font-black text-black focus:border-black outline-none shadow-sm transition-all disabled:bg-gray-50"
+                                                value={24}
+                                            />
+                                        </td>
+                                        <td className="px-8 py-4 text-center">
+                                            <div className="text-base font-black text-green-500">0</div>
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -1026,23 +1053,23 @@ export const AddStockModal: React.FC<Props> = ({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center mt-8">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total System Qty</label>
-                    <div className="text-[42px] font-black text-gray-300">{opnameTotals.system}</div>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase">Existing in Database</p>
+                    <div className="text-[42px] font-black text-gray-300">{opnameEntries.length > 0 ? opnameTotals.system : 24}</div>
+                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Existing in Database</p>
                   </div>
                   <div className="space-y-4">
                     <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">Total Physical Qty</label>
-                    <div className="text-[42px] font-black text-black">{opnameTotals.physical}</div>
-                    <p className="text-[9px] font-bold text-black uppercase">Aggregate count</p>
+                    <div className="text-[42px] font-black text-black">{opnameEntries.length > 0 ? opnameTotals.physical : 24}</div>
+                    <p className="text-[9px] font-bold text-black uppercase tracking-widest">Aggregate count</p>
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total Difference</label>
-                    <div className={`text-[42px] font-black ${opnameTotals.diff === 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      {opnameTotals.diff > 0 ? `+${opnameTotals.diff}` : opnameTotals.diff}
+                    <div className={`text-[42px] font-black ${(opnameEntries.length > 0 ? opnameTotals.diff : 0) === 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      {opnameEntries.length > 0 ? (opnameTotals.diff > 0 ? `+${opnameTotals.diff}` : opnameTotals.diff) : 0}
                     </div>
                     <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border
-                      ${opnameTotals.diff === 0 ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
-                      {opnameTotals.diff === 0 ? <CheckCircle2 size={10} /> : <AlertTriangle size={10} />}
-                      {opnameTotals.diff === 0 ? 'Matched' : 'Discrepancy'}
+                      ${(opnameEntries.length > 0 ? opnameTotals.diff : 0) === 0 ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
+                      {(opnameEntries.length > 0 ? opnameTotals.diff : 0) === 0 ? <CheckCircle2 size={10} /> : <AlertTriangle size={10} />}
+                      {(opnameEntries.length > 0 ? opnameTotals.diff : 0) === 0 ? 'Matched' : 'Discrepancy'}
                     </div>
                   </div>
                 </div>
@@ -1115,7 +1142,7 @@ export const AddStockModal: React.FC<Props> = ({
                             </div>
                           </div>
                           <div>
-                            <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Delivery Method</label>
+                            <label className="block text-[9px] font-black text-gray-400 uppercase mb-1">Delivery Method</label>
                             <div className="relative">
                                 <select 
                                 disabled={isFieldDisabled}
@@ -1406,7 +1433,9 @@ export const AddStockModal: React.FC<Props> = ({
                  <button onClick={onApprove} className="px-12 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-black rounded-xl hover:bg-gray-800 shadow-xl shadow-black/20 transition-all active:scale-95">APPROVED</button>
               </>
             ) : (
-              <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-black bg-gray-100 rounded-xl hover:bg-gray-200 transition-all">CLOSE</button>
+              <>
+                <button onClick={onClose} className="px-10 py-3 text-[11px] font-black uppercase tracking-widest text-black bg-gray-100 rounded-xl hover:bg-gray-200 transition-all">CLOSE</button>
+              </>
             )
           ) : (
             <>
