@@ -171,6 +171,9 @@ export const MOCK_STOCK_OPNAME_DATA: StockOpnameRecord[] = [
   { id: 1, opnameNumber: 'SO/ATK/2024/0001', itemCode: 'TP-HP0048', itemName: 'HP Laserjet 204A Black', category: 'Tinta Printer', systemQty: 5, physicalQty: 5, difference: 0, date: '2024-03-20', performedBy: 'Aan Junaidi', status: 'Matched' },
   { id: 2, opnameNumber: 'SO/ATK/2024/0002', itemCode: 'KRT-A4-70', itemName: 'Kertas A4 70gr Sinar Dunia', category: 'Kertas', systemQty: 45, physicalQty: 42, difference: -3, date: '2024-03-21', performedBy: 'Budi Santoso', status: 'Discrepancy' },
   { id: 3, opnameNumber: 'SO/ARK/2024/0001', itemCode: 'CL-STL-01', itemName: 'Stella Matic Refill Green', category: 'Pembersih', systemQty: 4, physicalQty: 5, difference: 1, date: '2024-03-22', performedBy: 'Citra Lestari', status: 'Discrepancy' },
+  { id: 4, opnameNumber: 'SO/ATK/2024/0004', itemCode: 'EL-PRN-HP', itemName: 'Printer HP LaserJet Pro M15w', category: 'Elektronik', systemQty: 2, physicalQty: 1, difference: -1, date: '2024-03-23', performedBy: 'Aan Junaidi', status: 'Draft' },
+  { id: 5, opnameNumber: 'SO/ARK/2024/0002', itemCode: 'CL-WPL-01', itemName: 'Wipol Karbol Wangi 750ml', category: 'Pembersih', systemQty: 10, physicalQty: 10, difference: 0, date: '2024-03-23', performedBy: 'Eko Prasetyo', status: 'Draft' },
+  { id: 6, opnameNumber: 'SO/ATK/2024/0005', itemCode: 'KRT-F4-80', itemName: 'Kertas F4 80gr PaperOne', category: 'Kertas', systemQty: 12, physicalQty: 15, difference: 3, date: '2024-03-24', performedBy: 'Dewi Putri', status: 'Draft' },
 ];
 
 export const MOCK_UOM_DATA: GeneralMasterItem[] = [

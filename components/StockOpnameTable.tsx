@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { StockOpnameRecord } from '../types';
 import { ChevronsUpDown, ChevronLeft, ChevronRight, Eye, MoreHorizontal, AlertTriangle, CheckCircle2 } from 'lucide-react';
@@ -6,9 +5,10 @@ import { ChevronsUpDown, ChevronLeft, ChevronRight, Eye, MoreHorizontal, AlertTr
 interface Props {
   data: StockOpnameRecord[];
   onView?: (item: StockOpnameRecord) => void;
+  showItemCode?: boolean;
 }
 
-export const StockOpnameTable: React.FC<Props> = ({ data, onView }) => {
+export const StockOpnameTable: React.FC<Props> = ({ data, onView, showItemCode = true }) => {
   return (
     <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden transition-all duration-500">
       <div className="overflow-x-auto custom-scrollbar">
@@ -22,12 +22,14 @@ export const StockOpnameTable: React.FC<Props> = ({ data, onView }) => {
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-48 group cursor-pointer hover:bg-gray-200/50 transition-colors">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Item Code</span>
-                  <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
-                </div>
-              </th>
+              {showItemCode && (
+                <th className="p-5 w-48 group cursor-pointer hover:bg-gray-200/50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Item Code</span>
+                    <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
+                  </div>
+                </th>
+              )}
               <th className="p-5 w-64 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Item Category</span>
@@ -52,7 +54,9 @@ export const StockOpnameTable: React.FC<Props> = ({ data, onView }) => {
                     {item.opnameNumber}
                    </div>
                 </td>
-                <td className="p-5 font-mono text-[11px] text-gray-500 font-bold uppercase">{item.itemCode}</td>
+                {showItemCode && (
+                  <td className="p-5 font-mono text-[11px] text-gray-500 font-bold uppercase">{item.itemCode}</td>
+                )}
                 <td className="p-5 font-black text-black text-[13px] uppercase tracking-tight">{item.category}</td>
                 <td className="p-5 text-center font-black text-gray-400 text-[14px]">{item.systemQty}</td>
                 <td className="p-5 text-center font-black text-black text-[14px]">{item.physicalQty}</td>
@@ -74,7 +78,6 @@ export const StockOpnameTable: React.FC<Props> = ({ data, onView }) => {
                               item.status === 'Discrepancy' ? 'bg-red-50 text-red-600 border-red-100' : 
                               'bg-gray-50 text-gray-400 border-gray-100' // Draft
                             }`}>
-                            {/* Fixed: AlertTriangle was used but not imported. AlertCircle was imported but not used. */}
                             {item.status === 'Matched' ? <CheckCircle2 size={10} /> : item.status === 'Discrepancy' ? <AlertTriangle size={10} /> : null}
                             {item.status}
                         </span>

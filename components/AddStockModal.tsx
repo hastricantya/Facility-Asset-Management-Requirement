@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { X, Save, Calendar, User, Package, MessageSquare, Plus, Trash2, Send, Layers, ClipboardCheck, Clock, Archive, Settings, History, Lock, Home, LayoutGrid, Baby, Users, Activity, Briefcase, Building2, Key, Hash, ShieldCheck, DollarSign, Landmark, ShoppingCart, AlertCircle, UploadCloud, Check, XCircle, MapPin, ChevronDown, ClipboardList, RefreshCw, Trash } from 'lucide-react';
 import { AssetRecord, LogBookRecord, StockOpnameRecord, LockerRecord, LockerRequestRecord, PodRequestRecord, ModenaPodRecord, MasterPodRecord, MasterLockerRecord, StationeryRequestRecord, StationeryRequestItem, MasterItem, Employee } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
-import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_POD_DATA } from '../constants';
+import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_POD_DATA, MOCK_STOCK_OPNAME_DATA } from '../constants';
 
 interface Props {
   isOpen: boolean;
@@ -19,6 +19,8 @@ interface Props {
   onSaveMasterLocker?: (pod: Partial<MasterLockerRecord>) => void;
   onApprove?: (item: AssetRecord) => void;
   onReject?: (item: AssetRecord) => void;
+  onApproveOpname?: (id: number) => void;
+  onRejectOpname?: (id: number) => void;
   
   initialAssetData?: AssetRecord;
   initialLogBookData?: LogBookRecord;
@@ -48,6 +50,8 @@ export const AddStockModal: React.FC<Props> = ({
     onSaveMasterLocker,
     onApprove,
     onReject,
+    onApproveOpname,
+    onRejectOpname,
     initialAssetData,
     initialLogBookData,
     initialStockOpnameData,
@@ -97,7 +101,23 @@ export const AddStockModal: React.FC<Props> = ({
     if (isOpen) {
         if (mode === 'edit' || mode === 'view') {
            if (initialLogBookData) setLogBookForm(initialLogBookData);
-           if (initialStockOpnameData) setStockOpnameForm(initialStockOpnameData);
+           if (initialStockOpnameData) {
+               setStockOpnameForm(initialStockOpnameData);
+               // Simulation: If we are viewing an opname, show the item in a list
+               // Real app would fetch all items with this opnameNumber
+               setOpnameItems([
+                   { 
+                       id: initialStockOpnameData.id,
+                       itemCode: initialStockOpnameData.itemCode,
+                       itemName: initialStockOpnameData.itemName,
+                       remainingStock: initialStockOpnameData.systemQty,
+                       physicalQty: initialStockOpnameData.physicalQty,
+                       difference: initialStockOpnameData.difference
+                   }
+               ]);
+               setOpnameMainCategory(initialStockOpnameData.opnameNumber.includes('ATK') ? 'ATK' : 'ARK');
+               setOpnameSubCategory(initialStockOpnameData.category);
+           }
            if (initialLockerData) setLockerForm(initialLockerData);
            if (initialLockerRequestData) setLockerRequestForm(initialLockerRequestData);
            if (initialPodRequestData) setPodRequestForm(initialPodRequestData);
@@ -147,9 +167,9 @@ export const AddStockModal: React.FC<Props> = ({
     }
   }, [isOpen, initialAssetData, initialLogBookData, initialStockOpnameData, initialLockerData, initialLockerRequestData, initialPodData, initialMasterPodData, initialMasterLockerData, initialPodRequestData, mode, isArkModule, isStationeryRequest, isStockOpname, isPod, isMasterPod, isMasterLocker, moduleName]);
 
-  // Sync Stock Opname Items when Sub-Category changes
+  // Sync Stock Opname Items when Sub-Category changes (only in Create mode)
   useEffect(() => {
-    if (isStockOpname && opnameSubCategory) {
+    if (isStockOpname && opnameSubCategory && !isViewMode) {
         const masterList = opnameMainCategory === 'ATK' ? MOCK_MASTER_DATA : MOCK_MASTER_ARK_DATA;
         const filtered = masterList.filter(m => m.category === opnameSubCategory);
         setOpnameItems(filtered.map(m => ({
@@ -158,7 +178,7 @@ export const AddStockModal: React.FC<Props> = ({
             difference: 0
         })));
     }
-  }, [opnameSubCategory, opnameMainCategory, isStockOpname]);
+  }, [opnameSubCategory, opnameMainCategory, isStockOpname, isViewMode]);
 
   const handleSave = () => {
       if (isStationeryRequest && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
@@ -189,14 +209,20 @@ export const AddStockModal: React.FC<Props> = ({
   };
 
   const handleApproveAction = () => {
-    if (onApprove && initialAssetData) {
+    if (isStockOpname && onApproveOpname && initialStockOpnameData) {
+        onApproveOpname(initialStockOpnameData.id);
+        onClose();
+    } else if (onApprove && initialAssetData) {
       onApprove(initialAssetData);
       onClose();
     }
   };
 
   const handleRejectAction = () => {
-    if (onReject && initialAssetData) {
+    if (isStockOpname && onRejectOpname && initialStockOpnameData) {
+        onRejectOpname(initialStockOpnameData.id);
+        onClose();
+    } else if (onReject && initialAssetData) {
       onReject(initialAssetData);
       onClose();
     }
@@ -294,9 +320,10 @@ export const AddStockModal: React.FC<Props> = ({
                            <div className="relative">
                                <input 
                                   type="date" 
-                                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm" 
+                                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm disabled:bg-gray-50 disabled:text-gray-400" 
                                   value={stationeryRequestForm.date || ''} 
                                   onChange={(e) => handleStationeryRequestChange('date', e.target.value)} 
+                                  disabled={isViewMode}
                                 />
                            </div>
                         </div>
@@ -304,15 +331,16 @@ export const AddStockModal: React.FC<Props> = ({
                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Request Type</label>
                            <div className="relative">
                                <select 
-                                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm appearance-none" 
+                                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm appearance-none disabled:bg-gray-50 disabled:text-gray-400" 
                                  value={stationeryRequestForm.type || 'Daily Request'} 
                                  onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
+                                 disabled={isViewMode}
                                >
                                   <option value="Daily Request">Daily Request</option>
                                   <option value="Event Request">Event Request</option>
                                   <option value="Emergency Request">Emergency Request</option>
                                </select>
-                               <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                               {!isViewMode && <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />}
                            </div>
                         </div>
                     </div>
@@ -322,8 +350,9 @@ export const AddStockModal: React.FC<Props> = ({
                            {['PICKUP HO', 'DELIVERY'].map(m => (
                                <button 
                                  key={m}
+                                 disabled={isViewMode}
                                  onClick={() => handleStationeryRequestChange('deliveryType', m)}
-                                 className={`flex-1 py-3 text-[11px] font-black rounded-xl border transition-all uppercase tracking-widest ${stationeryRequestForm.deliveryType === m ? 'bg-black text-white border-black shadow-lg' : 'bg-white text-gray-400 border-gray-200 hover:border-black'}`}
+                                 className={`flex-1 py-3 text-[11px] font-black rounded-xl border transition-all uppercase tracking-widest ${stationeryRequestForm.deliveryType === m ? 'bg-black text-white border-black shadow-lg' : 'bg-white text-gray-400 border-gray-200 hover:border-black disabled:hover:border-gray-200'}`}
                                >
                                   {m}
                                </button>
@@ -342,7 +371,8 @@ export const AddStockModal: React.FC<Props> = ({
                                <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Full Name</label>
                                <input 
                                  type="text" 
-                                 className="w-full bg-transparent border-b border-gray-200 focus:border-black outline-none text-[15px] font-black uppercase tracking-tight"
+                                 disabled={isViewMode}
+                                 className="w-full bg-transparent border-b border-gray-200 focus:border-black outline-none text-[15px] font-black uppercase tracking-tight disabled:border-transparent disabled:text-black"
                                  value={requester.name}
                                  onChange={(e) => setRequester({...requester, name: e.target.value})}
                                />
@@ -352,7 +382,8 @@ export const AddStockModal: React.FC<Props> = ({
                            <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 pl-1">Role / Position</label>
                            <input 
                              type="text" 
-                             className="w-full border border-gray-100 rounded-xl px-4 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white"
+                             disabled={isViewMode}
+                             className="w-full border border-gray-100 rounded-xl px-4 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white disabled:bg-gray-50"
                              value={requester.role}
                              onChange={(e) => setRequester({...requester, role: e.target.value})}
                            />
@@ -365,12 +396,14 @@ export const AddStockModal: React.FC<Props> = ({
                <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
                  <div className="flex items-center justify-between mb-8">
                    <SectionHeader icon={Package} title="Requested Items" />
-                   <button 
-                     onClick={addRequestItem}
-                     className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-lg shadow-black/10 active:scale-95"
-                   >
-                     <Plus size={16} /> Add Item
-                   </button>
+                   {!isViewMode && (
+                       <button 
+                         onClick={addRequestItem}
+                         className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-lg shadow-black/10 active:scale-95"
+                       >
+                         <Plus size={16} /> Add Item
+                       </button>
+                   )}
                  </div>
                  
                  <div className="overflow-hidden border border-gray-100 rounded-xl">
@@ -383,7 +416,7 @@ export const AddStockModal: React.FC<Props> = ({
                                 <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">In Stock</th>
                                 <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Qty</th>
                                 <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest pl-6">UOM</th>
-                                <th className="p-4 w-12 pr-8"></th>
+                                {!isViewMode && <th className="p-4 w-12 pr-8"></th>}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
@@ -396,42 +429,51 @@ export const AddStockModal: React.FC<Props> = ({
                                 return (
                                     <tr key={idx} className="hover:bg-gray-50/30 transition-colors">
                                         <td className="p-4 pl-8">
-                                            <div className="relative">
-                                                <select 
-                                                  className="w-full bg-transparent border-0 font-black text-black text-[12px] uppercase tracking-tight outline-none appearance-none cursor-pointer"
-                                                  value={item.categoryId}
-                                                  onChange={(e) => handleRequestItemChange(idx, 'categoryId', e.target.value)}
-                                                >
-                                                    <option value="">- PILIH -</option>
-                                                    {cats.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                                                </select>
-                                            </div>
+                                            {isViewMode ? (
+                                                <span className="text-[12px] font-black text-black uppercase">{item.categoryId || initialAssetData?.category || '-'}</span>
+                                            ) : (
+                                                <div className="relative">
+                                                    <select 
+                                                      className="w-full bg-transparent border-0 font-black text-black text-[12px] uppercase tracking-tight outline-none appearance-none cursor-pointer"
+                                                      value={item.categoryId}
+                                                      onChange={(e) => handleRequestItemChange(idx, 'categoryId', e.target.value)}
+                                                    >
+                                                        <option value="">- PILIH -</option>
+                                                        {cats.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                                                    </select>
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="p-4">
-                                            <select 
-                                              className="w-full bg-transparent border-0 font-black text-black text-[12px] uppercase tracking-tight outline-none appearance-none cursor-pointer"
-                                              value={item.itemId}
-                                              onChange={(e) => handleRequestItemChange(idx, 'itemId', e.target.value)}
-                                            >
-                                                <option value="">- PILIH ITEM -</option>
-                                                {filteredMasters.map(m => <option key={m.id} value={m.id}>{m.itemName}</option>)}
-                                            </select>
+                                            {isViewMode ? (
+                                                <span className="text-[12px] font-black text-black uppercase">{selectedItemFull?.itemName || initialAssetData?.itemName || '-'}</span>
+                                            ) : (
+                                                <select 
+                                                  className="w-full bg-transparent border-0 font-black text-black text-[12px] uppercase tracking-tight outline-none appearance-none cursor-pointer"
+                                                  value={item.itemId}
+                                                  onChange={(e) => handleRequestItemChange(idx, 'itemId', e.target.value)}
+                                                >
+                                                    <option value="">- PILIH ITEM -</option>
+                                                    {filteredMasters.map(m => <option key={m.id} value={m.id}>{m.itemName}</option>)}
+                                                </select>
+                                            )}
                                         </td>
                                         <td className="p-4">
                                             <span className="text-[12px] font-mono font-bold text-blue-600 uppercase">
-                                                {selectedItemFull?.itemCode || '-'}
+                                                {selectedItemFull?.itemCode || initialAssetData?.itemCode || '-'}
                                             </span>
                                         </td>
                                         <td className="p-4 text-center">
                                             <span className="text-[13px] font-black text-red-500">
-                                                {selectedItemFull?.remainingStock || '-'}
+                                                {selectedItemFull?.remainingStock || initialAssetData?.remainingStock || '-'}
                                             </span>
                                         </td>
                                         <td className="p-4">
                                             <div className="flex justify-center">
                                                 <input 
                                                   type="number"
-                                                  className="w-16 h-10 border border-gray-200 rounded-xl bg-white text-center font-black text-black text-sm shadow-sm focus:border-black outline-none transition-all"
+                                                  disabled={isViewMode}
+                                                  className="w-16 h-10 border border-gray-200 rounded-xl bg-white text-center font-black text-black text-sm shadow-sm focus:border-black outline-none transition-all disabled:bg-transparent disabled:border-transparent disabled:shadow-none"
                                                   value={item.qty}
                                                   onChange={(e) => handleRequestItemChange(idx, 'qty', e.target.value)}
                                                   placeholder="0"
@@ -439,16 +481,18 @@ export const AddStockModal: React.FC<Props> = ({
                                             </div>
                                         </td>
                                         <td className="p-4 pl-6">
-                                            <span className="text-[11px] font-black text-gray-400 uppercase">{item.uom || '-'}</span>
+                                            <span className="text-[11px] font-black text-gray-400 uppercase">{item.uom || selectedItemFull?.uom || '-'}</span>
                                         </td>
-                                        <td className="p-4 pr-8 text-right">
-                                            <button 
-                                              onClick={() => removeRequestItem(idx)}
-                                              className="p-2 text-gray-300 hover:text-red-500 transition-colors"
-                                            >
-                                                <Trash size={16} />
-                                            </button>
-                                        </td>
+                                        {!isViewMode && (
+                                            <td className="p-4 pr-8 text-right">
+                                                <button 
+                                                  onClick={() => removeRequestItem(idx)}
+                                                  className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                                                >
+                                                    <Trash size={16} />
+                                                </button>
+                                            </td>
+                                        )}
                                     </tr>
                                 );
                             })}
@@ -462,7 +506,8 @@ export const AddStockModal: React.FC<Props> = ({
                  <SectionHeader icon={MessageSquare} title="Keterangan / Remarks" />
                  <textarea 
                    rows={3} 
-                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white outline-none focus:border-black transition-all placeholder:text-gray-300" 
+                   disabled={isViewMode}
+                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white outline-none focus:border-black transition-all placeholder:text-gray-300 disabled:bg-gray-50 disabled:text-gray-400" 
                    value={stationeryRequestForm.remarks || ''} 
                    onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)} 
                    placeholder="Tulis catatan tambahan di sini..." 
@@ -470,9 +515,10 @@ export const AddStockModal: React.FC<Props> = ({
                </div>
             </div>
           ) : isStockOpname ? (
-            /* STOCK OPNAME CREATION FORM - FULLY EDITABLE */
+            /* STOCK OPNAME FORM - HANDLES BOTH CREATE AND VIEW (APPROVAL) */
             <div className="space-y-8">
                <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                  {/* CATEGORY SELECTION */}
                   <div className="md:col-span-8 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
                     <SectionHeader icon={Layers} title="Categorization Filter" />
                     <div className="grid grid-cols-2 gap-8">
@@ -482,8 +528,9 @@ export const AddStockModal: React.FC<Props> = ({
                              {['ATK', 'ARK'].map(cat => (
                                  <button 
                                     key={cat}
+                                    disabled={isViewMode}
                                     onClick={() => { setOpnameMainCategory(cat as 'ATK' | 'ARK'); setOpnameSubCategory(''); setOpnameItems([]); }}
-                                    className={`flex-1 py-3 text-[11px] font-black rounded-xl border transition-all uppercase tracking-widest ${opnameMainCategory === cat ? 'bg-black text-white border-black shadow-lg shadow-black/10' : 'bg-white text-gray-400 border-gray-100 hover:border-black'}`}
+                                    className={`flex-1 py-3 text-[11px] font-black rounded-xl border transition-all uppercase tracking-widest ${opnameMainCategory === cat ? 'bg-black text-white border-black shadow-lg shadow-black/10' : 'bg-white text-gray-400 border-gray-100 hover:border-black disabled:hover:border-gray-100'}`}
                                  >
                                     {cat} Category
                                  </button>
@@ -494,7 +541,8 @@ export const AddStockModal: React.FC<Props> = ({
                           <label className="block text-[10px] font-black text-gray-400 uppercase mb-3 tracking-widest">Item Sub-Category</label>
                           <div className="relative">
                               <select 
-                                className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-bold text-black focus:border-black outline-none appearance-none bg-white shadow-sm transition-all"
+                                disabled={isViewMode}
+                                className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-bold text-black focus:border-black outline-none appearance-none bg-white shadow-sm transition-all disabled:bg-gray-50 disabled:text-gray-500"
                                 value={opnameSubCategory}
                                 onChange={(e) => setOpnameSubCategory(e.target.value)}
                               >
@@ -503,12 +551,13 @@ export const AddStockModal: React.FC<Props> = ({
                                     <option key={c.id} value={c.name}>{c.name}</option>
                                 ))}
                               </select>
-                              <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                              {!isViewMode && <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />}
                           </div>
                        </div>
                     </div>
                   </div>
 
+                  {/* OPNAME INFO */}
                   <div className="md:col-span-4 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
                     <SectionHeader icon={ClipboardList} title="Opname Info" />
                     <div className="space-y-4">
@@ -516,7 +565,8 @@ export const AddStockModal: React.FC<Props> = ({
                           <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 pl-1">Opname Reference ID</label>
                           <input 
                             type="text" 
-                            className="w-full border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-mono font-black text-blue-600 focus:border-black outline-none bg-gray-50/50"
+                            disabled={isViewMode}
+                            className="w-full border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-mono font-black text-blue-600 focus:border-black outline-none bg-gray-50/50 disabled:bg-gray-50 disabled:border-transparent disabled:text-blue-600"
                             value={stockOpnameForm.opnameNumber || ''}
                             onChange={(e) => setStockOpnameForm({...stockOpnameForm, opnameNumber: e.target.value})}
                           />
@@ -525,7 +575,8 @@ export const AddStockModal: React.FC<Props> = ({
                           <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 pl-1">Performed On</label>
                           <input 
                             type="date" 
-                            className="w-full border border-gray-100 rounded-xl px-4 py-2 text-sm font-bold focus:border-black outline-none"
+                            disabled={isViewMode}
+                            className="w-full border border-gray-100 rounded-xl px-4 py-2 text-sm font-bold focus:border-black outline-none disabled:bg-gray-50 disabled:border-transparent disabled:text-black"
                             value={stockOpnameForm.date || ''}
                             onChange={(e) => setStockOpnameForm({...stockOpnameForm, date: e.target.value})}
                           />
@@ -534,6 +585,7 @@ export const AddStockModal: React.FC<Props> = ({
                   </div>
                </div>
 
+               {/* INVENTORY COUNT TABLE */}
                <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm min-h-[400px]">
                   <div className="flex items-center justify-between mb-8">
                     <SectionHeader icon={Package} title="Inventory Count Table" />
@@ -568,7 +620,8 @@ export const AddStockModal: React.FC<Props> = ({
                                             <div className="flex justify-center">
                                                 <input 
                                                     type="number"
-                                                    className="w-20 h-11 border border-gray-200 rounded-xl text-center font-black text-[15px] focus:border-black outline-none shadow-sm transition-all"
+                                                    disabled={isViewMode}
+                                                    className="w-20 h-11 border border-gray-200 rounded-xl text-center font-black text-[15px] focus:border-black outline-none shadow-sm transition-all disabled:bg-transparent disabled:border-transparent disabled:shadow-none"
                                                     value={item.physicalQty}
                                                     onChange={(e) => handleOpnamePhysicalChange(idx, e.target.value)}
                                                 />
@@ -609,7 +662,7 @@ export const AddStockModal: React.FC<Props> = ({
         <div className="px-8 py-5 bg-white border-t border-gray-100 flex justify-end items-center gap-3 shrink-0">
             <button onClick={onClose} className="px-12 py-3 text-[11px] font-black text-gray-400 bg-white border border-gray-200 rounded-xl uppercase tracking-widest hover:bg-gray-50 hover:text-black transition-all">Close</button>
             
-            {isViewMode && isApprovalModule && initialAssetData?.status === 'Pending' && (
+            {isViewMode && (isApprovalModule || moduleName === 'Stock Opname Approval') && (
               <>
                 <button 
                   onClick={handleRejectAction} 

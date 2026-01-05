@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
@@ -182,6 +181,14 @@ const App: React.FC = () => {
     }
   };
 
+  const handleApproveOpname = (id: number) => {
+    setStockOpnameData(stockOpnameData.map(d => d.id === id ? { ...d, status: d.difference === 0 ? 'Matched' : 'Discrepancy' } : d));
+  };
+
+  const handleRejectOpname = (id: number) => {
+    setStockOpnameData(stockOpnameData.map(d => d.id === id ? { ...d, status: 'Draft' } : d));
+  };
+
   const handleSavePod = (data: Partial<ModenaPodRecord>) => {
     if (modalMode === 'create') {
         const newRecord: ModenaPodRecord = {
@@ -263,7 +270,7 @@ const App: React.FC = () => {
             return <MasterModenaPodTable data={masterPodData} onEdit={(item) => { setSelectedMasterPod(item); setModalMode('edit'); setIsStockModalOpen(true); }} />;
          case 'Request MODENA Pod': return <PodRequestTable data={podRequestData} onView={(item) => { setSelectedPodRequest(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Stock Opname': return <StockOpnameTable data={stockOpnameData.filter(item => activeTab === 'Semua' || activeTab === '' || item.status === currentTargetStatus)} onView={(item) => { setSelectedStockOpname(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
-         case 'Stock Opname Approval': return <StockOpnameTable data={stockOpnameData.filter(item => item.status === 'Draft')} onView={(item) => { setSelectedStockOpname(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
+         case 'Stock Opname Approval': return <StockOpnameTable data={stockOpnameData.filter(item => item.status === 'Draft')} showItemCode={false} onView={(item) => { setSelectedStockOpname(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Request ATK':
          case 'Stationery Request Approval':
             const filteredAtk = atkData.filter(item => activeTab === 'Semua' || activeTab === '' || item.status === currentTargetStatus);
@@ -387,6 +394,8 @@ const App: React.FC = () => {
         onSavePodRequest={(data) => setPodRequestData([data as PodRequestRecord, ...podRequestData])}
         onApprove={handleApproveRequest}
         onReject={handleRejectRequest}
+        onApproveOpname={handleApproveOpname}
+        onRejectOpname={handleRejectOpname}
       />
 
       <ImportExcelModal 
