@@ -69,6 +69,7 @@ export const FilterBar: React.FC<Props> = ({
   const isLogBook = moduleName === 'Log Book';
   const isMaster = moduleName?.includes('Master');
   const isPod = moduleName === 'MODENA Pod';
+  const isStockOpname = moduleName === 'Stock Opname';
   const isStationeryModule = moduleName?.includes('ATK') || moduleName?.includes('ARK') || moduleName?.includes('Request') || moduleName?.includes('Approval');
   const isMasterATKARK = moduleName === 'Master ATK' || moduleName === 'Master ARK';
 
@@ -354,12 +355,22 @@ export const FilterBar: React.FC<Props> = ({
           </div>
 
           {!hideAdd && (
-            <button 
-              onClick={onAddClick}
-              className="bg-black text-white px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-[0.15em] flex items-center gap-2 hover:bg-gray-800 transition-all active:scale-95 shadow-xl shadow-black/10"
-            >
-              <Plus size={18} /> {t('Add Data')}
-            </button>
+            <div className={`flex ${isStockOpname ? 'flex-col gap-2' : 'items-center gap-3'}`}>
+              {isStockOpname && (
+                <button 
+                  onClick={onImportExcelClick}
+                  className="bg-white text-black border border-gray-200 px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-[0.15em] flex items-center gap-2 hover:bg-gray-50 transition-all active:scale-95 shadow-sm"
+                >
+                  <Upload size={16} /> UPLOAD EXCEL
+                </button>
+              )}
+              <button 
+                onClick={onAddClick}
+                className="bg-black text-white px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-[0.15em] flex items-center gap-2 hover:bg-gray-800 transition-all active:scale-95 shadow-xl shadow-black/10"
+              >
+                <Plus size={18} /> {t('Add Data')}
+              </button>
+            </div>
           )}
         </div>
       </div>

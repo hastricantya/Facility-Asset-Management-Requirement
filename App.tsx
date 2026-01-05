@@ -148,6 +148,10 @@ const App: React.FC = () => {
     setIsStockModalOpen(true);
   };
 
+  const handleImportExcelClick = () => {
+    setIsImportExcelModalOpen(true);
+  };
+
   const handleSavePod = (data: Partial<ModenaPodRecord>) => {
     if (modalMode === 'create') {
         const newRecord: ModenaPodRecord = {
@@ -212,6 +216,10 @@ const App: React.FC = () => {
          case 'Household Request Approval':
             const filteredArk = arkData.filter(item => activeTab === 'Semua' || activeTab === '' || item.status === currentTargetStatus);
             return <StationeryRequestTable data={filteredArk} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
+         case 'Master ATK':
+            return <MasterAtkTable data={atkMaster} onEdit={(item) => { setModalMode('edit'); setSelectedAsset({ ...MOCK_ATK_DATA[0], itemName: item.itemName, itemCode: item.itemCode, category: item.category }); setIsMasterItemModalOpen(true); }} />;
+         case 'Master ARK':
+            return <MasterAtkTable data={arkMaster} onEdit={(item) => { setModalMode('edit'); setSelectedAsset({ ...MOCK_ARK_DATA[0], itemName: item.itemName, itemCode: item.itemCode, category: item.category }); setIsMasterItemModalOpen(true); }} />;
          default: return <div className="p-8 text-center text-gray-400 uppercase font-black text-[10px] tracking-widest">{activeModule} module content placeholder</div>;
      }
   };
@@ -220,9 +228,12 @@ const App: React.FC = () => {
     if (activeModule === 'Pod Census') return ['Semua', 'Lt 2 Pria', 'Lt 2 Perempuan', 'Lt 3 Pria', 'Lt 3 Perempuan'];
     if (activeModule === 'Daftar Loker') return ['Semua', 'Terisi', 'Kosong', 'Kunci Hilang'];
     if (activeModule.includes('Daftar') || activeModule.includes('Approval') || activeModule.includes('Request')) {
-        return ['Semua', 'Draft', 'Waiting Approval', 'Approved', 'Rejected', 'Closed'];
+        if (!activeModule.includes('Master')) {
+           return ['Semua', 'Draft', 'Waiting Approval', 'Approved', 'Rejected', 'Closed'];
+        }
     }
     if (activeModule === 'Stock Opname') return ['Semua', 'Matched', 'Discrepancy'];
+    if (activeModule.includes('Master')) return ['Semua'];
     return ['Semua'];
   }, [activeModule]);
 
@@ -279,6 +290,7 @@ const App: React.FC = () => {
                 activeTab={activeTab} 
                 onTabChange={setActiveTab} 
                 onAddClick={handleAddClick}
+                onImportExcelClick={handleImportExcelClick}
                 moduleName={activeModule}
                 searchPlaceholder={`Search ${activeModule}...`}
                 hideAdd={false}
@@ -311,6 +323,16 @@ const App: React.FC = () => {
         onSaveStockOpname={(data) => setStockOpnameData([data as StockOpnameRecord, ...stockOpnameData])}
         onSaveLockerRequest={(data) => setLockerRequestData([data as LockerRequestRecord, ...lockerRequestData])}
         onSavePodRequest={(data) => setPodRequestData([data as PodRequestRecord, ...podRequestData])}
+      />
+
+      <ImportExcelModal 
+        isOpen={isImportExcelModalOpen} 
+        onClose={() => setIsImportExcelModalOpen(false)} 
+        onImport={(file) => {
+            console.log("Importing file:", file.name);
+            // Handle bulk import logic for Stock Opname here
+        }} 
+        title={`IMPORT ${activeModule.toUpperCase()}`} 
       />
     </div>
   );
