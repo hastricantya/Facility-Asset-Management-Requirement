@@ -1,3 +1,4 @@
+
 import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord, MasterPodRecord, MasterLockerRecord } from './types';
 
 // Helper function to generate mock data for ATK/ARK
@@ -75,103 +76,23 @@ export const MOCK_LOCKER_REQUEST_DATA: LockerRequestRecord[] = [
 ];
 
 export const MOCK_LOCKER_DATA: LockerRecord[] = [
-    // Lantai 2 Satrio Samples
     { 
-      id: 141, 
-      lockerNumber: 'S-2071', 
-      location: 'Lantai 2 Satrio', 
-      subLocation: 'Satrio', 
+      id: 1, 
+      lockerNumber: '001', 
+      location: 'Lantai 1', 
+      subLocation: '-', 
       status: 'Terisi', 
-      employee: { name: 'Muljana Susanto', role: 'Staff', position: 'Executive Vice President of Finance & Governance', department: 'Finance & Governance Division', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=muljana' }, 
+      employee: { name: 'Aan Junaidi', role: 'Technician', position: 'Team Leader', department: 'After Sales', phone: '08123', avatar: 'https://i.pravatar.cc/150?u=1' }, 
       spareKey: 'Ada', 
-      lastUpdate: '10/28/2025', 
-      remarks: ''
+      lastUpdate: '2024-03-20', 
+      remarks: 'Good condition',
+      history: [
+        { id: 101, date: '2024-03-20', name: 'Aan Junaidi', department: 'After Sales', status: 'Terisi' },
+        { id: 102, date: '2024-01-10', name: 'Budi Santoso', department: 'Supply Chain', status: 'Selesai Pinjam' },
+        { id: 103, date: '2023-11-05', name: 'Citra Lestari', department: 'HRGA', status: 'Selesai Pinjam' }
+      ]
     },
-    { 
-      id: 142, 
-      lockerNumber: 'S-2072', 
-      location: 'Lantai 2 Satrio', 
-      subLocation: 'Satrio', 
-      status: 'Kunci Hilang', 
-      spareKey: 'Ada', 
-      lastUpdate: '-', 
-      remarks: ''
-    },
-    { 
-      id: 143, 
-      lockerNumber: 'S-2073', 
-      location: 'Lantai 2 Satrio', 
-      subLocation: 'Satrio', 
-      status: 'Terisi', 
-      employee: { name: 'Rachma Octavia Ningtias', role: 'Staff', position: 'MCI - Account Receivable Officer', department: 'Accounting Department', phone: '08124', avatar: 'https://i.pravatar.cc/150?u=rachma' }, 
-      spareKey: 'Ada', 
-      lastUpdate: '10/6/2025', 
-      remarks: ''
-    },
-    { 
-      id: 144, 
-      lockerNumber: 'S-2074', 
-      location: 'Lantai 2 Satrio', 
-      subLocation: 'Satrio', 
-      status: 'Terisi', 
-      employee: { name: 'Noviana Dwi Andayani', role: 'Staff', position: 'Sales & Incentive Controller', department: 'Accounting Department', phone: '08125', avatar: 'https://i.pravatar.cc/150?u=noviana' }, 
-      spareKey: 'Ada', 
-      lastUpdate: '10/7/2025', 
-      remarks: ''
-    },
-    { 
-      id: 145, 
-      lockerNumber: 'S-2075', 
-      location: 'Lantai 2 Satrio', 
-      subLocation: 'Satrio', 
-      status: 'Kosong', 
-      spareKey: 'Ada', 
-      lastUpdate: '-', 
-      remarks: ''
-    },
-    // Lantai 2 Karang Asem Samples
-    { 
-      id: 170, 
-      lockerNumber: 'K-2001', 
-      location: 'Lantai 2 Kr. Asem', 
-      subLocation: 'Karang Asem', 
-      status: 'Terisi', 
-      employee: { name: 'Anton Wijaya', role: 'Staff', position: 'Head of Inbound Shipping', department: 'Inbound Shipping Department', phone: '08221', avatar: 'https://i.pravatar.cc/150?u=anton' }, 
-      spareKey: 'Ada', 
-      lastUpdate: '-', 
-      remarks: ''
-    },
-    { 
-      id: 171, 
-      lockerNumber: 'K-2002', 
-      location: 'Lantai 2 Kr. Asem', 
-      subLocation: 'Karang Asem', 
-      status: 'Terisi', 
-      employee: { name: 'Septiani Dwi Rahma Putri', role: 'Staff', position: 'Intern', department: 'Digital Ecosystem Department', phone: '08222', avatar: 'https://i.pravatar.cc/150?u=septiani' }, 
-      spareKey: 'Ada', 
-      lastUpdate: '11/11/2025', 
-      remarks: ''
-    },
-    { 
-      id: 183, 
-      lockerNumber: 'K-2014', 
-      location: 'Lantai 2 Kr. Asem', 
-      subLocation: 'Karang Asem', 
-      status: 'Kosong', 
-      spareKey: 'Tidak Ada', 
-      lastUpdate: '-', 
-      remarks: ''
-    },
-    { 
-      id: 184, 
-      lockerNumber: 'K-2015', 
-      location: 'Lantai 2 Kr. Asem', 
-      subLocation: 'Karang Asem', 
-      status: 'Kunci Hilang', 
-      spareKey: 'Ada', 
-      lastUpdate: '-', 
-      remarks: ''
-    }
+    { id: 2, lockerNumber: '002', location: 'Lantai 1', subLocation: '-', status: 'Kosong', spareKey: 'Ada', lastUpdate: '2024-03-10', remarks: '' },
 ];
 
 export const MOCK_POD_DATA: ModenaPodRecord[] = [

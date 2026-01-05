@@ -1,19 +1,20 @@
-
 import React from 'react';
 import { AssetRecord } from '../types';
-import { ChevronsUpDown, ChevronLeft, ChevronRight, Eye, MoreHorizontal, Check } from 'lucide-react';
+import { ChevronsUpDown, ChevronLeft, ChevronRight, Eye, MoreHorizontal, Check, X } from 'lucide-react';
 
 interface Props {
   data: AssetRecord[];
   onView?: (item: AssetRecord) => void;
   onCloseTransaction?: (item: AssetRecord) => void;
+  onApprove?: (item: AssetRecord) => void;
+  onReject?: (item: AssetRecord) => void;
 }
 
-export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseTransaction }) => {
+export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseTransaction, onApprove, onReject }) => {
   return (
     <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden transition-all duration-500">
       <div className="overflow-x-auto custom-scrollbar">
-        <table className="w-full min-w-[1000px] text-left border-collapse">
+        <table className="w-full min-w-[1100px] text-left border-collapse">
           <thead>
             <tr className="bg-[#F2F2F2] border-b border-gray-200">
               <th className="p-5 w-14 text-center pl-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">#</th>
@@ -37,7 +38,7 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseT
               </th>
               <th className="p-5 w-36 text-[10px] font-black text-black uppercase tracking-[0.15em]">Date</th>
               <th className="p-5 w-36 text-[10px] font-black text-black uppercase tracking-[0.15em]">Status</th>
-              <th className="p-5 w-24 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Action</th>
+              <th className="p-5 w-32 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -102,9 +103,6 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseT
                             title="View Details"
                         >
                             <Eye size={18} />
-                        </button>
-                        <button className="text-gray-400 hover:text-black transition-all p-2 rounded-xl hover:bg-gray-100" title="More">
-                            <MoreHorizontal size={18} />
                         </button>
                     </div>
                 </td>
