@@ -73,7 +73,7 @@ export const StationeryRequestTable: React.FC<Props> = ({ data, onView, onCloseT
                     <span className="text-[11px] font-black text-gray-400 uppercase tracking-tight">{item.date}</span>
                 </td>
                 <td className="p-5">
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-start">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.1em] border whitespace-nowrap
                             ${item.status === 'Approved' ? 'bg-green-500 text-white border-green-600' : 
                               item.status === 'Pending' ? 'bg-orange-500 text-white border-orange-600' : 
