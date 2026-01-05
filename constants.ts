@@ -1,5 +1,5 @@
 
-import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord } from './types';
+import { AssetRecord, MasterItem, ContractRecord, TimesheetRecord, VendorRecord, VehicleRecord, ServiceRecord, TaxKirRecord, MutationRecord, SalesRecord, MasterVendorRecord, DeliveryLocationRecord, LogBookRecord, BuildingRecord, ReminderRecord, VehicleContractRecord, GeneralMasterItem, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord, MasterPodRecord } from './types';
 
 // Helper function to generate mock data for ATK/ARK
 const generateAssetData = (type: 'ATK' | 'ARK', startId: number): AssetRecord[] => {
@@ -270,6 +270,12 @@ export const MOCK_POD_DATA: ModenaPodRecord[] = [
       jadwalLaundry: 'Senin & Kamis',
       keterangan: 'isi'
     }
+];
+
+export const MOCK_MASTER_POD_DATA: MasterPodRecord[] = [
+  { id: 1, lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', nomorKamar: '201', kapasitas: 1, fasilitas: ['Wifi', 'AC', 'Meja Kerja'], status: 'Active' },
+  { id: 2, lantai: 'Lt 2 Pria', jenisKamar: 'Double Bed', nomorKamar: '202', kapasitas: 2, fasilitas: ['Wifi', 'AC'], status: 'Active' },
+  { id: 3, lantai: 'Lt 3 Perempuan', jenisKamar: 'Quadruple Bed', nomorKamar: '317', kapasitas: 4, fasilitas: ['Wifi', 'AC', 'Loker'], status: 'Active' },
 ];
 
 export const MOCK_POD_REQUEST_DATA: PodRequestRecord[] = [

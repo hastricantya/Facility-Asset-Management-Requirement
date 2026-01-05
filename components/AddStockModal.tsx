@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, Save, List, Calendar, CheckCircle, CheckCircle2, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid, ChevronDown, Layers, ClipboardCheck, Clock, Baby, Trash2, UploadCloud, Plus } from 'lucide-react';
-import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord, PodHistory, LockerHistoryEntry } from '../types';
+/* Added Settings to imports from lucide-react to fix missing import error on line 471 */
+import { X, Save, List, Calendar, CheckCircle, CheckCircle2, XCircle, FileText, Archive, ChevronLeft, Printer, History, User, Package, MapPin, Users, MessageSquare, Check, RotateCcw, AlertTriangle, Hash, Activity, Search, Lock, Briefcase, Building2, Key, Home, Box, Send, LayoutGrid, ChevronDown, Layers, ClipboardCheck, Clock, Baby, Trash2, UploadCloud, Plus, Settings } from 'lucide-react';
+import { VehicleRecord, ServiceRecord, MutationRecord, SalesRecord, ContractRecord, GeneralMasterItem, MasterVendorRecord, StationeryRequestRecord, StationeryRequestItem, DeliveryLocationRecord, AssetRecord, LogBookRecord, TaxKirRecord, StockOpnameRecord, LockerRecord, ModenaPodRecord, LockerRequestRecord, PodRequestRecord, PodHistory, LockerHistoryEntry, MasterPodRecord } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_DELIVERY_LOCATIONS, MOCK_POD_DATA } from '../constants';
 
@@ -25,6 +26,7 @@ interface Props {
   onSaveLockerRequest?: (request: Partial<LockerRequestRecord>) => void;
   onSavePodRequest?: (request: Partial<PodRequestRecord>) => void;
   onSavePod?: (pod: Partial<ModenaPodRecord>) => void;
+  onSaveMasterPod?: (pod: Partial<MasterPodRecord>) => void;
   onRevise?: () => void;
   onApprove?: () => void;
   onReject?: () => void;
@@ -45,6 +47,7 @@ interface Props {
   initialLockerRequestData?: LockerRequestRecord;
   initialPodRequestData?: PodRequestRecord;
   initialPodData?: ModenaPodRecord;
+  initialMasterPodData?: MasterPodRecord;
   
   mode?: 'create' | 'edit' | 'view';
   vehicleList?: VehicleRecord[];
@@ -62,6 +65,7 @@ export const AddStockModal: React.FC<Props> = ({
     onSaveLockerRequest,
     onSavePodRequest,
     onSavePod,
+    onSaveMasterPod,
     onApprove,
     onReject,
     initialAssetData,
@@ -70,6 +74,7 @@ export const AddStockModal: React.FC<Props> = ({
     initialLockerData,
     initialLockerRequestData,
     initialPodData,
+    initialMasterPodData,
     initialPodRequestData,
     mode = 'create'
 }) => {
@@ -81,6 +86,7 @@ export const AddStockModal: React.FC<Props> = ({
   const [lockerRequestForm, setLockerRequestForm] = useState<Partial<LockerRequestRecord>>({});
   const [podRequestForm, setPodRequestForm] = useState<Partial<PodRequestRecord>>({});
   const [podForm, setPodForm] = useState<Partial<ModenaPodRecord>>({});
+  const [masterPodForm, setMasterPodForm] = useState<Partial<MasterPodRecord>>({});
   const [stationeryRequestForm, setStationeryRequestForm] = useState<Partial<StationeryRequestRecord>>({});
   const [requestItems, setRequestItems] = useState<StationeryRequestItem[]>([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
   
@@ -91,6 +97,7 @@ export const AddStockModal: React.FC<Props> = ({
   const isLocker = moduleName === 'Daftar Loker';
   const isLockerRequest = moduleName === 'Request Locker';
   const isPod = moduleName === 'Pod Census';
+  const isMasterPod = moduleName === 'Master MODENA Pod';
   const isPodRequest = moduleName === 'Request MODENA Pod';
   const isViewMode = mode === 'view';
   const isFieldDisabled = isViewMode;
@@ -105,6 +112,7 @@ export const AddStockModal: React.FC<Props> = ({
            if (initialLockerRequestData) setLockerRequestForm(initialLockerRequestData);
            if (initialPodRequestData) setPodRequestForm(initialPodRequestData);
            if (initialPodData) setPodForm(initialPodData);
+           if (initialMasterPodData) setMasterPodForm(initialMasterPodData);
            
            if (initialAssetData) {
                const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
@@ -126,13 +134,14 @@ export const AddStockModal: React.FC<Props> = ({
         } else {
             if (isStockOpname) setStockOpnameForm({ opnameNumber: 'SO-NEW', date: new Date().toISOString().split('T')[0], status: 'Draft' });
             if (isPod) setPodForm({ lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', statusLokerBarang: 'Tidak Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Tidak ada', isExpat: false });
+            if (isMasterPod) setMasterPodForm({ lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', kapasitas: 1, status: 'Active', fasilitas: [] });
             if (isStationeryRequest) {
                 setStationeryRequestForm({ type: 'DAILY REQUEST', deliveryType: 'PICKUP HO', location: 'Satrio', date: new Date().toISOString().split('T')[0] });
                 setRequestItems([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
             }
         }
     }
-  }, [isOpen, initialAssetData, initialLogBookData, initialStockOpnameData, initialLockerData, initialLockerRequestData, initialPodData, initialPodRequestData, mode, isArkModule, isStationeryRequest, isStockOpname, isPod]);
+  }, [isOpen, initialAssetData, initialLogBookData, initialStockOpnameData, initialLockerData, initialLockerRequestData, initialPodData, initialMasterPodData, initialPodRequestData, mode, isArkModule, isStationeryRequest, isStockOpname, isPod, isMasterPod]);
 
   const handleSave = () => {
       if (isStationeryRequest && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
@@ -142,6 +151,7 @@ export const AddStockModal: React.FC<Props> = ({
       if (isLockerRequest && onSaveLockerRequest) onSaveLockerRequest(lockerRequestForm);
       if (isPodRequest && onSavePodRequest) onSavePodRequest(podRequestForm);
       if (isPod && onSavePod) onSavePod(podForm);
+      if (isMasterPod && onSaveMasterPod) onSaveMasterPod(masterPodForm);
       onClose();
   };
 
@@ -187,6 +197,7 @@ export const AddStockModal: React.FC<Props> = ({
               <h2 className="text-[14px] font-black text-black uppercase tracking-widest">
                 {isStationeryRequest ? (isViewMode ? 'Stationery Request Details' : `Create ${isArkModule ? 'Household' : 'Stationery'} Request`) :
                  isPod ? (isViewMode ? 'Pod Occupancy Detail' : 'Register New Room Assignment') : 
+                 isMasterPod ? (isViewMode ? 'Master Pod Detail' : 'Define Pod Configuration') :
                  isLocker ? (isViewMode ? 'Locker Management Details' : 'Register Locker') : moduleName}
               </h2>
               {isViewMode && (initialAssetData?.transactionNumber || initialLockerData?.lockerNumber) && (
@@ -201,6 +212,7 @@ export const AddStockModal: React.FC<Props> = ({
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
           {isStationeryRequest ? (
+            /* STATIONERY REQUEST FORM */
             <div className="space-y-8">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                  <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
@@ -296,6 +308,7 @@ export const AddStockModal: React.FC<Props> = ({
                </div>
             </div>
           ) : isPod ? (
+            /* POD CENSUS FORM */
             <div className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
@@ -449,6 +462,75 @@ export const AddStockModal: React.FC<Props> = ({
               <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
                 <SectionHeader icon={MessageSquare} title="Keterangan" />
                 <textarea rows={2} disabled={isFieldDisabled} placeholder="Catatan tambahan..." className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white outline-none focus:border-black shadow-sm transition-all" value={podForm.keterangan || ''} onChange={(e) => setPodForm({...podForm, keterangan: e.target.value})} />
+              </div>
+            </div>
+          ) : isMasterPod ? (
+            /* MASTER POD CONFIGURATION FORM */
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                  <SectionHeader icon={Settings} title="General Configuration" />
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Lantai</label>
+                        <select disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white appearance-none outline-none focus:border-black shadow-sm" value={masterPodForm.lantai || ''} onChange={(e) => setMasterPodForm({...masterPodForm, lantai: e.target.value})}>
+                          <option value="Lt 2 Pria">Lt 2 Pria</option><option value="Lt 2 Perempuan">Lt 2 Perempuan</option><option value="Lt 3 Pria">Lt 3 Pria</option><option value="Lt 3 Perempuan">Lt 3 Perempuan</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Jenis Kamar</label>
+                        <select disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white appearance-none outline-none focus:border-black shadow-sm" value={masterPodForm.jenisKamar || ''} onChange={(e) => setMasterPodForm({...masterPodForm, jenisKamar: e.target.value as any})}>
+                          <option value="Single Bed">Single Bed</option><option value="Double Bed">Double Bed</option><option value="Quadruple Bed">Quadruple Bed</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Nomor Kamar</label>
+                        <input type="text" disabled={isFieldDisabled} placeholder="e.g. 217" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono font-bold text-black outline-none focus:border-black shadow-sm transition-all" value={masterPodForm.nomorKamar || ''} onChange={(e) => setMasterPodForm({...masterPodForm, nomorKamar: e.target.value})} />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Kapasitas (Orang)</label>
+                        <input type="number" disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black outline-none focus:border-black shadow-sm transition-all" value={masterPodForm.kapasitas || 1} onChange={(e) => setMasterPodForm({...masterPodForm, kapasitas: parseInt(e.target.value) || 1})} />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Operational Status</label>
+                      <div className="flex gap-2">
+                        {['Active', 'Maintenance', 'Inactive'].map(s => (
+                          <button key={s} disabled={isFieldDisabled} onClick={() => setMasterPodForm({...masterPodForm, status: s as any})} className={`flex-1 py-3 text-[10px] font-black rounded-xl border transition-all uppercase tracking-widest ${masterPodForm.status === s ? 'bg-black text-white' : 'bg-white text-gray-400 border-gray-200 hover:border-black'}`}>
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                  <SectionHeader icon={LayoutGrid} title="Room Features" />
+                  <div className="space-y-4">
+                    <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Pilih Fasilitas</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {['AC', 'Wifi', 'Loker Barang', 'Loker Pantry', 'Smart TV', 'Meja Kerja'].map(f => (
+                         <label key={f} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${masterPodForm.fasilitas?.includes(f) ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-100 text-gray-400 hover:border-gray-300'}`}>
+                            <input 
+                              type="checkbox" 
+                              className="hidden" 
+                              checked={masterPodForm.fasilitas?.includes(f)} 
+                              onChange={() => {
+                                const current = masterPodForm.fasilitas || [];
+                                if (current.includes(f)) setMasterPodForm({...masterPodForm, fasilitas: current.filter(x => x !== f)});
+                                else setMasterPodForm({...masterPodForm, fasilitas: [...current, f]});
+                              }}
+                            />
+                            {masterPodForm.fasilitas?.includes(f) ? <CheckCircle2 size={16} /> : <div className="w-4 h-4 rounded-full border-2 border-gray-200" />}
+                            <span className="text-[11px] font-black uppercase tracking-tight">{f}</span>
+                         </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           ) : isLocker ? (

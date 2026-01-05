@@ -278,6 +278,16 @@ export interface ModenaPodRecord {
   history?: PodHistory[];
 }
 
+export interface MasterPodRecord {
+  id: number;
+  lantai: string;
+  jenisKamar: 'Single Bed' | 'Double Bed' | 'Quadruple Bed';
+  nomorKamar: string;
+  kapasitas: number;
+  fasilitas: string[];
+  status: 'Active' | 'Maintenance' | 'Inactive';
+}
+
 export interface MasterItem {
   id: string | number;
   category: string;
