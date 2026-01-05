@@ -136,15 +136,24 @@ const App: React.FC = () => {
   const [selectedMasterLocker, setSelectedMasterLocker] = useState<MasterLockerRecord | null>(null);
   const [selectedPodRequest, setSelectedPodRequest] = useState<PodRequestRecord | null>(null);
   const [selectedStockOpname, setSelectedStockOpname] = useState<StockOpnameRecord | null>(null);
+  const [selectedGeneralMaster, setSelectedGeneralMaster] = useState<GeneralMasterItem | null>(null);
+  const [selectedDeliveryLocation, setSelectedDeliveryLocation] = useState<DeliveryLocationRecord | null>(null);
+  const [masterModalTitle, setMasterModalTitle] = useState('');
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const handleModuleNavigate = (module: string) => {
     setActiveModule(module);
-    if (module === 'Pod Census' || module === 'Daftar Loker' || module === 'Master MODENA Pod') setActiveTab('Semua');
-    else if (module === 'Log Book' || module === 'Request Locker' || module === 'Request MODENA Pod') setActiveTab('');
-    else setActiveTab('Semua');
+    if (module === 'Pod Census' || module === 'Daftar Loker' || module === 'Master MODENA Pod') {
+      setActiveTab('Semua');
+    } else if (module === 'Master ATK' || module === 'Master ARK') {
+      setActiveTab('Item');
+    } else if (module === 'Log Book' || module === 'Request Locker' || module === 'Request MODENA Pod') {
+      setActiveTab('');
+    } else {
+      setActiveTab('Semua');
+    }
     setIsMobileMenuOpen(false); 
   };
 
@@ -159,7 +168,24 @@ const App: React.FC = () => {
     setSelectedMasterPod(null);
     setSelectedMasterLocker(null);
     setSelectedPodRequest(null);
-    setIsStockModalOpen(true);
+    setSelectedGeneralMaster(null);
+    setSelectedDeliveryLocation(null);
+
+    if (activeModule === 'Master ATK' || activeModule === 'Master ARK') {
+      if (activeTab === 'Item') {
+        setIsMasterItemModalOpen(true);
+      } else if (activeTab === 'Kategori') {
+        setMasterModalTitle('Kategori');
+        setIsMasterModalOpen(true);
+      } else if (activeTab === 'UOM') {
+        setMasterModalTitle('UOM');
+        setIsMasterModalOpen(true);
+      } else if (activeTab === 'Delivery') {
+        setIsDeliveryLocationModalOpen(true);
+      }
+    } else {
+      setIsStockModalOpen(true);
+    }
   };
 
   const handleImportExcelClick = () => {
@@ -257,8 +283,14 @@ const App: React.FC = () => {
             const filteredArk = arkData.filter(item => activeTab === 'Semua' || activeTab === '' || item.status === currentTargetStatus);
             return <StationeryRequestTable data={filteredArk} onView={(item) => { setSelectedAsset(item); setModalMode('view'); setIsStockModalOpen(true); }} />;
          case 'Master ATK':
+            if (activeTab === 'Kategori') return <GeneralMasterTable data={MOCK_ATK_CATEGORY} onEdit={(item) => { setSelectedGeneralMaster(item); setMasterModalTitle('Kategori'); setIsMasterModalOpen(true); }} onDelete={() => {}} />;
+            if (activeTab === 'UOM') return <GeneralMasterTable data={MOCK_UOM_DATA} onEdit={(item) => { setSelectedGeneralMaster(item); setMasterModalTitle('UOM'); setIsMasterModalOpen(true); }} onDelete={() => {}} />;
+            if (activeTab === 'Delivery') return <MasterDeliveryLocationTable data={MOCK_DELIVERY_LOCATIONS} onEdit={(item) => { setSelectedDeliveryLocation(item); setModalMode('edit'); setIsDeliveryLocationModalOpen(true); }} onDelete={() => {}} />;
             return <MasterAtkTable data={atkMaster} onEdit={(item) => { setModalMode('edit'); setSelectedAsset({ ...MOCK_ATK_DATA[0], itemName: item.itemName, itemCode: item.itemCode, category: item.category }); setIsMasterItemModalOpen(true); }} />;
          case 'Master ARK':
+            if (activeTab === 'Kategori') return <GeneralMasterTable data={MOCK_ARK_CATEGORY} onEdit={(item) => { setSelectedGeneralMaster(item); setMasterModalTitle('Kategori'); setIsMasterModalOpen(true); }} onDelete={() => {}} />;
+            if (activeTab === 'UOM') return <GeneralMasterTable data={MOCK_UOM_DATA} onEdit={(item) => { setSelectedGeneralMaster(item); setMasterModalTitle('UOM'); setIsMasterModalOpen(true); }} onDelete={() => {}} />;
+            if (activeTab === 'Delivery') return <MasterDeliveryLocationTable data={MOCK_DELIVERY_LOCATIONS} onEdit={(item) => { setSelectedDeliveryLocation(item); setModalMode('edit'); setIsDeliveryLocationModalOpen(true); }} onDelete={() => {}} />;
             return <MasterAtkTable data={arkMaster} onEdit={(item) => { setModalMode('edit'); setSelectedAsset({ ...MOCK_ARK_DATA[0], itemName: item.itemName, itemCode: item.itemCode, category: item.category }); setIsMasterItemModalOpen(true); }} />;
          default: return <div className="p-8 text-center text-gray-400 uppercase font-black text-[10px] tracking-widest">{activeModule} module content placeholder</div>;
      }
@@ -268,6 +300,7 @@ const App: React.FC = () => {
     if (activeModule === 'Pod Census') return ['Semua', 'Lt 2 Pria', 'Lt 2 Perempuan', 'Lt 3 Pria', 'Lt 3 Perempuan'];
     if (activeModule === 'Daftar Loker') return ['Semua', 'Terisi', 'Kosong', 'Kunci Hilang'];
     if (activeModule === 'Master MODENA Pod') return ['Semua', 'Loker Barang', 'Loker Pantry'];
+    if (activeModule === 'Master ATK' || activeModule === 'Master ARK') return ['Item', 'Kategori', 'UOM', 'Delivery'];
     if (activeModule.includes('Daftar') || activeModule.includes('Approval') || activeModule.includes('Request')) {
         if (!activeModule.includes('Master')) {
            return ['Semua', 'Draft', 'Waiting Approval', 'Approved', 'Rejected', 'Closed'];
@@ -368,6 +401,40 @@ const App: React.FC = () => {
         onSaveStockOpname={(data) => setStockOpnameData([data as StockOpnameRecord, ...stockOpnameData])}
         onSaveLockerRequest={(data) => setLockerRequestData([data as LockerRequestRecord, ...lockerRequestData])}
         onSavePodRequest={(data) => setPodRequestData([data as PodRequestRecord, ...podRequestData])}
+      />
+
+      <MasterItemModal
+        isOpen={isMasterItemModalOpen}
+        onClose={() => setIsMasterItemModalOpen(false)}
+        moduleName={activeModule}
+        mode={modalMode}
+        initialData={activeTab === 'Item' ? atkMaster.find(m => m.itemCode === selectedAsset?.itemCode) || null : null}
+        onSave={(data) => {
+            console.log('Save master item', data);
+            setIsMasterItemModalOpen(false);
+        }}
+      />
+
+      <GeneralMasterModal
+        isOpen={isMasterModalOpen}
+        onClose={() => setIsMasterModalOpen(false)}
+        title={masterModalTitle}
+        initialData={selectedGeneralMaster}
+        onSave={(name) => {
+            console.log('Save general master', name);
+            setIsMasterModalOpen(false);
+        }}
+      />
+
+      <DeliveryLocationModal
+        isOpen={isDeliveryLocationModalOpen}
+        onClose={() => setIsDeliveryLocationModalOpen(false)}
+        mode={modalMode}
+        initialData={selectedDeliveryLocation}
+        onSave={(data) => {
+            console.log('Save delivery location', data);
+            setIsDeliveryLocationModalOpen(false);
+        }}
       />
 
       <ImportExcelModal 
