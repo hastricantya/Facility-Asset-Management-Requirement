@@ -102,7 +102,7 @@ export const AddStockModal: React.FC<Props> = ({
                const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
                const matchedMaster = masterList.find(m => m.itemName === initialAssetData.itemName);
                setStationeryRequestForm({
-                   type: 'DAILY REQUEST',
+                   type: initialAssetData.id % 2 === 0 ? 'Daily Request' : 'Event Request',
                    date: initialAssetData.date,
                    remarks: initialAssetData.itemDescription || '',
                    deliveryType: 'PICKUP HO',
@@ -111,7 +111,7 @@ export const AddStockModal: React.FC<Props> = ({
                setRequestItems([{ 
                    itemId: matchedMaster ? matchedMaster.id.toString() : '', 
                    qty: initialAssetData.qty.toString(),
-                   categoryId: matchedMaster ? matchedMaster.category : '',
+                   categoryId: matchedMaster ? matchedMaster.category : initialAssetData.category,
                    uom: matchedMaster ? matchedMaster.uom : ''
                }]);
            }
@@ -121,20 +121,12 @@ export const AddStockModal: React.FC<Props> = ({
             if (isMasterPod) setMasterPodForm({ lantai: 'Lt 2 Pria', jenisKamar: 'Single Bed', kapasitas: 1, status: 'Active', fasilitas: [] });
             if (isMasterLocker) setMasterLockerForm({ floor: 'Lt 2 Pria', status: 'Active', type: moduleName.includes('Goods') ? 'Goods' : 'Pantry' });
             if (isStationeryRequest) {
-                setStationeryRequestForm({ type: 'DAILY REQUEST', deliveryType: 'PICKUP HO', location: 'Satrio', date: '2026-01-05' }); 
+                setStationeryRequestForm({ type: 'Daily Request', deliveryType: 'PICKUP HO', location: 'Satrio', date: new Date().toISOString().split('T')[0] }); 
                 setRequestItems([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
-            }
-            if (isLockerRequest) {
-                setLockerRequestForm({
-                  date: new Date().toLocaleDateString('id-ID'),
-                  status: 'Pending',
-                  reason: '',
-                  preferredLocation: 'Lantai 1'
-                });
             }
         }
     }
-  }, [isOpen, initialAssetData, initialLogBookData, initialStockOpnameData, initialLockerData, initialLockerRequestData, initialPodData, initialMasterPodData, initialMasterLockerData, initialPodRequestData, mode, isArkModule, isStationeryRequest, isStockOpname, isPod, isMasterPod, isMasterLocker, isLockerRequest, moduleName]);
+  }, [isOpen, initialAssetData, initialLogBookData, initialStockOpnameData, initialLockerData, initialLockerRequestData, initialPodData, initialMasterPodData, initialMasterLockerData, initialPodRequestData, mode, isArkModule, isStationeryRequest, isStockOpname, isPod, isMasterPod, isMasterLocker, moduleName]);
 
   const handleSave = () => {
       if (isStationeryRequest && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
@@ -206,9 +198,19 @@ export const AddStockModal: React.FC<Props> = ({
                  moduleName}
               </h2>
           </div>
-          <button className="text-gray-300 hover:text-red-500 transition-colors p-1" onClick={onClose}>
-            <X size={24} />
-          </button>
+          <div className="flex items-center gap-4">
+            {isStationeryRequest && isViewMode && isApprovalModule && (
+              <button 
+                onClick={() => alert('Approval Workflow: Primary approval routed to Mas Ibnu Faisal')}
+                className="px-4 py-2 text-[9px] font-black text-black border border-gray-200 rounded-lg uppercase tracking-widest hover:bg-gray-50 transition-all flex items-center gap-2"
+              >
+                <History size={14} className="text-gray-400" /> View History Approval ATK
+              </button>
+            )}
+            <button className="text-gray-300 hover:text-red-500 transition-colors p-1" onClick={onClose}>
+              <X size={24} />
+            </button>
+          </div>
         </div>
         
         {/* Body */}
@@ -218,228 +220,113 @@ export const AddStockModal: React.FC<Props> = ({
             <div className="space-y-8">
                <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
                  {/* APPLICATION INFO */}
-                 <div className="md:col-span-7 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                 <div className="md:col-span-7 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
                     <SectionHeader icon={Send} title="Application Info" />
                     <div className="grid grid-cols-2 gap-6">
                         <div>
                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Request Date</label>
                            <div className="relative">
-                               <input type="date" disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm" value={stationeryRequestForm.date || ''} onChange={(e) => handleStationeryRequestChange('date', e.target.value)} />
+                               <input type="text" disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm disabled:bg-white" value={stationeryRequestForm.date || '2026-01-05'} onChange={(e) => handleStationeryRequestChange('date', e.target.value)} />
                            </div>
                         </div>
                         <div>
                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Request Type</label>
                            <div className="relative">
-                               <select disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm appearance-none" value={stationeryRequestForm.type || 'DAILY REQUEST'} onChange={(e) => handleStationeryRequestChange('type', e.target.value)}>
-                                  <option value="DAILY REQUEST">Daily Request</option>
-                                  <option value="EVENT REQUEST">Event Request</option>
+                               <select 
+                                 disabled={isFieldDisabled} 
+                                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold bg-white focus:border-black outline-none shadow-sm appearance-none disabled:bg-white disabled:opacity-100" 
+                                 value={stationeryRequestForm.type || 'Daily Request'} 
+                                 onChange={(e) => handleStationeryRequestChange('type', e.target.value)}
+                               >
+                                  <option value="Daily Request">Daily Request</option>
+                                  <option value="Event Request">Event Request</option>
                                </select>
+                               <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                            </div>
                         </div>
                     </div>
                     <div>
                         <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Delivery Method</label>
-                        <div className="flex gap-2">
-                           {['PICKUP HO'].map(m => (
-                               <button key={m} disabled={isFieldDisabled} onClick={() => handleStationeryRequestChange('deliveryType', m)} className={`flex-1 py-3 text-[10px] font-black rounded-xl border transition-all uppercase tracking-widest ${stationeryRequestForm.deliveryType === m ? 'bg-black text-white border-black shadow-lg shadow-black/10' : 'bg-white text-gray-400 border-gray-200 hover:border-black'}`}>
-                                   {m}
-                               </button>
-                           ))}
+                        <div className="w-full py-3 bg-black text-white text-[12px] font-black rounded-xl border border-black shadow-lg text-center uppercase tracking-widest">
+                            PICKUP HO
                         </div>
                     </div>
                  </div>
 
                  {/* REQUESTER INFO */}
-                 <div className="md:col-span-5 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                 <div className="md:col-span-5 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
                    <SectionHeader icon={User} title="Requester Info" />
-                   <div className="flex items-center gap-4 p-5 bg-gray-50/50 rounded-xl border border-gray-100">
-                       <img src={initialAssetData?.employee.avatar || 'https://i.pravatar.cc/150?u=current_user'} className="w-14 h-14 rounded-full border-2 border-white shadow-sm" />
+                   <div className="flex items-center gap-5 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                       <img src={initialAssetData?.employee.avatar || 'https://i.pravatar.cc/150?u=aan'} className="w-16 h-16 rounded-full border-4 border-white shadow-md object-cover" />
                        <div>
-                           <div className="text-[14px] font-black text-black uppercase tracking-tight">{initialAssetData?.employee.name || 'Current User'}</div>
-                           <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{initialAssetData?.employee.role || 'Staff'}</div>
+                           <div className="text-[16px] font-black text-black uppercase tracking-tight leading-none mb-1">{initialAssetData?.employee.name || 'Aan Junaidi'}</div>
+                           <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{initialAssetData?.employee.role || 'Technician Team Leader'}</div>
                        </div>
                    </div>
                  </div>
                </div>
 
                {/* REQUESTED ITEMS */}
-               <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+               <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
                  <SectionHeader icon={Package} title="Requested Items" />
                  <div className="overflow-hidden border border-gray-100 rounded-xl">
                     <table className="w-full text-left">
                         <thead className="bg-gray-50/80 border-b border-gray-100">
                             <tr>
-                                <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest pl-6">Kategori</th>
+                                <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest pl-8">Kategori</th>
                                 <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Item Name</th>
                                 <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Item Code</th>
                                 <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">In Stock</th>
                                 <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Qty</th>
                                 <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest pl-10">UOM</th>
-                                {!isViewMode && <th className="p-4 w-16 pr-6"></th>}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
                             {requestItems.map((item, idx) => {
                                 const masterList = isArkModule ? MOCK_MASTER_ARK_DATA : MOCK_MASTER_DATA;
-                                const catList = isArkModule ? MOCK_ARK_CATEGORY : MOCK_ATK_CATEGORY;
-                                const filteredMasterList = item.categoryId 
-                                    ? masterList.filter(m => m.category === item.categoryId)
-                                    : masterList;
-                                
                                 const selectedItemFull = masterList.find(m => m.id.toString() === item.itemId);
 
                                 return (
                                     <tr key={idx} className="hover:bg-gray-50/30 transition-colors">
-                                        <td className="p-4 pl-6">
-                                            <select 
-                                                disabled={isFieldDisabled} 
-                                                className="w-full bg-transparent border-0 font-bold text-[13px] text-black focus:ring-0 appearance-none outline-none" 
-                                                value={item.categoryId} 
-                                                onChange={(e) => handleRequestItemChange(idx, 'categoryId', e.target.value)}
-                                            >
-                                                <option value="">Select Category</option>
-                                                {catList.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                                            </select>
+                                        <td className="p-5 pl-8">
+                                            <span className="text-[13px] font-black text-black uppercase tracking-tight">{item.categoryId || initialAssetData?.category || '-'}</span>
                                         </td>
-                                        <td className="p-4">
-                                            <select 
-                                                disabled={isFieldDisabled || !item.categoryId} 
-                                                className={`w-full bg-transparent border-0 font-bold text-[13px] focus:ring-0 appearance-none outline-none ${!item.categoryId ? 'text-gray-300' : 'text-black'}`}
-                                                value={item.itemId} 
-                                                onChange={(e) => handleRequestItemChange(idx, 'itemId', e.target.value)}
-                                            >
-                                                <option value="">{item.categoryId ? 'Select Item' : 'Select category first'}</option>
-                                                {filteredMasterList.map(m => <option key={m.id} value={m.id}>{m.itemName}</option>)}
-                                            </select>
+                                        <td className="p-5">
+                                            <span className="text-[13px] font-black text-black uppercase tracking-tight">{selectedItemFull?.itemName || initialAssetData?.itemName || '-'}</span>
                                         </td>
-                                        <td className="p-4">
-                                            <span className={`text-[12px] font-mono font-bold ${selectedItemFull ? 'text-blue-600' : 'text-gray-300'}`}>
-                                                {selectedItemFull?.itemCode || '-'}
+                                        <td className="p-5">
+                                            <span className="text-[12px] font-mono font-bold text-blue-600 uppercase">
+                                                {selectedItemFull?.itemCode || initialAssetData?.itemCode || '-'}
                                             </span>
                                         </td>
-                                        <td className="p-4 text-center">
-                                            <span className={`text-[13px] font-black ${selectedItemFull ? (selectedItemFull.remainingStock > 5 ? 'text-green-600' : 'text-red-500') : 'text-gray-300'}`}>
-                                                {selectedItemFull ? selectedItemFull.remainingStock : '-'}
+                                        <td className="p-5 text-center">
+                                            <span className="text-[13px] font-black text-red-500">
+                                                {selectedItemFull ? selectedItemFull.remainingStock : (initialAssetData?.remainingStock || '-')}
                                             </span>
                                         </td>
-                                        <td className="p-4">
+                                        <td className="p-5">
                                             <div className="flex justify-center">
-                                                <input type="number" disabled={isFieldDisabled} className="w-16 h-10 border border-gray-200 rounded-lg text-center font-black text-sm outline-none focus:border-black shadow-sm" value={item.qty} onChange={(e) => handleRequestItemChange(idx, 'qty', e.target.value)} />
+                                                <div className="w-16 h-10 border border-gray-200 rounded-xl bg-white flex items-center justify-center font-black text-black text-sm shadow-sm">
+                                                    {item.qty}
+                                                </div>
                                             </div>
                                         </td>
-                                        <td className="p-4 pl-10">
-                                            <select 
-                                                disabled={isFieldDisabled} 
-                                                className="w-full bg-transparent border-0 font-bold text-[11px] text-black focus:ring-0 appearance-none outline-none uppercase" 
-                                                value={item.uom || ''} 
-                                                onChange={(e) => handleRequestItemChange(idx, 'uom', e.target.value)}
-                                            >
-                                                <option value="">-</option>
-                                                {MOCK_UOM_DATA.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
-                                            </select>
+                                        <td className="p-5 pl-10">
+                                            <span className="text-[13px] font-black text-black uppercase">{item.uom || '-'}</span>
                                         </td>
-                                        {!isViewMode && (
-                                            <td className="p-4 pr-6 text-right">
-                                                <button onClick={() => setRequestItems(requestItems.filter((_, i) => i !== idx))} className="text-red-200 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
-                                            </td>
-                                        )}
                                     </tr>
                                 );
                             })}
                         </tbody>
                     </table>
                  </div>
-                 {!isViewMode && (
-                     <button onClick={() => setRequestItems([...requestItems, { itemId: '', qty: '', categoryId: '', uom: '' }])} className="mt-6 text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] flex items-center gap-2 hover:underline">
-                        <Plus size={14} className="stroke-[3]" /> ADD MORE ITEM
-                     </button>
-                 )}
                </div>
 
                {/* REMARKS */}
-               <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+               <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
                  <SectionHeader icon={MessageSquare} title="Keterangan / Remarks" />
-                 <textarea rows={3} disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white outline-none focus:border-black transition-all placeholder:text-gray-300" value={stationeryRequestForm.remarks || ''} onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)} placeholder="Tulis catatan tambahan di sini..." />
+                 <textarea rows={3} disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white outline-none focus:border-black transition-all placeholder:text-gray-300 disabled:bg-white" value={stationeryRequestForm.remarks || ''} onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)} placeholder="Tulis catatan tambahan di sini..." />
                </div>
-            </div>
-          ) : isLockerRequest ? (
-            /* LOCKER REQUEST FORM */
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-                <div className="md:col-span-6 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
-                   <SectionHeader icon={User} title="Requester Information" />
-                   <div className="space-y-6">
-                      <div className="p-5 bg-gray-50/50 rounded-2xl border border-gray-100 flex items-center gap-4">
-                          <img src={initialLockerRequestData?.employee.avatar || 'https://i.pravatar.cc/150?u=current_user'} className="w-16 h-16 rounded-full border-4 border-white shadow-md" />
-                          <div>
-                              <div className="text-[16px] font-black text-black uppercase tracking-tight leading-none mb-1">{initialLockerRequestData?.employee.name || 'Gian Nanda Pratama'}</div>
-                              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{initialLockerRequestData?.employee.role || 'Staff Admin'}</div>
-                          </div>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Department</label>
-                        <input 
-                          type="text" 
-                          disabled={isFieldDisabled} 
-                          className="w-full bg-gray-50/30 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all shadow-sm"
-                          value={initialLockerRequestData?.employee.department || 'After Sales'}
-                          readOnly
-                        />
-                      </div>
-                   </div>
-                </div>
-
-                <div className="md:col-span-6 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
-                  <SectionHeader icon={Send} title="Request Specifications" />
-                  <div className="space-y-6">
-                      <div className="grid grid-cols-2 gap-6">
-                         <div>
-                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Request Date</label>
-                            <div className="relative">
-                                <Calendar size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
-                                <input 
-                                  type="text" 
-                                  disabled={true} 
-                                  className="w-full bg-gray-50/30 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-black text-gray-400 outline-none"
-                                  value={lockerRequestForm.date || ''}
-                                />
-                            </div>
-                         </div>
-                         <div>
-                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Preferred Floor</label>
-                            <div className="relative">
-                                <MapPin size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
-                                <select 
-                                  disabled={isFieldDisabled}
-                                  className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-bold text-black focus:border-black outline-none appearance-none transition-all shadow-sm"
-                                  value={lockerRequestForm.preferredLocation || ''}
-                                  onChange={(e) => setLockerRequestForm({...lockerRequestForm, preferredLocation: e.target.value})}
-                                >
-                                  <option value="Lantai 1">Lantai 1</option>
-                                  <option value="Lantai 2 Satrio">Lantai 2 Satrio</option>
-                                  <option value="Lantai 3 Satrio">Lantai 3 Satrio</option>
-                                  <option value="Lantai 2 Kr. Asem">Lantai 2 Kr. Asem</option>
-                                  <option value="Lantai 3 Kr. Asem">Lantai 3 Kr. Asem</option>
-                                </select>
-                            </div>
-                         </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Reason for Request</label>
-                        <textarea 
-                          rows={4}
-                          disabled={isFieldDisabled}
-                          placeholder="Please provide details for the locker allocation request..."
-                          className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:border-black outline-none transition-all placeholder:text-gray-300 shadow-sm"
-                          value={lockerRequestForm.reason || ''}
-                          onChange={(e) => setLockerRequestForm({...lockerRequestForm, reason: e.target.value})}
-                        />
-                      </div>
-                  </div>
-                </div>
-              </div>
             </div>
           ) : (
             <div className="bg-white p-20 rounded-2xl border border-gray-100 text-center flex flex-col items-center">
@@ -458,31 +345,23 @@ export const AddStockModal: React.FC<Props> = ({
               <>
                 <button 
                   onClick={handleRejectAction} 
-                  className="px-10 py-3 text-[11px] font-black text-white bg-red-500 rounded-xl uppercase tracking-widest shadow-xl shadow-red-500/10 active:scale-95 transition-all hover:bg-red-600 flex items-center gap-2"
+                  className="px-12 py-3 text-[11px] font-black text-white bg-red-600 rounded-xl uppercase tracking-widest shadow-xl shadow-red-600/20 active:scale-95 transition-all hover:bg-red-700 flex items-center gap-2"
                 >
-                  <XCircle size={16} className="stroke-[3]" /> Reject
+                  <XCircle size={16} className="stroke-[3]" /> Reject Request
                 </button>
                 <button 
                   onClick={handleApproveAction} 
-                  className="px-10 py-3 text-[11px] font-black text-white bg-green-500 rounded-xl uppercase tracking-widest shadow-xl shadow-green-500/10 active:scale-95 transition-all hover:bg-green-600 flex items-center gap-2"
+                  className="px-12 py-3 text-[11px] font-black text-white bg-green-600 rounded-xl uppercase tracking-widest shadow-xl shadow-green-600/20 active:scale-95 transition-all hover:bg-green-700 flex items-center gap-2"
                 >
-                  <Check size={16} className="stroke-[3]" /> Approve
+                  <Check size={16} className="stroke-[3]" /> Approve Request
                 </button>
               </>
             )}
 
             {!isViewMode && (
                 <div className="flex items-center gap-3">
-                    {isStationeryRequest && (
-                      <button 
-                        onClick={handleSave} 
-                        className="px-10 py-3 text-[11px] font-black text-gray-400 bg-white border border-gray-200 rounded-xl uppercase tracking-widest hover:bg-gray-50 hover:text-black transition-all"
-                      >
-                        Save Draft
-                      </button>
-                    )}
                     <button onClick={handleSave} className="px-12 py-3 text-[11px] font-black text-white bg-black rounded-xl uppercase tracking-widest shadow-xl shadow-black/10 active:scale-95 transition-all hover:bg-gray-900">
-                      {isLockerRequest ? 'Submit Request' : 'Save Data'}
+                      {mode === 'edit' ? 'Save Changes' : 'Save Data'}
                     </button>
                 </div>
             )}
@@ -491,3 +370,6 @@ export const AddStockModal: React.FC<Props> = ({
     </div>
   );
 };
+
+// Fixed missing import ChevronDown for the request type select
+import { ChevronDown } from 'lucide-react';
