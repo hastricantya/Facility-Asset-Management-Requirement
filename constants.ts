@@ -75,31 +75,6 @@ export const MOCK_LOCKER_REQUEST_DATA: LockerRequestRecord[] = [
   }
 ];
 
-export const MOCK_POD_REQUEST_DATA: PodRequestRecord[] = [
-  {
-    id: 1,
-    transactionNumber: 'REQ/POD/2024/001',
-    employee: { name: 'Aan Junaidi', role: 'Technician', phone: '0812', avatar: 'https://i.pravatar.cc/150?u=1' },
-    date: '20/03/2024',
-    status: 'Pending',
-    reason: 'Temporary housing for project duration.',
-    preferredFloor: 'Lt 2 Pria',
-    preferredRoomType: 'Single Bed'
-  }
-];
-
-export const MOCK_MASTER_DATA: MasterItem[] = [
-  { id: 1, category: 'Tinta Printer', itemName: 'HP Laserjet 204A Black', itemCode: 'TP-HP0048', uom: 'Pcs', remainingStock: 5, minimumStock: 2, maximumStock: 10, requestedStock: 0, purchaseDate: '27/08/2008', lastPurchasePrice: 'Rp. 22.000', averagePrice: 'Rp. 21.082' },
-];
-
-export const MOCK_MASTER_ARK_DATA: MasterItem[] = [
-  { id: 1, category: 'Pembersih', itemName: 'Wipol Karbol', itemCode: 'CL-WPL-01', uom: 'Pcs', remainingStock: 10, minimumStock: 5, maximumStock: 20, requestedStock: 0, purchaseDate: '10/03/2024', lastPurchasePrice: 'Rp. 15.000', averagePrice: 'Rp. 14.800' },
-];
-
-export const MOCK_STOCK_OPNAME_DATA: StockOpnameRecord[] = [
-  { id: 1, opnameNumber: 'SO/ATK/2024/0001', itemCode: 'TP-HP0048', itemName: 'HP Laserjet 204A Black', category: 'Tinta Printer', systemQty: 5, physicalQty: 5, difference: 0, date: '2024-03-20', performedBy: 'Aan Junaidi', status: 'Matched' },
-];
-
 export const MOCK_LOCKER_DATA: LockerRecord[] = [
     { 
       id: 1, 
@@ -127,17 +102,42 @@ export const MOCK_POD_DATA: ModenaPodRecord[] = [
       jenisKamar: 'Single Bed', 
       nomorKamar: '211', 
       namaPenghuni: 'Gian Nanda Pratama', 
-      posisi: 'Technician', 
+      posisi: 'Technician Team Leader', 
       departemen: 'After Sales', 
       statusLokerBarang: 'Terpakai', 
       statusLokerPantry: 'Tidak Terpakai', 
       jadwalLaundry: '-', 
       keterangan: 'isi',
       history: [
-        { id: 1, namaPenghuni: 'Yudi Saputra', nomorKamar: '211', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Senin & Kamis', startDate: '2023-12-01', endDate: '2024-02-15' },
-        { id: 2, namaPenghuni: 'Andi Wijaya', nomorKamar: '211', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Terpakai', jadwalLaundry: 'Selasa & Jumat', startDate: '2023-09-10', endDate: '2023-11-25' }
+        { id: 1, namaPenghuni: 'Yudi Saputra', posisi: 'Technician', departemen: 'After Sales', nomorKamar: '211', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Tidak Terpakai', jadwalLaundry: 'Senin & Kamis', startDate: '2023-12-01', endDate: '2024-02-15' },
+        { id: 2, namaPenghuni: 'Andi Wijaya', posisi: 'Staff Admin', departemen: 'Supply Chain', nomorKamar: '211', statusLokerBarang: 'Terpakai', statusLokerPantry: 'Terpakai', jadwalLaundry: 'Selasa & Jumat', startDate: '2023-09-10', endDate: '2023-11-25' }
       ]
     },
+];
+
+export const MOCK_POD_REQUEST_DATA: PodRequestRecord[] = [
+  {
+    id: 1,
+    transactionNumber: 'REQ/POD/2024/001',
+    employee: { name: 'Aan Junaidi', role: 'Technician', phone: '0812', avatar: 'https://i.pravatar.cc/150?u=1' },
+    date: '20/03/2024',
+    status: 'Pending',
+    reason: 'Temporary housing for project duration.',
+    preferredFloor: 'Lt 2 Pria',
+    preferredRoomType: 'Single Bed'
+  }
+];
+
+export const MOCK_MASTER_DATA: MasterItem[] = [
+  { id: 1, category: 'Tinta Printer', itemName: 'HP Laserjet 204A Black', itemCode: 'TP-HP0048', uom: 'Pcs', remainingStock: 5, minimumStock: 2, maximumStock: 10, requestedStock: 0, purchaseDate: '27/08/2008', lastPurchasePrice: 'Rp. 22.000', averagePrice: 'Rp. 21.082' },
+];
+
+export const MOCK_MASTER_ARK_DATA: MasterItem[] = [
+  { id: 1, category: 'Pembersih', itemName: 'Wipol Karbol', itemCode: 'CL-WPL-01', uom: 'Pcs', remainingStock: 10, minimumStock: 5, maximumStock: 20, requestedStock: 0, purchaseDate: '10/03/2024', lastPurchasePrice: 'Rp. 15.000', averagePrice: 'Rp. 14.800' },
+];
+
+export const MOCK_STOCK_OPNAME_DATA: StockOpnameRecord[] = [
+  { id: 1, opnameNumber: 'SO/ATK/2024/0001', itemCode: 'TP-HP0048', itemName: 'HP Laserjet 204A Black', category: 'Tinta Printer', systemQty: 5, physicalQty: 5, difference: 0, date: '2024-03-20', performedBy: 'Aan Junaidi', status: 'Matched' },
 ];
 
 export const MOCK_UOM_DATA: GeneralMasterItem[] = [

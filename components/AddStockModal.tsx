@@ -358,11 +358,12 @@ export const AddStockModal: React.FC<Props> = ({
                     </div>
                     <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter bg-white px-2 py-1 rounded border border-gray-100">{roomHistory.length} Previous Occupants</span>
                   </div>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left">
                       <thead>
                         <tr className="bg-white border-b border-gray-100">
                           <th className="p-4 text-[9px] font-black text-gray-400 uppercase tracking-widest pl-8">Nama Penghuni</th>
+                          <th className="p-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Posisi / Departemen</th>
                           <th className="p-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">No Kamar</th>
                           <th className="p-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">Loker Barang</th>
                           <th className="p-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">Loker Pantry</th>
@@ -375,6 +376,12 @@ export const AddStockModal: React.FC<Props> = ({
                            <tr key={h.id} className="hover:bg-gray-50/50 transition-colors">
                              <td className="p-4 pl-8">
                                <div className="text-[12px] font-black text-black uppercase">{h.namaPenghuni}</div>
+                             </td>
+                             <td className="p-4">
+                               <div className="flex flex-col">
+                                 <span className="text-[11px] font-black text-black uppercase">{h.posisi || '-'}</span>
+                                 <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tight">{h.departemen || '-'}</span>
+                               </div>
                              </td>
                              <td className="p-4 text-center">
                                <span className="font-mono text-[11px] font-bold text-gray-400">{h.nomorKamar}</span>
@@ -401,7 +408,7 @@ export const AddStockModal: React.FC<Props> = ({
                            </tr>
                         )) : (
                           <tr>
-                            <td colSpan={6} className="p-12 text-center">
+                            <td colSpan={7} className="p-12 text-center">
                               <div className="flex flex-col items-center justify-center opacity-20">
                                 <Activity size={32} className="text-gray-400 mb-2" />
                                 <p className="text-[10px] font-black uppercase tracking-widest italic text-gray-500">No previous history for this room ID</p>

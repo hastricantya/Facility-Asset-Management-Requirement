@@ -251,6 +251,8 @@ export interface LockerRecord {
 export interface PodHistory {
   id: number;
   namaPenghuni: string;
+  posisi?: string;
+  departemen?: string;
   nomorKamar: string;
   statusLokerBarang: string;
   statusLokerPantry: string;

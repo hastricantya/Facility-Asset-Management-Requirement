@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ModenaPodRecord } from '../types';
-import { ChevronsUpDown, Eye, Pencil, MapPin, Calendar, Clock, Lock, User, MoreHorizontal, ChevronLeft, ChevronRight, Briefcase, Building2, Key, Hash, Home } from 'lucide-react';
+import { ChevronsUpDown, Eye, Pencil, User, Calendar, Home, ChevronLeft, ChevronRight, Briefcase, Building2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props {
@@ -26,36 +26,42 @@ export const ModenaPodTable: React.FC<Props> = ({ data, onEdit, onView }) => {
   return (
     <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden transition-all duration-500">
       <div className="overflow-x-auto custom-scrollbar">
-        <table className="w-full min-w-[1500px] text-left border-collapse">
+        <table className="w-full min-w-[1700px] text-left border-collapse">
           <thead>
             <tr className="bg-[#F2F2F2] border-b border-gray-200">
               <th className="p-5 w-14 text-center pl-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">#</th>
-              <th className="p-5 w-44 group cursor-pointer hover:bg-gray-200/50 transition-colors">
+              <th className="p-5 w-40 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Lantai</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-44 group cursor-pointer hover:bg-gray-200/50 transition-colors">
+              <th className="p-5 w-40 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Jenis Kamar</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-36 group cursor-pointer hover:bg-gray-200/50 transition-colors">
+              <th className="p-5 w-32 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">No. Kamar</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-72 group cursor-pointer hover:bg-gray-200/50 transition-colors">
+              <th className="p-5 w-64 group cursor-pointer hover:bg-gray-200/50 transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Penghuni</span>
                   <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
                 </div>
               </th>
-              <th className="p-5 w-44 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Loker Barang</th>
-              <th className="p-5 w-44 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Loker Pantry</th>
+              <th className="p-5 w-64 group cursor-pointer hover:bg-gray-200/50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black text-black uppercase tracking-[0.15em]">Posisi / Departemen</span>
+                  <ChevronsUpDown size={12} className="text-gray-300 group-hover:text-black transition-colors"/>
+                </div>
+              </th>
+              <th className="p-5 w-40 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Loker Barang</th>
+              <th className="p-5 w-40 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Loker Pantry</th>
               <th className="p-5 w-48 text-[10px] font-black text-black uppercase tracking-[0.15em]">Jadwal Laundry</th>
               <th className="p-5 text-[10px] font-black text-black uppercase tracking-[0.15em]">Keterangan</th>
               <th className="p-5 w-24 text-center text-[10px] font-black text-black uppercase tracking-[0.15em]">Action</th>
@@ -86,6 +92,12 @@ export const ModenaPodTable: React.FC<Props> = ({ data, onEdit, onView }) => {
                                 <User size={14} />
                             </div>
                             <span className="font-black text-black text-[13px] uppercase tracking-tight italic">{item.namaPenghuni}</span>
+                        </div>
+                    </td>
+                    <td className="p-5">
+                        <div className="flex flex-col">
+                            <span className="font-black text-black uppercase tracking-tight leading-tight">{item.posisi || '-'}</span>
+                            <span className="text-[9px] text-gray-400 font-black uppercase tracking-widest mt-0.5">{item.departemen || '-'}</span>
                         </div>
                     </td>
                     <td className="p-5 text-center">
@@ -127,7 +139,7 @@ export const ModenaPodTable: React.FC<Props> = ({ data, onEdit, onView }) => {
                 ))
             ) : (
                 <tr>
-                    <td colSpan={10} className="p-20 text-center text-gray-300 uppercase font-black text-[11px] tracking-widest italic">Belum ada data tersedia</td>
+                    <td colSpan={11} className="p-20 text-center text-gray-300 uppercase font-black text-[11px] tracking-widest italic">Belum ada data tersedia</td>
                 </tr>
             )}
           </tbody>
