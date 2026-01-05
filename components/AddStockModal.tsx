@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, Save, Calendar, User, Package, MessageSquare, Plus, Trash2, Send, Layers, ClipboardCheck, Clock, Archive, Settings, History, Lock, Home, LayoutGrid, Baby, Users, Activity, Briefcase, Building2, Key, Hash, ShieldCheck, DollarSign, Landmark, ShoppingCart, AlertCircle, UploadCloud, Check, XCircle } from 'lucide-react';
+import { X, Save, Calendar, User, Package, MessageSquare, Plus, Trash2, Send, Layers, ClipboardCheck, Clock, Archive, Settings, History, Lock, Home, LayoutGrid, Baby, Users, Activity, Briefcase, Building2, Key, Hash, ShieldCheck, DollarSign, Landmark, ShoppingCart, AlertCircle, UploadCloud, Check, XCircle, MapPin } from 'lucide-react';
 import { AssetRecord, LogBookRecord, StockOpnameRecord, LockerRecord, LockerRequestRecord, PodRequestRecord, ModenaPodRecord, MasterPodRecord, MasterLockerRecord, StationeryRequestRecord, StationeryRequestItem } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOCK_MASTER_DATA, MOCK_MASTER_ARK_DATA, MOCK_ATK_CATEGORY, MOCK_ARK_CATEGORY, MOCK_UOM_DATA, MOCK_POD_DATA } from '../constants';
@@ -125,9 +125,17 @@ export const AddStockModal: React.FC<Props> = ({
                 setStationeryRequestForm({ type: 'DAILY REQUEST', deliveryType: 'PICKUP HO', location: 'Satrio', date: '2026-01-05' }); 
                 setRequestItems([{ itemId: '', qty: '', categoryId: '', uom: '' }]);
             }
+            if (isLockerRequest) {
+                setLockerRequestForm({
+                  date: new Date().toLocaleDateString('id-ID'),
+                  status: 'Pending',
+                  reason: '',
+                  preferredLocation: 'Lantai 1'
+                });
+            }
         }
     }
-  }, [isOpen, initialAssetData, initialLogBookData, initialStockOpnameData, initialLockerData, initialLockerRequestData, initialPodData, initialMasterPodData, initialMasterLockerData, initialPodRequestData, mode, isArkModule, isStationeryRequest, isStockOpname, isPod, isMasterPod, isMasterLocker, moduleName]);
+  }, [isOpen, initialAssetData, initialLogBookData, initialStockOpnameData, initialLockerData, initialLockerRequestData, initialPodData, initialMasterPodData, initialMasterLockerData, initialPodRequestData, mode, isArkModule, isStationeryRequest, isStockOpname, isPod, isMasterPod, isMasterLocker, isLockerRequest, moduleName]);
 
   const handleSave = () => {
       if (isStationeryRequest && onSaveStationeryRequest) onSaveStationeryRequest({ ...stationeryRequestForm, items: requestItems });
@@ -200,7 +208,9 @@ export const AddStockModal: React.FC<Props> = ({
                  isPod ? (isViewMode ? 'Pod Occupancy Detail' : 'Register New Room Assignment') : 
                  isMasterPod ? (isViewMode ? 'Master Pod Detail' : 'Define Pod Configuration') :
                  isMasterLocker ? (isViewMode ? 'Master Locker Detail' : 'Catalog New Locker') :
-                 isLocker ? (isViewMode ? 'Locker Management Details' : 'Register Locker') : moduleName}
+                 isLocker ? (isViewMode ? 'Locker Management Details' : 'Register Locker') : 
+                 isLockerRequest ? (isViewMode ? 'Locker Request Details' : 'Create New Locker Request') :
+                 moduleName}
               </h2>
           </div>
           <button className="text-gray-300 hover:text-red-500 transition-colors p-1" onClick={onClose}>
@@ -211,7 +221,7 @@ export const AddStockModal: React.FC<Props> = ({
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
           {isStationeryRequest ? (
-            /* STATIONERY REQUEST FORM */
+            /* STATIONERY REQUEST FORM (Logic Preserved) */
             <div className="space-y-8">
                <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
                  {/* APPLICATION INFO */}
@@ -349,11 +359,92 @@ export const AddStockModal: React.FC<Props> = ({
                  <textarea rows={3} disabled={isFieldDisabled} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium bg-white outline-none focus:border-black transition-all placeholder:text-gray-300" value={stationeryRequestForm.remarks || ''} onChange={(e) => handleStationeryRequestChange('remarks', e.target.value)} placeholder="Tulis catatan tambahan di sini..." />
                </div>
             </div>
+          ) : isLockerRequest ? (
+            /* LOCKER REQUEST FORM - NEWLY IMPLEMENTED */
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                {/* Section 1: Requester Details */}
+                <div className="md:col-span-6 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                   <SectionHeader icon={User} title="Requester Information" />
+                   <div className="space-y-6">
+                      <div className="p-5 bg-gray-50/50 rounded-2xl border border-gray-100 flex items-center gap-4">
+                          <img src={initialLockerRequestData?.employee.avatar || 'https://i.pravatar.cc/150?u=current_user'} className="w-16 h-16 rounded-full border-4 border-white shadow-md" />
+                          <div>
+                              <div className="text-[16px] font-black text-black uppercase tracking-tight leading-none mb-1">{initialLockerRequestData?.employee.name || 'Gian Nanda Pratama'}</div>
+                              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{initialLockerRequestData?.employee.role || 'Staff Admin'}</div>
+                          </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Department</label>
+                        <input 
+                          type="text" 
+                          disabled={isFieldDisabled} 
+                          className="w-full bg-gray-50/30 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black focus:border-black outline-none transition-all shadow-sm"
+                          value={initialLockerRequestData?.employee.department || 'After Sales'}
+                          readOnly
+                        />
+                      </div>
+                   </div>
+                </div>
+
+                {/* Section 2: Request Details */}
+                <div className="md:col-span-6 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                  <SectionHeader icon={Send} title="Request Specifications" />
+                  <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-6">
+                         <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Request Date</label>
+                            <div className="relative">
+                                <Calendar size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                                <input 
+                                  type="text" 
+                                  disabled={true} 
+                                  className="w-full bg-gray-50/30 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-black text-gray-400 outline-none"
+                                  value={lockerRequestForm.date || ''}
+                                />
+                            </div>
+                         </div>
+                         <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Preferred Floor</label>
+                            <div className="relative">
+                                <MapPin size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                                <select 
+                                  disabled={isFieldDisabled}
+                                  className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-bold text-black focus:border-black outline-none appearance-none transition-all shadow-sm"
+                                  value={lockerRequestForm.preferredLocation || ''}
+                                  onChange={(e) => setLockerRequestForm({...lockerRequestForm, preferredLocation: e.target.value})}
+                                >
+                                  <option value="Lantai 1">Lantai 1</option>
+                                  <option value="Lantai 2 Satrio">Lantai 2 Satrio</option>
+                                  <option value="Lantai 3 Satrio">Lantai 3 Satrio</option>
+                                  <option value="Lantai 2 Kr. Asem">Lantai 2 Kr. Asem</option>
+                                  <option value="Lantai 3 Kr. Asem">Lantai 3 Kr. Asem</option>
+                                </select>
+                            </div>
+                         </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Reason for Request</label>
+                        <textarea 
+                          rows={4}
+                          disabled={isFieldDisabled}
+                          placeholder="Please provide details for the locker allocation request..."
+                          className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:border-black outline-none transition-all placeholder:text-gray-300 shadow-sm"
+                          value={lockerRequestForm.reason || ''}
+                          onChange={(e) => setLockerRequestForm({...lockerRequestForm, reason: e.target.value})}
+                        />
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="bg-white p-20 rounded-2xl border border-gray-100 text-center flex flex-col items-center">
                 <Archive size={48} className="text-gray-200 mb-4" />
-                <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">Other module views</p>
-                <p className="text-gray-300 text-xs mt-2 italic uppercase">Content logic preserved but visual style for Stationery focused.</p>
+                <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">Module detail View</p>
+                <p className="text-gray-300 text-xs mt-2 italic uppercase">Content logic for {moduleName} module.</p>
             </div>
           )}
         </div>
@@ -381,7 +472,9 @@ export const AddStockModal: React.FC<Props> = ({
             )}
 
             {!isViewMode && (
-                <button onClick={handleSave} className="px-12 py-3 text-[11px] font-black text-white bg-black rounded-xl uppercase tracking-widest shadow-xl shadow-black/10 active:scale-95 transition-all hover:bg-gray-900">Save Data</button>
+                <button onClick={handleSave} className="px-12 py-3 text-[11px] font-black text-white bg-black rounded-xl uppercase tracking-widest shadow-xl shadow-black/10 active:scale-95 transition-all hover:bg-gray-900">
+                  {isLockerRequest ? 'Submit Request' : 'Save Data'}
+                </button>
             )}
         </div>
       </div>
